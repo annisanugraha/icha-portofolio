@@ -1,4 +1,4 @@
-# GSA Studio | Digital Portfolio
+My Digital Portfolio
 
 A minimalist, high-performance portfolio built with **Next.js 15**, **Tailwind CSS v4**, and **Prisma**. Designed for software engineers who value clean aesthetics and robust content management.
 
