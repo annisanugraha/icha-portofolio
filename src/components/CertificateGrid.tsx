@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface CertificateData {
   id: string;
@@ -17,43 +17,169 @@ interface CertificateGridProps {
 }
 
 export const CertificateGrid = ({ certificates }: CertificateGridProps) => {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const selected = selectedIndex !== null ? certificates[selectedIndex] : null;
+
+  const handleNext = useCallback(() => {
+    if (selectedIndex === null) return;
+    setSelectedIndex((prev) => (prev! + 1) % certificates.length);
+  }, [selectedIndex, certificates.length]);
+
+  const handlePrev = useCallback(() => {
+    if (selectedIndex === null) return;
+    setSelectedIndex((prev) => (prev! - 1 + certificates.length) % certificates.length);
+  }, [selectedIndex, certificates.length]);
+
+  // Keyboard Navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedIndex === null) return;
+      if (e.key === 'ArrowRight') handleNext();
+      if (e.key === 'ArrowLeft') handlePrev();
+      if (e.key === 'Escape') setSelectedIndex(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedIndex, handleNext, handlePrev]);
+
   if (certificates.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-14">
-      {certificates.map((item, i) => (
-        <motion.div
-          key={item.id}
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.9, delay: (i % 2) * 0.1 }}
-          className="group space-y-4"
-        >
-          {/* Image */}
-          <div className="img-container aspect-[3/2] rounded-sm overflow-hidden">
-            <img
-              src={item.imageUrl || 'https://placehold.co/900x600/f5f5f5/999999?text=—'}
-              alt={item.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* Meta */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="label">{item.category}</span>
-              <span className="label text-[#ddd]">{String(i + 1).padStart(2, '0')}</span>
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-14">
+        {certificates.map((item, i) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: (i % 4) * 0.1 }}
+            className="group space-y-4 cursor-pointer"
+            onClick={() => setSelectedIndex(i)}
+          >
+            {/* Image Container */}
+            <div className="img-container aspect-[3/2] rounded-sm overflow-hidden bg-[#fafafa] relative">
+              <img
+                src={item.imageUrl || 'https://placehold.co/900x600/f5f5f5/999999?text=—'}
+                alt={item.title}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-500" />
             </div>
-            <h3 className="text-base font-serif group-hover:opacity-50 transition-opacity duration-500">
-              {item.title}
-            </h3>
-            <p className="text-[11px] text-[#999] leading-relaxed line-clamp-2 italic">
-              {item.description}
-            </p>
+
+            {/* Meta */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="label">{item.category}</span>
+                <span className="label text-[#ddd]">{String(i + 1).padStart(2, '0')}</span>
+              </div>
+              <p className="text-base font-serif group-hover:opacity-50 transition-opacity duration-500">
+                {item.title}
+              </p>
+              <p className="text-[11px] text-[#999] leading-relaxed line-clamp-2">
+                {item.description}
+              </p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* ── Modal Lightbox with Navigation ── */}
+      <AnimatePresence mode="wait">
+        {selected && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-20 overflow-hidden">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedIndex(null)}
+              className="absolute inset-0 bg-white/95 backdrop-blur-sm cursor-zoom-out"
+            />
+
+            {/* Navigation Arrows (Desktop) */}
+            <div className="absolute inset-x-4 md:inset-x-10 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none z-50">
+              <button 
+                onClick={handlePrev}
+                className="w-12 h-12 flex items-center justify-center bg-white border border-[#ebebeb] text-[#111] hover:border-[#111] transition-all pointer-events-auto cursor-pointer"
+                title="Previous (Left Arrow)"
+              >
+                ←
+              </button>
+              <button 
+                onClick={handleNext}
+                className="w-12 h-12 flex items-center justify-center bg-white border border-[#ebebeb] text-[#111] hover:border-[#111] transition-all pointer-events-auto cursor-pointer"
+                title="Next (Right Arrow)"
+              >
+                →
+              </button>
+            </div>
+
+            {/* Content Container */}
+            <motion.div
+              key={selected.id}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+              className="relative w-full max-w-5xl bg-white border border-[#ebebeb] shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-full"
+            >
+              {/* Close Button Mobile */}
+              <button 
+                onClick={() => setSelectedIndex(null)}
+                className="absolute top-4 right-4 z-[60] md:hidden w-8 h-8 flex items-center justify-center bg-white border border-[#ebebeb] rounded-full"
+              >
+                ×
+              </button>
+
+              {/* Image Side */}
+              <div className="flex-[1.5] bg-[#fafafa] flex items-center justify-center overflow-hidden min-h-[250px] md:min-h-0">
+                <img 
+                  src={selected.imageUrl || 'https://placehold.co/900x600/f5f5f5/999999?text=—'} 
+                  alt={selected.title}
+                  className="w-full h-full object-contain p-4 md:p-8"
+                />
+              </div>
+
+              {/* Info Side */}
+              <div className="flex-1 p-8 md:p-12 flex flex-col justify-between border-t md:border-t-0 md:border-l border-[#ebebeb] bg-white relative z-10">
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="label text-[#111]">{selected.category}</span>
+                      <span className="text-[10px] font-mono text-[#ccc] tabular-nums">
+                        {String(selectedIndex! + 1).padStart(2, '0')} / {String(certificates.length).padStart(2, '0')}
+                      </span>
+                    </div>
+                    <p className="text-2xl md:text-3xl font-serif text-[#111] leading-tight tracking-tight">
+                      {selected.title}
+                    </p>
+                  </div>
+                  
+                  <div className="w-12 h-px bg-[#111]" />
+
+                  <p className="text-[12px] md:text-[13px] text-[#666] leading-relaxed font-sans whitespace-pre-line overflow-y-auto max-h-[150px] md:max-h-none pr-2">
+                    {selected.description}
+                  </p>
+                </div>
+
+                <div className="pt-10 flex items-center justify-between">
+                  <span className="text-[9px] tracking-widest text-[#ccc] uppercase font-mono">
+                    Archives · Recognition
+                  </span>
+                  <button 
+                    onClick={() => setSelectedIndex(null)}
+                    className="text-[10px] tracking-[0.4em] text-[#111] uppercase hover:opacity-50 transition-opacity font-mono cursor-pointer"
+                  >
+                    [ Close ]
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
-      ))}
-    </div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };

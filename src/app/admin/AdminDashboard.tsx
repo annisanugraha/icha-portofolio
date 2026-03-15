@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { addProject, deleteProject } from '@/actions/project';
+import { addProject, deleteProject } from '@/actions/projects';
 import { addCertificate, deleteCertificate } from '@/actions/certificate';
 
 export default function AdminDashboard({ initialProjects, initialCertificates }: any) {
@@ -35,13 +35,13 @@ export default function AdminDashboard({ initialProjects, initialCertificates }:
         <div className="flex gap-4">
           <button 
             onClick={() => setTab('projects')}
-            className={`label ${tab === 'projects' ? 'text-[#111] border-b border-[#111]' : 'text-[#ccc]'}`}
+            className={`label cursor-pointer transition-colors ${tab === 'projects' ? 'text-[#111] border-b border-[#111]' : 'text-[#999] hover:text-[#666]'}`}
           >
             Projects
           </button>
           <button 
             onClick={() => setTab('certificates')}
-            className={`label ${tab === 'certificates' ? 'text-[#111] border-b border-[#111]' : 'text-[#ccc]'}`}
+            className={`label cursor-pointer transition-colors ${tab === 'certificates' ? 'text-[#111] border-b border-[#111]' : 'text-[#999] hover:text-[#666]'}`}
           >
             Certificates
           </button>

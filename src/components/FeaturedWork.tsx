@@ -1,10 +1,11 @@
 import React from 'react';
-import { getProjects } from '@/actions/project';
+import { getFeaturedProjects } from '@/actions/projects';
 import { WorkList } from './WorkList';
 
 // Ini adalah Server Component (mengambil data langsung dari database)
 export const FeaturedWork = async () => {
-  const projects = await getProjects();
+  // Hanya ambil project yang diset 'featured: true' di CMS
+  const projects = await getFeaturedProjects();
 
   // Jika benar-benar kosong, skip section ini
   if (!projects || projects.length === 0) {

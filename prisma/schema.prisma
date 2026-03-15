@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,17 +6,26 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id       String @id @default(cuid())
+  email    String @unique
+  password String 
+}
+
 model Project {
   id               String   @id @default(cuid())
   title            String
   slug             String   @unique
-  category         String   // Web, Mobile, SaaS, etc.
+  category         String   
   shortDescription String   @db.Text
   fullDescription  String   @db.Text
   imageUrl         String?
+  galleryImages    String[] @default([]) // Array of image URLs for gallery
   githubUrl        String?
   demoUrl          String?
   year             String
+  featured         Boolean  @default(false) // For "Selected Work" section
+  order            Int      @default(0)     // For custom sorting
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
@@ -27,9 +33,50 @@ model Project {
 model Certificate {
   id          String   @id @default(cuid())
   title       String
-  category    String   // HKI, Competition, Course, Seminar
+  category    String   
   description String   @db.Text
   imageUrl    String?
+  order       Int      @default(0)     // For custom sorting
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Profile {
+  id              String   @id @default("singleton")
+  logoText        String   @default("Annisa Nugraha")
+  logoImage       String?  // Gambar untuk logo
+  favicon         String?  // Gambar untuk favicon (ikon browser)
+  
+  // SEO & Metadata
+  siteTitle       String   @default("Icha's Portfolio")
+  siteDescription String   @default("Minimalist portfolio focused on software engineering and user experience.")
+
+  // Hero Section
+  heroRole        String   @default("Software Engineer")
+  heroTitle       String   @default("Building things that matter.")
+  heroSubtitle    String   @default("Engineering & minimal design.")
+  
+  // About Section
+  aboutQuote      String   @default("Crafting digital clarity through intentional code.")
+  aboutBio1       String   @default("")
+  aboutBio2       String   @default("")
+  aboutImage      String?
+  
+  // Footer Links
+  linkedinUrl     String   @default("#")
+  githubUrl       String   @default("#")
+  emailAddress    String   @default("")
+  
+  updatedAt       DateTime @updatedAt
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  year        String
+  title       String
+  company     String
+  description String   @db.Text
+  imageUrl    String?  // Foto kenangan (Optional)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
 }

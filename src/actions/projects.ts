@@ -1,0 +1,149 @@
+// src/actions/projects.ts - New name to force Turbopack reload
+'use server'
+
+import prisma from '@/lib/db'
+import { revalidatePath } from 'next/cache'
+
+export async function addProject(data: any) {
+  try {
+    const project = await prisma.project.create({
+      data: {
+        title: data.title,
+        slug: data.slug,
+        category: data.category,
+        shortDescription: data.shortDescription,
+        fullDescription: data.fullDescription,
+        imageUrl: data.imageUrl || null,
+        galleryImages: data.galleryImages || [],
+        githubUrl: data.githubUrl || null,
+        demoUrl: data.demoUrl || null,
+        year: data.year,
+        featured: data.featured || false,
+        order: data.order || 0,
+      },
+    })
+    revalidatePath('/')
+    revalidatePath('/admin')
+    return { success: true, data: project }
+  } catch (error: any) {
+    console.error('Add project error:', error)
+    if (error.code === 'P2002') return { success: false, error: 'Slug already exists.' }
+    return { success: false, error: 'DB Error: ' + (error.message || 'Unknown') }
+  }
+}
+
+export async function updateProject(id: string, data: any) {
+  try {
+    const project = await prisma.project.update({
+      where: { id },
+      data: {
+        title: data.title,
+        slug: data.slug,
+        category: data.category,
+        shortDescription: data.shortDescription,
+        fullDescription: data.fullDescription,
+        imageUrl: data.imageUrl || null,
+        galleryImages: data.galleryImages || [],
+        githubUrl: data.githubUrl || null,
+        demoUrl: data.demoUrl || null,
+        year: data.year,
+        featured: data.featured ?? false,
+        order: data.order ?? 0,
+      },
+    })
+    revalidatePath('/')
+    revalidatePath(`/work/${data.slug}`)
+    revalidatePath('/admin')
+    return { success: true, data: project }
+  } catch (error: any) {
+    console.error('Update project error:', error)
+    if (error.code === 'P2002') return { success: false, error: 'Slug already exists.' }
+    return { success: false, error: 'DB Error: ' + (error.message || 'Unknown') }
+  }
+}
+
+export async function reorderProjects(orders: { id: string, order: number }[]) {
+  try {
+    const transactions = orders.map(item => 
+      prisma.project.update({
+        where: { id: item.id },
+        data: { order: item.order }
+      })
+    );
+    await prisma.$transaction(transactions);
+    revalidatePath('/');
+    revalidatePath('/admin/projects');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Reorder error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function toggleProjectFeatured(id: string) {
+  try {
+    const project = await prisma.project.findUnique({ where: { id } });
+    if (!project) return { success: false, error: 'Project not found' };
+
+    const updated = await prisma.project.update({
+      where: { id },
+      data: { featured: !project.featured }
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin');
+    revalidatePath('/admin/projects');
+    
+    return { success: true, data: updated };
+  } catch (error: any) {
+    console.error('Toggle featured error:', error);
+    return { success: false, error: 'Failed to toggle featured status' };
+  }
+}
+
+export async function deleteProject(id: string) {
+  try {
+    await prisma.project.delete({ where: { id } });
+    revalidatePath('/')
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Delete project error:', error)
+    return { success: false, error: 'Delete failed.' }
+  }
+}
+
+export async function getProjects() {
+  try {
+    const allProjects = await prisma.project.findMany({
+      orderBy: { order: 'asc' }
+    });
+    return allProjects;
+  } catch (error: any) {
+    console.error('Fetch projects error:', error);
+    return [];
+  }
+}
+
+export async function getFeaturedProjects() {
+  try {
+    const featured = await prisma.project.findMany({
+      where: { featured: true },
+      orderBy: { order: 'asc' }
+    });
+    return featured;
+  } catch (error: any) {
+    console.error('Fetch featured error:', error);
+    return [];
+  }
+}
+
+export async function getProjectBySlug(slug: string) {
+  try {
+    const p = await prisma.project.findUnique({ where: { slug } });
+    return p;
+  } catch (error: any) {
+    console.error('Fetch slug error:', error);
+    return null;
+  }
+}

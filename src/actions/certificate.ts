@@ -3,82 +3,74 @@
 import prisma from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
-export async function addCertificate(title: string, category: string, description: string, imageUrl: string) {
-  if (!title || !category || !description) {
-    throw new Error('Semua field wajib diisi!')
-  }
-
+export async function getCertificates() {
   try {
-    const certificate = await prisma.certificate.create({
-      data: {
-        title,
-        category,
-        description,
-        imageUrl: imageUrl || null,
-      },
-    })
-
-    revalidatePath('/')
-    revalidatePath('/archives')
-    revalidatePath('/admin')
-    
-    return { success: true, data: certificate }
+    return await prisma.certificate.findMany({
+      orderBy: { order: 'asc' }
+    });
   } catch (error) {
-    console.error('Gagal menambahkan sertifikat:', error)
-    return { success: false, error: 'Gagal menyimpan ke database cloud.' }
+    console.error('Fetch certificates error:', error);
+    return [];
   }
 }
 
-export async function updateCertificate(id: string, data: { title: string, category: string, description: string, imageUrl?: string }) {
+export async function addCertificate(title: string, category: string, description: string, imageUrl: string, order: number = 0) {
   try {
-    const certificate = await prisma.certificate.update({
+    await prisma.certificate.create({
+      data: { title, category, description, imageUrl, order }
+    });
+    revalidatePath('/archives');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Add certificate error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateCertificate(id: string, data: any) {
+  try {
+    await prisma.certificate.update({
       where: { id },
       data: {
         title: data.title,
         category: data.category,
         description: data.description,
-        imageUrl: data.imageUrl || null,
-      },
-    })
+        imageUrl: data.imageUrl,
+        order: data.order
+      }
+    });
+    revalidatePath('/archives');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Update certificate error:', error);
+    return { success: false, error: error.message };
+  }
+}
 
-    revalidatePath('/')
-    revalidatePath('/archives')
-    revalidatePath('/admin')
-    
-    return { success: true, data: certificate }
-  } catch (error) {
-    console.error('Gagal update sertifikat:', error)
-    return { success: false, error: 'Gagal memperbarui database.' }
+export async function reorderCertificates(orders: { id: string, order: number }[]) {
+  try {
+    const transactions = orders.map(item => 
+      prisma.certificate.update({
+        where: { id: item.id },
+        data: { order: item.order }
+      })
+    );
+    await prisma.$transaction(transactions);
+    revalidatePath('/archives');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Reorder error:', error);
+    return { success: false, error: error.message };
   }
 }
 
 export async function deleteCertificate(id: string) {
   try {
-    await prisma.certificate.delete({
-      where: { id },
-    })
-
-    revalidatePath('/')
-    revalidatePath('/archives')
-    revalidatePath('/admin')
-    
-    return { success: true }
-  } catch (error) {
-    console.error('Gagal hapus sertifikat:', error)
-    return { success: false, error: 'Gagal menghapus dari database.' }
-  }
-}
-
-export async function getCertificates() {
-  try {
-    const certificates = await prisma.certificate.findMany({
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
-    return certificates
-  } catch (error) {
-    console.error('Gagal mengambil data sertifikat:', error)
-    return []
+    await prisma.certificate.delete({ where: { id } });
+    revalidatePath('/archives');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Delete certificate error:', error);
+    return { success: false, error: error.message };
   }
 }

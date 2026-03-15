@@ -3,78 +3,91 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-interface Journey {
+interface ExperienceData {
   id: string;
   year: string;
   title: string;
   company: string;
   description: string;
+  imageUrl?: string | null;
 }
 
-const experiences: Journey[] = [
-  {
-    id: "1",
-    year: "2023",
-    title: "Finalis GEMASTIK XVI",
-    company: "Puspresnas",
-    description: "Berhasil masuk ke babak final nasional kategori pengembangan perangkat lunak."
-  },
-  {
-    id: "2",
-    year: "2024",
-    title: "Anggota Bengkel Koding",
-    company: "Udinus",
-    description: "Aktif dalam komunitas pengembangan kode dan berkontribusi dalam project open source."
-  }
-];
+export const Timeline = ({ experiences }: { experiences: ExperienceData[] }) => {
+  if (!experiences || experiences.length === 0) return null;
 
-export const Timeline = () => {
   return (
-    <div>
+    <div className="space-y-0">
       <div className="mb-12">
-        <span className="label">Chronology</span>
+        <span className="label tracking-[0.5em] text-[#999] uppercase text-[9px]">Chronology</span>
       </div>
 
-      <div className="relative flex gap-0">
-
-        {/* Kolom kiri: tahun + dot + garis */}
-        <div className="relative flex flex-col" style={{ width: '80px', marginRight: '2rem' }}>
-          {experiences.map((exp, i) => {
-            const isLast = i === experiences.length - 1;
-            return (
-              <div key={exp.id} className="relative flex flex-col items-end" style={{ paddingBottom: isLast ? 0 : '3rem' }}>
-                {/* Tahun */}
-                <span className="label text-[#bbb] mb-3 self-start">{exp.year}</span>
-                {/* Dot */}
-                <div className="w-1.5 h-1.5 rounded-full bg-[#111] self-end mr-[-1px]" />
-                {/* Garis ke entry berikutnya */}
-                {!isLast && (
-                  <div className="absolute right-0 top-[calc(1.5rem+6px)] bottom-0 w-px bg-[#e0e0e0]" />
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Kolom kanan: konten */}
-        <div className="flex-1 flex flex-col">
-          {experiences.map((exp, i) => (
+      <div className="flex flex-col">
+        {experiences.map((exp, i) => {
+          const isLast = i === experiences.length - 1;
+          
+          return (
             <motion.div
               key={exp.id}
-              initial={{ opacity: 0, x: -6 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: i * 0.15 }}
-              className="space-y-1.5"
-              style={{ paddingBottom: i === experiences.length - 1 ? 0 : '3rem' }}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-5%" }}
+              transition={{ duration: 0.8, delay: i * 0.1 }}
+              className="flex items-start group"
             >
-              <h4 className="text-base font-serif tracking-tight">{exp.title}</h4>
-              <span className="label text-[#bbb] block">{exp.company}</span>
-              <p className="text-xs text-[#999] leading-relaxed pt-1">{exp.description}</p>
-            </motion.div>
-          ))}
-        </div>
+              {/* 1. GAMBAR MEMORI (Cinematic, 16:9) */}
+              <div className="w-24 md:w-40 shrink-0 pt-1">
+                {exp.imageUrl ? (
+                  <div className="aspect-video w-full bg-[#fafafa] border border-[#ebebeb] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out opacity-80 group-hover:opacity-100">
+                    <img 
+                      src={exp.imageUrl} 
+                      alt={exp.title} 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                ) : (
+                  <div className="aspect-video w-full bg-[#fafafa] border border-[#ebebeb] flex items-center justify-center">
+                    <span className="text-[6px] text-[#ddd] tracking-widest uppercase font-mono">N/A</span>
+                  </div>
+                )}
+              </div>
 
+              {/* 2. DIVIDER (TITIK & GARIS VERTIKAL) */}
+              <div className="flex flex-col items-center mx-5 md:mx-10 shrink-0">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#ddd] group-hover:bg-[#111] transition-colors duration-500 mt-2.5" />
+                <div className={`w-[0.5px] bg-[#ebebeb] flex-1 min-h-[70px] md:min-h-[90px] ${isLast ? 'opacity-0' : 'opacity-100'}`} />
+              </div>
+
+              {/* 3. KONTEN (Kanan) */}
+              <div className="flex-1 pt-0 pb-10">
+                <div className="space-y-2.5">
+                  {/* Header: [Tahun] Judul (Mono, Bold Year) */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="font-mono text-[10px] md:text-[11px] tracking-[0.1em] text-[#111] group-hover:text-black transition-colors duration-500 font-bold">
+                      [{exp.year}]
+                    </span>
+                    <h4 className="font-mono text-[11px] md:text-[12px] tracking-tight text-[#111] group-hover:opacity-70 transition-opacity">
+                      {exp.title}
+                    </h4>
+                  </div>
+
+                  {/* Body: Deskripsi */}
+                  <div className="max-w-xl">
+                    <p className="text-[11px] md:text-[12px] text-[#777] leading-relaxed font-sans">
+                      {exp.description}
+                    </p>
+                  </div>
+
+                  {/* Footer: Company */}
+                  <div className="">
+                    <span className="text-[8px] tracking-[0.4em] text-[#bbb] group-hover:text-[#999] transition-colors font-mono italic">
+                      at {exp.company}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );
