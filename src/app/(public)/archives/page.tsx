@@ -15,7 +15,7 @@ export default function ArchivesPage() {
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="main-container pt-24 pb-32 space-y-16">
+      <div className="main-container pt-24 space-y-16">
 
         {/* Animated Header */}
         <motion.div 

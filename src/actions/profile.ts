@@ -36,6 +36,7 @@ export async function updateProfile(data: any) {
         linkedinUrl: data.linkedinUrl,
         githubUrl: data.githubUrl,
         emailAddress: data.emailAddress,
+        emailSubject: data.emailSubject,
       }
     });
     revalidatePath('/', 'layout');

@@ -80,10 +80,7 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
           })}
         </div>
 
-        {/* Copyright */}
-        <span className="text-[7px] text-[#ddd] [writing-mode:vertical-lr] rotate-180 tracking-widest font-mono">
-          © 2026
-        </span>
+        <div className="h-10" />
       </nav>
 
       {/* ── Mobile Top Bar ── */}

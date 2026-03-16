@@ -19,15 +19,35 @@ model Project {
   category         String   
   shortDescription String   @db.Text
   fullDescription  String   @db.Text
+  
+  // Custom project details
+  contextWhy       String?  @db.Text
+  scopeWhat        String?  @db.Text
+  outcomeHow       String?  @db.Text
+
   imageUrl         String?
   galleryImages    String[] @default([]) // Array of image URLs for gallery
+  
+  // Legacy links (keeping for data safety, but will use ProjectLink moving forward)
   githubUrl        String?
   demoUrl          String?
+  
+  // New flexible links
+  links            ProjectLink[]
+
   year             String
   featured         Boolean  @default(false) // For "Selected Work" section
   order            Int      @default(0)     // For custom sorting
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+model ProjectLink {
+  id        String  @id @default(cuid())
+  label     String  // e.g., "GitHub", "Figma", "Live Demo"
+  url       String
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model Certificate {
@@ -66,6 +86,7 @@ model Profile {
   linkedinUrl     String   @default("#")
   githubUrl       String   @default("#")
   emailAddress    String   @default("")
+  emailSubject    String   @default("")
   
   updatedAt       DateTime @updatedAt
 }

@@ -139,33 +139,39 @@ export default function ArchivesContent() {
       )}
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="archives" direction="horizontal">
+        <Droppable droppableId="archives" direction="vertical">
           {(provided) => (
-            <div {...provided.droppableProps} ref={provided.innerRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
               {certs.map((c, index) => (
                 <Draggable key={c.id} draggableId={c.id} index={index}>
                   {(provided, snapshot) => (
                     <div 
                       ref={provided.innerRef}
                       {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className={`border group select-none transition-all duration-300 ${snapshot.isDragging ? 'border-[#111] bg-[#fafafa] z-50' : 'border-[#ebebeb] hover:border-[#111] hover:bg-[#fafafa] hover:shadow-sm'}`}
+                      className={`flex items-center gap-6 p-4 border bg-white group select-none transition-all duration-300 ${snapshot.isDragging ? 'border-[#111] shadow-xl z-50' : 'border-[#ebebeb] hover:border-[#111]'}`}
                     >
-                      <div className="aspect-[4/3] bg-[#fafafa] overflow-hidden relative">
-                        <img src={c.imageUrl || 'https://placehold.co/600x400/fafafa/eee?text=—'} alt={c.title} className="w-full h-full object-cover opacity-100 group-hover:opacity-80 transition-opacity duration-500" />
-                        <div className="absolute top-2 right-2 bg-white/90 px-2 py-1 border border-[#ebebeb] opacity-0 group-hover:opacity-100 transition-opacity">
-                           <span className="text-[7px] tracking-widest text-[#999] uppercase">Drag to Reorder</span>
-                        </div>
+                      {/* Drag Handle */}
+                      <div {...provided.dragHandleProps} className="text-[#ccc] hover:text-[#111] cursor-grab active:cursor-grabbing">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8h16M4 16h16" />
+                        </svg>
                       </div>
-                      <div className="p-4 space-y-3">
-                        <div className="space-y-1">
-                          <p className="text-[8px] tracking-widest text-[#999] uppercase">{c.category}</p>
-                          <p className="text-sm text-[#111] line-clamp-1">{c.title}</p>
-                        </div>
-                        <div className="flex gap-4 border-t border-[#ebebeb] pt-3">
-                          <button onClick={() => handleEdit(c)} className="text-[9px] tracking-widest text-[#999] hover:text-[#111] transition-colors uppercase cursor-pointer">Edit</button>
-                          <button onClick={() => handleDelete(c.id)} className="text-[9px] tracking-widest text-[#ccc] hover:text-red-500 transition-colors uppercase cursor-pointer">Delete</button>
-                        </div>
+
+                      {/* Small Thumbnail */}
+                      <div className="w-20 h-14 bg-[#fafafa] overflow-hidden border border-[#eee] shrink-0">
+                        <img src={c.imageUrl || 'https://placehold.co/600x400/fafafa/eee?text=—'} alt={c.title} className="w-full h-full object-cover" />
+                      </div>
+
+                      {/* Title & Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[8px] tracking-[0.2em] text-[#999] uppercase">{c.category}</p>
+                        <p className="text-xs font-medium text-[#111] truncate">{c.title}</p>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex gap-4 shrink-0">
+                        <button onClick={() => handleEdit(c)} className="text-[9px] tracking-widest text-[#999] hover:text-[#111] transition-colors uppercase cursor-pointer border-b border-transparent hover:border-[#111]">Edit</button>
+                        <button onClick={() => handleDelete(c.id)} className="text-[9px] tracking-widest text-[#ccc] hover:text-red-500 transition-colors uppercase cursor-pointer border-b border-transparent hover:border-red-500">Delete</button>
                       </div>
                     </div>
                   )}

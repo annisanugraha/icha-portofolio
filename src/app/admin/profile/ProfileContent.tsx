@@ -101,9 +101,14 @@ export default function ProfileContent() {
               <Field label="GitHub URL">
                 <input type="text" value={profile.githubUrl} onChange={e => set('githubUrl', e.target.value)} className={inputCls} />
               </Field>
-              <Field label="Email Address">
-                <input type="email" value={profile.emailAddress} onChange={e => set('emailAddress', e.target.value)} className={inputCls} />
-              </Field>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Email Address">
+                  <input type="email" value={profile.emailAddress} onChange={e => set('emailAddress', e.target.value)} className={inputCls} />
+                </Field>
+                <Field label="Email Subject">
+                  <input type="text" value={profile.emailSubject || ''} onChange={e => set('emailSubject', e.target.value)} className={inputCls} placeholder="e.g. Hello Icha" />
+                </Field>
+              </div>
             </div>
             <div className="space-y-5">
               <ImageUploader

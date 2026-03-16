@@ -9,13 +9,13 @@ export default async function AboutPage() {
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="main-container">
+      <div className="main-container pt-24 md:pt-0">
         
         {/* Intro Section: Client component for animations */}
         <AboutContentClient profile={profile} />
 
         {/* Timeline Section */}
-        <section className="border-t border-[#ebebeb] pt-24 pb-32">
+        <section className="border-t border-[#ebebeb] pt-24">
           <Timeline experiences={experiences} />
         </section>
 

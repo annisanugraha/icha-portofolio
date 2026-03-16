@@ -15,7 +15,7 @@ interface ProjectData {
 
 export const WorkList = ({ projects }: { projects: ProjectData[] }) => {
   return (
-    <div className="main-container pb-32">
+    <div className="w-full pb-24">
 
       {/* ── Grid Header ── */}
       <div className="flex items-center justify-between mb-10 pb-5 border-b border-[#ebebeb]">

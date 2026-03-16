@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 export const Hero = ({ profile }: { profile: any }) => {
   return (
     <section className="min-h-screen flex flex-col justify-center">
-      <div className="main-container -mt-16 md:mt-0">
+      <div className="-mt-16 md:mt-0">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

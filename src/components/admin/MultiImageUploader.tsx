@@ -58,14 +58,14 @@ export const MultiImageUploader = ({ onUpload, currentImages = [], label = "Proj
     }
   };
 
-  const handleAddUrl = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddUrl = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!urlInput.trim()) return;
     const newUrls = [...images, urlInput.trim()];
     setImages(newUrls);
     onUpload(newUrls);
     setUrlInput('');
-    setUrlMode(false);
+    // Kita tidak tutup mode-nya agar user bisa paste banyak sekaligus
   };
 
   const removeImage = (index: number) => {
@@ -86,14 +86,14 @@ export const MultiImageUploader = ({ onUpload, currentImages = [], label = "Proj
           <button 
             type="button"
             onClick={() => setUrlMode(false)}
-            className={`text-[8px] tracking-[0.2em] uppercase transition-colors ${!urlMode ? 'text-[#111] font-bold' : 'text-[#ccc] hover:text-[#999]'}`}
+            className={`text-[8px] tracking-[0.2em] uppercase transition-colors cursor-pointer ${!urlMode ? 'text-[#111] font-bold' : 'text-[#ccc] hover:text-[#999]'}`}
           >
             Upload Files
           </button>
           <button 
             type="button"
             onClick={() => setUrlMode(true)}
-            className={`text-[8px] tracking-[0.2em] uppercase transition-colors ${urlMode ? 'text-[#111] font-bold' : 'text-[#ccc] hover:text-[#999]'}`}
+            className={`text-[8px] tracking-[0.2em] uppercase transition-colors cursor-pointer ${urlMode ? 'text-[#111] font-bold' : 'text-[#ccc] hover:text-[#999]'}`}
           >
             Add by URL
           </button>
@@ -103,18 +103,28 @@ export const MultiImageUploader = ({ onUpload, currentImages = [], label = "Proj
       {/* Input Area */}
       <div className="min-h-[50px]">
         {urlMode ? (
-          <form onSubmit={handleAddUrl} className="flex gap-2">
+          <div className="flex gap-2">
             <input 
               type="text"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
-              placeholder="Paste image direct link (e.g. Imgur, Pinterest, etc.)"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddUrl();
+                }
+              }}
+              placeholder="Paste image direct link (e.g. Pinterest, Imgur, etc.)"
               className="flex-1 bg-[#fafafa] border border-[#ebebeb] text-[10px] px-4 py-3 focus:outline-none focus:border-[#ccc] font-mono transition-all"
             />
-            <button type="submit" className="bg-white border border-[#ebebeb] text-[#999] text-[9px] px-6 py-2 uppercase tracking-widest hover:border-[#111] hover:text-[#111] transition-all cursor-pointer">
+            <button 
+              type="button" 
+              onClick={handleAddUrl}
+              className="bg-white border border-[#ebebeb] text-[#999] text-[9px] px-6 py-2 uppercase tracking-widest hover:border-[#111] hover:text-[#111] transition-all cursor-pointer"
+            >
               Add Link
             </button>
-          </form>
+          </div>
         ) : (
           <label className="flex items-center justify-center w-full h-12 border border-dashed border-[#ebebeb] text-[#999] hover:border-[#111] hover:text-[#111] transition-all cursor-pointer text-[9px] tracking-[0.3em] uppercase">
             {uploading ? 'Processing Gallery Upload...' : '+ Drop Files or Click to Browse'}
@@ -134,7 +144,12 @@ export const MultiImageUploader = ({ onUpload, currentImages = [], label = "Proj
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {images.map((url, i) => (
           <div key={i} className="group relative aspect-square bg-[#fafafa] border border-[#ebebeb] rounded-sm overflow-hidden">
-            <img src={url} alt={`Gallery ${i}`} className="w-full h-full object-cover" onError={(e) => (e.currentTarget.src = 'https://placehold.co/400x400/fafafa/ccc?text=Broken+Link')} />
+            <img 
+              src={url} 
+              alt={`Gallery ${i}`} 
+              className="w-full h-full object-cover" 
+              onError={(e) => (e.currentTarget.src = 'https://placehold.co/400x400/fafafa/ccc?text=Broken+Link')} 
+            />
             <button 
               type="button"
               onClick={() => removeImage(i)}

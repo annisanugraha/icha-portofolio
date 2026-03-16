@@ -13,8 +13,7 @@ export const FeaturedWork = async () => {
   }
 
   return (
-    <section>
-      {/* Kirim data ke Client Component untuk dianimasikan */}
+    <section className="border-t border-[#ebebeb] pt-24">
       <WorkList projects={projects} />
     </section>
   );

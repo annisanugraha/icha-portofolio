@@ -98,17 +98,17 @@ export const CertificateGrid = ({ certificates }: CertificateGridProps) => {
               className="absolute inset-0 bg-white/95 backdrop-blur-sm cursor-zoom-out"
             />
 
-            {/* Navigation Arrows (Desktop) */}
-            <div className="absolute inset-x-4 md:inset-x-10 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none z-50">
+            {/* Navigation Arrows (Desktop Only) */}
+            <div className="absolute inset-x-4 md:inset-x-10 top-1/2 -translate-y-1/2 hidden md:flex justify-between pointer-events-none z-50">
               <button 
-                onClick={handlePrev}
+                onClick={(e) => { e.stopPropagation(); handlePrev(); }}
                 className="w-12 h-12 flex items-center justify-center bg-white border border-[#ebebeb] text-[#111] hover:border-[#111] transition-all pointer-events-auto cursor-pointer"
                 title="Previous (Left Arrow)"
               >
                 ←
               </button>
               <button 
-                onClick={handleNext}
+                onClick={(e) => { e.stopPropagation(); handleNext(); }}
                 className="w-12 h-12 flex items-center justify-center bg-white border border-[#ebebeb] text-[#111] hover:border-[#111] transition-all pointer-events-auto cursor-pointer"
                 title="Next (Right Arrow)"
               >
@@ -122,17 +122,20 @@ export const CertificateGrid = ({ certificates }: CertificateGridProps) => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(_, info) => {
+                const threshold = 100;
+                if (info.offset.x > threshold) {
+                  handlePrev();
+                } else if (info.offset.x < -threshold) {
+                  handleNext();
+                }
+              }}
               transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              className="relative w-full max-w-5xl bg-white border border-[#ebebeb] shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-full"
+              className="relative w-full max-w-5xl bg-white border border-[#ebebeb] shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-full touch-none"
             >
-              {/* Close Button Mobile */}
-              <button 
-                onClick={() => setSelectedIndex(null)}
-                className="absolute top-4 right-4 z-[60] md:hidden w-8 h-8 flex items-center justify-center bg-white border border-[#ebebeb] rounded-full"
-              >
-                ×
-              </button>
-
               {/* Image Side */}
               <div className="flex-[1.5] bg-[#fafafa] flex items-center justify-center overflow-hidden min-h-[250px] md:min-h-0">
                 <img 
@@ -143,8 +146,9 @@ export const CertificateGrid = ({ certificates }: CertificateGridProps) => {
               </div>
 
               {/* Info Side */}
-              <div className="flex-1 p-8 md:p-12 flex flex-col justify-between border-t md:border-t-0 md:border-l border-[#ebebeb] bg-white relative z-10">
-                <div className="space-y-6">
+              <div className="flex-1 p-8 md:p-12 flex flex-col justify-between border-t md:border-t-0 md:border-l border-[#ebebeb] bg-white relative z-10 overflow-hidden">
+                {/* Scrollable Content Container */}
+                <div className="space-y-6 overflow-y-auto pr-2 custom-scrollbar">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="label text-[#111]">{selected.category}</span>
@@ -159,12 +163,13 @@ export const CertificateGrid = ({ certificates }: CertificateGridProps) => {
                   
                   <div className="w-12 h-px bg-[#111]" />
 
-                  <p className="text-[12px] md:text-[13px] text-[#666] leading-relaxed font-sans whitespace-pre-line overflow-y-auto max-h-[150px] md:max-h-none pr-2">
+                  <p className="text-[12px] md:text-[13px] text-[#666] leading-relaxed font-sans whitespace-pre-line">
                     {selected.description}
                   </p>
                 </div>
 
-                <div className="pt-10 flex items-center justify-between">
+                {/* Fixed Footer */}
+                <div className="pt-10 flex items-center justify-between bg-white shrink-0">
                   <span className="text-[9px] tracking-widest text-[#ccc] uppercase font-mono">
                     Archives · Recognition
                   </span>

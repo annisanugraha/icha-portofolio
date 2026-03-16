@@ -13,6 +13,9 @@ export async function addProject(data: any) {
         category: data.category,
         shortDescription: data.shortDescription,
         fullDescription: data.fullDescription,
+        contextWhy: data.contextWhy || null,
+        scopeWhat: data.scopeWhat || null,
+        outcomeHow: data.outcomeHow || null,
         imageUrl: data.imageUrl || null,
         galleryImages: data.galleryImages || [],
         githubUrl: data.githubUrl || null,
@@ -20,7 +23,11 @@ export async function addProject(data: any) {
         year: data.year,
         featured: data.featured || false,
         order: data.order || 0,
+        links: {
+          create: data.links || []
+        }
       },
+      include: { links: true }
     })
     revalidatePath('/')
     revalidatePath('/admin')
@@ -42,6 +49,9 @@ export async function updateProject(id: string, data: any) {
         category: data.category,
         shortDescription: data.shortDescription,
         fullDescription: data.fullDescription,
+        contextWhy: data.contextWhy || null,
+        scopeWhat: data.scopeWhat || null,
+        outcomeHow: data.outcomeHow || null,
         imageUrl: data.imageUrl || null,
         galleryImages: data.galleryImages || [],
         githubUrl: data.githubUrl || null,
@@ -49,7 +59,12 @@ export async function updateProject(id: string, data: any) {
         year: data.year,
         featured: data.featured ?? false,
         order: data.order ?? 0,
+        links: {
+          deleteMany: {},
+          create: data.links || []
+        }
       },
+      include: { links: true }
     })
     revalidatePath('/')
     revalidatePath(`/work/${data.slug}`)
@@ -116,7 +131,8 @@ export async function deleteProject(id: string) {
 export async function getProjects() {
   try {
     const allProjects = await prisma.project.findMany({
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'asc' },
+      include: { links: true }
     });
     return allProjects;
   } catch (error: any) {
@@ -129,7 +145,8 @@ export async function getFeaturedProjects() {
   try {
     const featured = await prisma.project.findMany({
       where: { featured: true },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'asc' },
+      include: { links: true }
     });
     return featured;
   } catch (error: any) {
@@ -140,8 +157,26 @@ export async function getFeaturedProjects() {
 
 export async function getProjectBySlug(slug: string) {
   try {
-    const p = await prisma.project.findUnique({ where: { slug } });
-    return p;
+    const p = await prisma.project.findUnique({ 
+      where: { slug },
+      include: { links: true }
+    });
+    
+    if (!p) return null;
+
+    // Get next project for navigation
+    const nextProject = await prisma.project.findFirst({
+      where: {
+        order: { gt: p.order }
+      },
+      orderBy: { order: 'asc' },
+      select: { title: true, slug: true }
+    }) || await prisma.project.findFirst({
+      orderBy: { order: 'asc' },
+      select: { title: true, slug: true }
+    });
+
+    return { ...p, nextProject };
   } catch (error: any) {
     console.error('Fetch slug error:', error);
     return null;
