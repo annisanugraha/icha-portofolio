@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PageSectionHeader } from './PageSectionHeader';
 
 interface ExperienceData {
   id: string;
@@ -44,9 +45,8 @@ export const Timeline = ({ experiences }: { experiences: ExperienceData[] }) => 
   return (
     <>
       <div className="space-y-0">
-        <div className="mb-12">
-          <span className="label tracking-[0.5em] text-[#999] uppercase text-[9px]">Chronology</span>
-        </div>
+        
+        <PageSectionHeader title="Chronology" number="02" />
 
         <div className="flex flex-col">
           {experiences.map((exp, i) => {

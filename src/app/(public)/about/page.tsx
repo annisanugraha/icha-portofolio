@@ -15,9 +15,10 @@ export default async function AboutPage() {
         <AboutContentClient profile={profile} />
 
         {/* Timeline Section */}
-        <section className="border-t border-[#ebebeb] pt-24">
+        <section className="pt-12">
           <Timeline experiences={experiences} />
         </section>
+
 
       </div>
     </main>

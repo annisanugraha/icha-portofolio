@@ -12,9 +12,12 @@ if (finalUrl) {
   // Hapus typo ':ase.com' jika ada
   finalUrl = finalUrl.replace(':ase.com:5432', ':5432');
   
-  // Tambahkan sslmode=require jika belum ada (Supabase mewajibkan ini)
+  // Tambahkan sslmode=require dan uselibpqcompat=true jika belum ada
   if (!finalUrl.includes('sslmode=')) {
     finalUrl += finalUrl.includes('?') ? '&sslmode=require' : '?sslmode=require';
+  }
+  if (!finalUrl.includes('uselibpqcompat=')) {
+    finalUrl += finalUrl.includes('?') ? '&uselibpqcompat=true' : '?uselibpqcompat=true';
   }
 }
 

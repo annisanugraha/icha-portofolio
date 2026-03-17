@@ -13,7 +13,7 @@ export const FeaturedWork = async () => {
   }
 
   return (
-    <section className="border-t border-[#ebebeb] pt-24">
+    <section className="pt-6">
       <WorkList projects={projects} />
     </section>
   );

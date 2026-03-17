@@ -7,9 +7,24 @@ const prismaClientSingleton = () => {
   const connectionString = process.env.DATABASE_URL
   if (!connectionString) {
     console.error('DATABASE_URL is missing from environment variables!')
+    return new PrismaClient()
   }
+
+  // 1. Bersihkan URL (Perbaikan nomor 2 & 3)
+  let finalUrl = connectionString
+  // Hapus typo ':ase.com' jika ada
+  finalUrl = finalUrl.replace(':ase.com:5432', ':5432')
+  
+  // Tambahkan sslmode=require dan uselibpqcompat=true jika belum ada
+  if (!finalUrl.includes('sslmode=')) {
+    finalUrl += finalUrl.includes('?') ? '&sslmode=require' : '?sslmode=require'
+  }
+  if (!finalUrl.includes('uselibpqcompat=')) {
+    finalUrl += finalUrl.includes('?') ? '&uselibpqcompat=true' : '?uselibpqcompat=true'
+  }
+
   // Gunakan Connection Pool untuk stabilitas koneksi cloud
-  const pool = new pg.Pool({ connectionString })
+  const pool = new pg.Pool({ connectionString: finalUrl })
   const adapter = new PrismaPg(pool as any)
   
   return new PrismaClient({ adapter })

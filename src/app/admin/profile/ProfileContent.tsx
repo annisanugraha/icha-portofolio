@@ -44,14 +44,14 @@ export default function ProfileContent() {
   };
 
   if (loading) return (
-    <div className="p-10 flex items-center gap-3">
+    <div className="flex items-center gap-3">
       <div className="w-1 h-4 bg-[#111] animate-pulse" />
       <span className="text-[10px] tracking-widest text-[#999] uppercase">Loading...</span>
     </div>
   );
 
   return (
-    <div className="p-10 space-y-14 pb-32">
+    <div className="space-y-10 lg:space-y-14 pb-32 p-6 lg:p-10">
 
       {/* Header */}
       <div className="border-b border-[#ebebeb] pb-8">
@@ -59,12 +59,12 @@ export default function ProfileContent() {
         <h1 className="text-2xl text-[#111] font-medium tracking-tight">Identity.</h1>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-14">
+      <form onSubmit={handleSave} className="space-y-10 lg:space-y-14">
 
         {/* SEO Section */}
         <section className="space-y-6">
           <p className="text-[9px] tracking-[0.5em] text-[#999] uppercase border-b border-[#ebebeb] pb-3">Search Engine Optimization (SEO)</p>
-          <div className="grid grid-cols-2 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
             <div className="space-y-5">
               <Field label="Site Title">
                 <input type="text" value={profile.siteTitle || ''} onChange={e => set('siteTitle', e.target.value)} className={inputCls} placeholder="e.g. Annisa Nugraha — Software Engineer" />
@@ -90,7 +90,7 @@ export default function ProfileContent() {
         {/* Branding Section */}
         <section className="space-y-6">
           <p className="text-[9px] tracking-[0.5em] text-[#999] uppercase border-b border-[#ebebeb] pb-3">Branding</p>
-          <div className="grid grid-cols-2 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
             <div className="space-y-5">
               <Field label="Logo Text">
                 <input type="text" value={profile.logoText} onChange={e => set('logoText', e.target.value)} className={inputCls} />
@@ -101,7 +101,7 @@ export default function ProfileContent() {
               <Field label="GitHub URL">
                 <input type="text" value={profile.githubUrl} onChange={e => set('githubUrl', e.target.value)} className={inputCls} />
               </Field>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field label="Email Address">
                   <input type="email" value={profile.emailAddress} onChange={e => set('emailAddress', e.target.value)} className={inputCls} />
                 </Field>
@@ -127,14 +127,14 @@ export default function ProfileContent() {
         {/* Hero */}
         <section className="space-y-6">
           <p className="text-[9px] tracking-[0.5em] text-[#999] uppercase border-b border-[#ebebeb] pb-3">Hero Section</p>
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <Field label="Role Label">
               <input type="text" value={profile.heroRole} onChange={e => set('heroRole', e.target.value)} className={inputCls} />
             </Field>
             <Field label="Subtitle">
               <input type="text" value={profile.heroSubtitle} onChange={e => set('heroSubtitle', e.target.value)} className={inputCls} />
             </Field>
-            <div className="col-span-2">
+            <div className="sm:col-span-2">
               <Field label="Main Heading">
                 <textarea rows={3} value={profile.heroTitle} onChange={e => set('heroTitle', e.target.value)} className={`${inputCls} resize-none`} />
               </Field>
@@ -145,8 +145,8 @@ export default function ProfileContent() {
         {/* About */}
         <section className="space-y-6">
           <p className="text-[9px] tracking-[0.5em] text-[#999] uppercase border-b border-[#ebebeb] pb-3">About Persona</p>
-          <div className="grid grid-cols-2 gap-10">
-            <div className="space-y-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+            <div className="space-y-5 order-2 lg:order-1">
               <Field label="Intro Quote">
                 <input type="text" value={profile.aboutQuote} onChange={e => set('aboutQuote', e.target.value)} className={`${inputCls} italic`} />
               </Field>
@@ -157,19 +157,21 @@ export default function ProfileContent() {
                 <textarea rows={4} value={profile.aboutBio2} onChange={e => set('aboutBio2', e.target.value)} className={`${inputCls} resize-none`} />
               </Field>
             </div>
-            <ImageUploader
-              label="Portrait Photo"
-              currentImage={profile.aboutImage}
-              onUpload={(url) => set('aboutImage', url)}
-              onDelete={() => set('aboutImage', null)}
-            />
+            <div className="order-1 lg:order-2">
+              <ImageUploader
+                label="Portrait Photo"
+                currentImage={profile.aboutImage}
+                onUpload={(url) => set('aboutImage', url)}
+                onDelete={() => set('aboutImage', null)}
+              />
+            </div>
           </div>
         </section>
 
         {/* Save */}
         <button
           disabled={saving}
-          className="bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase px-10 py-4 hover:bg-black transition-colors disabled:opacity-30 font-medium cursor-pointer"
+          className="bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase px-10 py-4 hover:bg-black transition-colors disabled:opacity-30 font-medium cursor-pointer w-full sm:w-auto"
         >
           {saving ? 'Saving...' : saved ? 'Saved ✓' : 'Save Identity'}
         </button>

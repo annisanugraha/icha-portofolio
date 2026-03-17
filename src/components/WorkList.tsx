@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { PageSectionHeader } from './PageSectionHeader';
 
 interface ProjectData {
   id: string;
@@ -18,9 +19,8 @@ export const WorkList = ({ projects }: { projects: ProjectData[] }) => {
     <div className="w-full pb-24">
 
       {/* ── Grid Header ── */}
-      <div className="flex items-center justify-between mb-10 pb-5 border-b border-[#ebebeb]">
-        <span className="label">Selected Work</span>
-        <span className="label">{String(projects.length).padStart(2, '0')}</span>
+      <div className="flex items-center justify-between">
+        <PageSectionHeader title="Selected Work" number="02" />
       </div>
 
       {/* ── Project Grid — 2 col ── */}

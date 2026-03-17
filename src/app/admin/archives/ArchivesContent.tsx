@@ -72,16 +72,16 @@ export default function ArchivesContent() {
   };
 
   if (loading) return (
-    <div className="p-10 flex items-center gap-3">
+    <div className="flex items-center gap-3">
       <div className="w-1 h-4 bg-[#111] animate-pulse" />
       <span className="text-[10px] tracking-widest text-[#999] uppercase">Loading...</span>
     </div>
   );
 
   return (
-    <div className="p-10 space-y-10 pb-32">
+    <div className="space-y-6 lg:space-y-10 pb-32 p-6 lg:p-10">
       {/* Header */}
-      <div className="border-b border-[#ebebeb] pb-8 flex items-end justify-between">
+      <div className="border-b border-[#ebebeb] pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <p className="text-[9px] tracking-[0.5em] text-[#999] uppercase mb-2">Validation</p>
           <h1 className="text-2xl text-[#111] font-medium tracking-tight">Archives. <span className="text-[#ccc] text-lg">({certs.length})</span></h1>
@@ -97,17 +97,17 @@ export default function ArchivesContent() {
               setShowForm(true);
             }
           }}
-          className="text-[10px] tracking-[0.3em] uppercase border border-[#ebebeb] px-5 py-2.5 hover:border-[#111] hover:text-[#111] text-[#999] transition-all cursor-pointer"
+          className="text-[10px] tracking-[0.3em] uppercase border border-[#ebebeb] px-5 py-2.5 hover:border-[#111] hover:text-[#111] text-[#999] transition-all cursor-pointer w-full sm:w-auto"
         >
           {showForm ? '× Cancel' : '+ Add'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="border border-[#ebebeb] p-8 space-y-8 bg-[#fafafa]">
+        <form onSubmit={handleSubmit} className="border border-[#ebebeb] p-5 lg:p-8 space-y-8 bg-[#fafafa]">
           <p className="text-[9px] tracking-[0.5em] text-[#999] uppercase">{editId ? 'Edit Entry' : 'New Entry'}</p>
           
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
               <label className="text-[9px] tracking-[0.4em] uppercase text-[#999]">Title</label>
               <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full bg-white border border-[#ebebeb] text-[#111] text-xs px-4 py-3 focus:outline-none focus:border-[#ccc] transition-colors font-mono" />
@@ -132,7 +132,7 @@ export default function ArchivesContent() {
             />
           </div>
 
-          <button className="bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase px-10 py-3.5 hover:bg-black transition-colors cursor-pointer">
+          <button className="bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase px-10 py-3.5 hover:bg-black transition-colors cursor-pointer w-full sm:w-auto">
             {editId ? 'Save Changes' : 'Publish Entry'}
           </button>
         </form>
@@ -148,28 +148,30 @@ export default function ArchivesContent() {
                     <div 
                       ref={provided.innerRef}
                       {...provided.draggableProps}
-                      className={`flex items-center gap-6 p-4 border bg-white group select-none transition-all duration-300 ${snapshot.isDragging ? 'border-[#111] shadow-xl z-50' : 'border-[#ebebeb] hover:border-[#111]'}`}
+                      className={`flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 p-4 border bg-white group select-none transition-all duration-300 ${snapshot.isDragging ? 'border-[#111] shadow-xl z-50' : 'border-[#ebebeb] hover:border-[#111]'}`}
                     >
-                      {/* Drag Handle */}
-                      <div {...provided.dragHandleProps} className="text-[#ccc] hover:text-[#111] cursor-grab active:cursor-grabbing">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8h16M4 16h16" />
-                        </svg>
-                      </div>
+                      <div className="flex items-center gap-4 sm:gap-6 flex-1 min-w-0">
+                        {/* Drag Handle */}
+                        <div {...provided.dragHandleProps} className="text-[#ccc] hover:text-[#111] cursor-grab active:cursor-grabbing shrink-0">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8h16M4 16h16" />
+                          </svg>
+                        </div>
 
-                      {/* Small Thumbnail */}
-                      <div className="w-20 h-14 bg-[#fafafa] overflow-hidden border border-[#eee] shrink-0">
-                        <img src={c.imageUrl || 'https://placehold.co/600x400/fafafa/eee?text=—'} alt={c.title} className="w-full h-full object-cover" />
-                      </div>
+                        {/* Small Thumbnail */}
+                        <div className="w-16 sm:w-20 h-12 sm:h-14 bg-[#fafafa] overflow-hidden border border-[#eee] shrink-0">
+                          <img src={c.imageUrl || 'https://placehold.co/600x400/fafafa/eee?text=—'} alt={c.title} className="w-full h-full object-cover" />
+                        </div>
 
-                      {/* Title & Info */}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[8px] tracking-[0.2em] text-[#999] uppercase">{c.category}</p>
-                        <p className="text-xs font-medium text-[#111] truncate">{c.title}</p>
+                        {/* Title & Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[8px] tracking-[0.2em] text-[#999] uppercase">{c.category}</p>
+                          <p className="text-xs font-medium text-[#111] truncate">{c.title}</p>
+                        </div>
                       </div>
 
                       {/* Actions */}
-                      <div className="flex gap-4 shrink-0">
+                      <div className="flex gap-4 shrink-0 justify-end ml-9 sm:ml-0">
                         <button onClick={() => handleEdit(c)} className="text-[9px] tracking-widest text-[#999] hover:text-[#111] transition-colors uppercase cursor-pointer border-b border-transparent hover:border-[#111]">Edit</button>
                         <button onClick={() => handleDelete(c.id)} className="text-[9px] tracking-widest text-[#ccc] hover:text-red-500 transition-colors uppercase cursor-pointer border-b border-transparent hover:border-red-500">Delete</button>
                       </div>

@@ -18,7 +18,7 @@ export default async function AdminPage() {
   ];
 
   return (
-    <div className="p-10 space-y-14 bg-white">
+    <div className="p-6 lg:p-10 space-y-10 lg:space-y-14 bg-white">
 
       {/* Header */}
       <div className="border-b border-[#ebebeb] pb-8">
@@ -27,7 +27,7 @@ export default async function AdminPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {stats.map((s) => (
           <Link
             key={s.path}
@@ -53,12 +53,12 @@ export default async function AdminPage() {
         </div>
         <div className="border border-[#ebebeb] divide-y divide-[#ebebeb]">
           {projects.slice(0, 5).map((p) => (
-            <div key={p.id} className="flex items-center justify-between px-5 py-4 bg-white">
-              <div className="flex items-center gap-6">
-                <span className="text-[9px] text-[#ccc] w-10 tabular-nums">{p.year}</span>
-                <span className="text-xs text-[#111]">{p.title}</span>
+            <div key={p.id} className="flex flex-col sm:flex-row sm:items-center justify-between px-5 py-4 bg-white gap-2 sm:gap-0">
+              <div className="flex items-center gap-4 sm:gap-6">
+                <span className="text-[9px] text-[#ccc] w-8 sm:w-10 tabular-nums">{p.year}</span>
+                <span className="text-xs text-[#111] font-medium sm:font-normal">{p.title}</span>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 ml-12 sm:ml-0">
                 {p.featured && (
                   <span className="text-[7px] tracking-widest text-[#ccc] uppercase border border-[#ebebeb] px-2 py-0.5">Featured</span>
                 )}

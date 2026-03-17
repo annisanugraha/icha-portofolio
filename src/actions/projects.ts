@@ -176,7 +176,19 @@ export async function getProjectBySlug(slug: string) {
       select: { title: true, slug: true }
     });
 
-    return { ...p, nextProject };
+    // Get previous project for navigation
+    const prevProject = await prisma.project.findFirst({
+      where: {
+        order: { lt: p.order }
+      },
+      orderBy: { order: 'desc' },
+      select: { title: true, slug: true }
+    }) || await prisma.project.findFirst({
+      orderBy: { order: 'desc' },
+      select: { title: true, slug: true }
+    });
+
+    return { ...p, nextProject, prevProject };
   } catch (error: any) {
     console.error('Fetch slug error:', error);
     return null;

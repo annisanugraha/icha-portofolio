@@ -132,33 +132,33 @@ export default function ProjectsContent() {
   };
 
   if (loading) return (
-    <div className="p-10 flex items-center gap-3">
+    <div className="flex items-center gap-3">
       <div className="w-1 h-4 bg-[#111] animate-pulse" />
       <span className="text-[10px] tracking-widest text-[#999] uppercase">Loading...</span>
     </div>
   );
 
   return (
-    <div className="p-10 space-y-10 pb-32">
+    <div className="space-y-6 lg:space-y-10 pb-32 p-6 lg:p-10">
 
       {/* Header */}
-      <div className="border-b border-[#ebebeb] pb-8 flex items-end justify-between">
+      <div className="border-b border-[#ebebeb] pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <p className="text-[9px] tracking-[0.5em] text-[#999] uppercase mb-2">Work</p>
           <h1 className="text-2xl text-[#111] font-medium tracking-tight">Portfolio. <span className="text-[#ccc] text-lg">({projects.length})</span></h1>
         </div>
         <button onClick={showForm ? () => setShowForm(false) : openAdd}
-          className="text-[10px] tracking-[0.3em] uppercase border border-[#ebebeb] px-5 py-2.5 hover:border-[#111] hover:text-[#111] text-[#999] transition-all cursor-pointer">
+          className="text-[10px] tracking-[0.3em] uppercase border border-[#ebebeb] px-5 py-2.5 hover:border-[#111] hover:text-[#111] text-[#999] transition-all cursor-pointer w-full sm:w-auto">
           {showForm ? '× Cancel' : '+ Add'}
         </button>
       </div>
 
       {/* Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="border border-[#ebebeb] p-8 space-y-8 bg-[#fafafa]">
+        <form onSubmit={handleSubmit} className="border border-[#ebebeb] p-5 lg:p-8 space-y-8 bg-[#fafafa]">
           <p className="text-[9px] tracking-[0.5em] text-[#999] uppercase">{editId ? 'Edit Project' : 'New Project'}</p>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <Field label="Title"><input required type="text" value={form.title} onChange={e => set('title', e.target.value)} className={inputCls} /></Field>
             <Field label="Slug"><input required type="text" value={form.slug} onChange={e => set('slug', e.target.value)} className={inputCls} /></Field>
             <Field label="Category"><input required type="text" value={form.category} onChange={e => set('category', e.target.value)} className={inputCls} /></Field>
@@ -169,7 +169,7 @@ export default function ProjectsContent() {
             <input required type="text" value={form.shortDescription} onChange={e => set('shortDescription', e.target.value)} className={inputCls} />
           </Field>
 
-          <div className="grid grid-cols-3 gap-5 border-t border-[#ebebeb] pt-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 border-t border-[#ebebeb] pt-8">
             <Field label="The Why (Context)">
               <textarea rows={3} value={form.contextWhy} onChange={e => set('contextWhy', e.target.value)} className={`${inputCls} resize-none`} placeholder="Why did you build this?" />
             </Field>
@@ -193,36 +193,38 @@ export default function ProjectsContent() {
               <Field label="Project Links (Resources)">
                 <div className="space-y-3">
                   {form.links.map((link, idx) => (
-                    <div key={idx} className="flex gap-2 items-center animate-in fade-in slide-in-from-left-2 duration-300">
-                      <input 
-                        placeholder="Label (e.g. Figma)" 
-                        value={link.label} 
-                        onChange={e => {
-                          const newLinks = [...form.links];
-                          newLinks[idx].label = e.target.value;
-                          set('links', newLinks);
-                        }}
-                        className={`${inputCls} w-1/3 uppercase`}
-                      />
-                      <input 
-                        placeholder="URL" 
-                        value={link.url} 
-                        onChange={e => {
-                          const newLinks = [...form.links];
-                          newLinks[idx].url = e.target.value;
-                          set('links', newLinks);
-                        }}
-                        className={`${inputCls} flex-1`}
-                      />
-                      <button 
-                        type="button" 
-                        onClick={() => {
-                          set('links', form.links.filter((_, i) => i !== idx));
-                        }}
-                        className="text-red-400 hover:text-red-600 transition-colors px-2 text-lg"
-                      >
-                        ×
-                      </button>
+                    <div key={idx} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center animate-in fade-in slide-in-from-left-2 duration-300">
+                      <div className="grid grid-cols-[1fr_1fr_auto] gap-2 w-full items-center">
+                        <input 
+                          placeholder="Label" 
+                          value={link.label} 
+                          onChange={e => {
+                            const newLinks = [...form.links];
+                            newLinks[idx].label = e.target.value;
+                            set('links', newLinks);
+                          }}
+                          className={`${inputCls} uppercase`}
+                        />
+                        <input 
+                          placeholder="URL" 
+                          value={link.url} 
+                          onChange={e => {
+                            const newLinks = [...form.links];
+                            newLinks[idx].url = e.target.value;
+                            set('links', newLinks);
+                          }}
+                          className={`${inputCls}`}
+                        />
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            set('links', form.links.filter((_, i) => i !== idx));
+                          }}
+                          className="text-red-400 hover:text-red-600 transition-colors px-1 text-lg"
+                        >
+                          ×
+                        </button>
+                      </div>
                     </div>
                   ))}
                   <button 
@@ -247,7 +249,7 @@ export default function ProjectsContent() {
 
           <MultiImageUploader label="Gallery Photos" currentImages={form.galleryImages} onUpload={urls => set('galleryImages', urls)} />
 
-          <button disabled={saving} className="bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase px-10 py-3.5 hover:bg-black transition-colors disabled:opacity-30 cursor-pointer">
+          <button disabled={saving} className="bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase px-10 py-3.5 hover:bg-black transition-colors disabled:opacity-30 cursor-pointer w-full sm:w-auto">
             {saving ? 'Saving...' : editId ? 'Save Changes' : 'Publish'}
           </button>
         </form>
@@ -264,47 +266,51 @@ export default function ProjectsContent() {
                     <div 
                       ref={provided.innerRef}
                       {...provided.draggableProps}
-                      className={`flex items-center gap-6 p-4 border bg-white group select-none transition-all duration-300 ${snapshot.isDragging ? 'border-[#111] shadow-xl z-50' : 'border-[#ebebeb] hover:border-[#111]'}`}
+                      className={`flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 p-4 border bg-white group select-none transition-all duration-300 ${snapshot.isDragging ? 'border-[#111] shadow-xl z-50' : 'border-[#ebebeb] hover:border-[#111]'}`}
                     >
-                      {/* Drag Handle */}
-                      <div {...provided.dragHandleProps} className="text-[#ccc] hover:text-[#111] cursor-grab active:cursor-grabbing">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8h16M4 16h16" />
-                        </svg>
+                      <div className="flex items-center gap-4 sm:gap-6 flex-1 min-w-0">
+                        {/* Drag Handle */}
+                        <div {...provided.dragHandleProps} className="text-[#ccc] hover:text-[#111] cursor-grab active:cursor-grabbing shrink-0">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8h16M4 16h16" />
+                          </svg>
+                        </div>
+
+                        {/* Small Thumbnail */}
+                        <div className="w-16 sm:w-20 h-12 sm:h-14 bg-[#fafafa] overflow-hidden border border-[#eee] shrink-0">
+                          <img src={p.imageUrl || 'https://placehold.co/400x300/fafafa/eee?text=—'} alt={p.title} className="w-full h-full object-cover" />
+                        </div>
+
+                        {/* Title & Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[8px] tracking-[0.2em] text-[#999] uppercase">{p.category} · {p.year}</p>
+                          <p className="text-xs font-medium text-[#111] truncate">{p.title}</p>
+                        </div>
                       </div>
 
-                      {/* Small Thumbnail */}
-                      <div className="w-20 h-14 bg-[#fafafa] overflow-hidden border border-[#eee] shrink-0">
-                        <img src={p.imageUrl || 'https://placehold.co/400x300/fafafa/eee?text=—'} alt={p.title} className="w-full h-full object-cover" />
-                      </div>
+                      <div className="flex items-center justify-between sm:justify-end gap-4 ml-9 sm:ml-0">
+                        {/* Featured Toggle */}
+                        <button 
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleToggleFeatured(p.id);
+                          }}
+                          className={`px-2 py-1 border transition-all cursor-pointer flex items-center gap-1.5 ${
+                            p.featured 
+                              ? 'bg-black border-black text-white' 
+                              : 'bg-white border-[#ebebeb] text-[#ccc] hover:border-[#111] hover:text-[#111]'
+                          }`}
+                        >
+                          <span className="text-[9px] font-bold tracking-tighter uppercase">{p.featured ? '★ ON' : '☆ OFF'}</span>
+                        </button>
 
-                      {/* Title & Info */}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[8px] tracking-[0.2em] text-[#999] uppercase">{p.category} · {p.year}</p>
-                        <p className="text-xs font-medium text-[#111] truncate">{p.title}</p>
-                      </div>
-
-                      {/* Featured Toggle */}
-                      <button 
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleToggleFeatured(p.id);
-                        }}
-                        className={`px-2 py-1 border transition-all cursor-pointer flex items-center gap-1.5 ${
-                          p.featured 
-                            ? 'bg-black border-black text-white' 
-                            : 'bg-white border-[#ebebeb] text-[#ccc] hover:border-[#111] hover:text-[#111]'
-                        }`}
-                      >
-                        <span className="text-[9px] font-bold tracking-tighter uppercase">{p.featured ? '★ ON' : '☆ OFF'}</span>
-                      </button>
-
-                      {/* Actions */}
-                      <div className="flex gap-4 shrink-0">
-                        <button onClick={() => openEdit(p)} className="text-[9px] tracking-widest text-[#999] hover:text-[#111] transition-colors uppercase cursor-pointer border-b border-transparent hover:border-[#111]">Edit</button>
-                        <button onClick={() => handleDelete(p.id)} className="text-[9px] tracking-widest text-[#ccc] hover:text-red-500 transition-colors uppercase cursor-pointer border-b border-transparent hover:border-red-500">Delete</button>
+                        {/* Actions */}
+                        <div className="flex gap-4 shrink-0">
+                          <button onClick={() => openEdit(p)} className="text-[9px] tracking-widest text-[#999] hover:text-[#111] transition-colors uppercase cursor-pointer border-b border-transparent hover:border-[#111]">Edit</button>
+                          <button onClick={() => handleDelete(p.id)} className="text-[9px] tracking-widest text-[#ccc] hover:text-red-500 transition-colors uppercase cursor-pointer border-b border-transparent hover:border-red-500">Delete</button>
+                        </div>
                       </div>
                     </div>
                   )}

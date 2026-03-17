@@ -13,9 +13,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white flex font-mono text-[#111]">
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row font-mono text-[#111]">
       <AdminSidebar />
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0">
         {children}
       </main>
     </div>
