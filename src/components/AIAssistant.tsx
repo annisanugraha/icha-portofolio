@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Send, X, Bot, User, Loader2 } from 'lucide-react'
 import { askAI } from '@/actions/ai'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkBreaks from 'remark-breaks'
 
 export default function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false)
@@ -13,7 +15,7 @@ export default function AIAssistant() {
   const [isLoading, setIsLoading] = useState(false)
   const chatRef = useRef<HTMLDivElement>(null)
 
-  // Load history from sessionStorage on mount
+  // Load history from sessionStorage on mount (clears when tab closes)
   useEffect(() => {
     const saved = sessionStorage.getItem('icha-ai-history')
     if (saved) {
@@ -98,8 +100,8 @@ export default function AIAssistant() {
                     <Bot size={20} />
                   </div>
                   <div>
-                    <h3 className="font-medium text-black">Icha&apos;s AI Assistant</h3>
-                    <p className="text-xs text-gray-500">Explore my journey and work through AI</p>
+                    <h3 className="font-medium text-black text-sm">Icha&apos;s AI Assistant</h3>
+                    <p className="text-[10px] text-gray-500">Explore my journey and work through AI</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -152,18 +154,60 @@ export default function AIAssistant() {
                 
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <div className={`max-w-[85%] flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                       <div className={`p-2 rounded-lg h-fit ${msg.role === 'user' ? 'bg-gray-100' : 'bg-black text-white'}`}>
-                        {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
+                        {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
                       </div>
-                      <div className={`p-3 rounded-2xl text-sm leading-relaxed ${
+                      <div className={`p-3 rounded-2xl text-[13px] leading-relaxed ${
                         msg.role === 'user' 
                         ? 'bg-gray-100 text-gray-800 rounded-tr-none' 
                         : 'bg-gray-50 border border-gray-100 text-gray-700 rounded-tl-none'
                       }`}>
                         {msg.role === 'ai' ? (
-                          <div className="prose prose-sm max-w-none prose-p:leading-relaxed prose-li:my-0 prose-headings:text-black prose-strong:text-black">
-                            <ReactMarkdown>
+                          <div className="prose prose-sm max-w-none prose-slate overflow-x-auto">
+                            <ReactMarkdown 
+                              remarkPlugins={[remarkGfm, remarkBreaks]}
+                              components={{
+                                // --- 1. SETTING TABEL (Garis Horizontal & Vertikal Rapi) ---
+                                table: ({node, ...props}) => (
+                                  // 1. Pindahkan bg-white ke div pembungkus ini
+                                  <div className="overflow-x-auto my-4 rounded-lg border border-gray-300 overflow-hidden bg-white">
+                                    {/* 2. Gunakan !m-0 (pakai tanda seru) untuk override paksa margin dari prose */}
+                                    <table className="min-w-full !m-0 text-[12px] border-collapse" {...props} />
+                                  </div>
+                                ),
+                                thead: ({node, ...props}) => (
+                                  <thead className="bg-gray-50 border-b border-gray-300" {...props} />
+                                ),
+                                tbody: ({node, ...props}) => (
+                                  <tbody className="divide-y divide-gray-200" {...props} />
+                                ),
+                                tr: ({node, ...props}) => (
+                                  <tr className="divide-x divide-gray-200" {...props} />
+                                ),
+                                th: ({node, ...props}) => (
+                                  <th className="px-3 py-2.5 font-semibold text-left text-gray-700" {...props} />
+                                ),
+                                td: ({node, ...props}) => (
+                                  <td className="px-3 py-2.5 text-gray-600 align-top" {...props} />
+                                ),
+
+                                // --- 2. SETTING LIST (Numbering & Bullets) ---
+                                ol: ({node, ...props}) => (
+                                  <ol className="list-decimal pl-8 space-y-1.5 my-2" {...props} />
+                                ),
+                                ul: ({node, ...props}) => (
+                                  <ul className="list-disc pl-8 space-y-1.5 my-2" {...props} />
+                                ),
+                                li: ({node, ...props}) => (
+                                  <li className="text-gray-700 leading-relaxed" {...props} />
+                                ),
+                                
+                                // --- 3. SETTING HEADINGS ---
+                                h3: ({node, ...props}) => <h3 className="text-sm font-semibold text-black mt-4 mb-2" {...props} />,
+                                h4: ({node, ...props}) => <h4 className="text-[13px] font-semibold text-gray-800 mt-3 mb-1" {...props} />,
+                              }}
+                            >
                               {msg.content}
                             </ReactMarkdown>
                           </div>
@@ -193,14 +237,14 @@ export default function AIAssistant() {
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                     placeholder="Ask anything..."
-                    className="w-full p-4 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all text-sm"
+                    className="w-full p-4 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all text-xs"
                   />
                   <button 
                     onClick={handleSend}
                     disabled={isLoading || !query.trim()}
                     className="absolute right-2 p-2 bg-black text-white rounded-lg disabled:bg-gray-300 transition-colors"
                   >
-                    <Send size={18} />
+                    <Send size={16} />
                   </button>
                 </div>
               </div>

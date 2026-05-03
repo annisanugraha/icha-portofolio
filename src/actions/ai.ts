@@ -54,9 +54,10 @@ export async function askAI(query: string, history: { role: 'user' | 'ai', conte
 
   try {
     const context = await getCachedPortfolioContext();
-    const ownerName = process.env.NEXT_PUBLIC_OWNER_NAME || 'Portfolio Owner';
+    const ownerName = 'Annisa Angelica Nugraha';
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    // Using gemini-3.1-flash-lite-preview for higher rate limits and cutting-edge performance
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite-preview' });
 
     // Format history for Gemini (roles: 'user' and 'model')
     const chatHistory = history.map(msg => ({
