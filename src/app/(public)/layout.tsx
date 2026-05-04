@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { getProfile } from "@/actions/profile";
+import { SidebarContentWrapper } from "@/components/SidebarContentWrapper";
 
 export default async function PublicLayout({
   children,
@@ -13,12 +14,14 @@ export default async function PublicLayout({
     <>
       <Navbar logoText={profile?.logoText} logoImage={profile?.logoImage} />
       {/* Padding md:pl-16 untuk memberikan ruang bagi sidebar desktop */}
-      <div className="md:pl-16 flex flex-col min-h-screen">
-        <div className="flex-1">
-          {children}
+      <SidebarContentWrapper>
+        <div className="flex flex-col min-h-screen">
+          <div className="flex-1">
+            {children}
+          </div>
+          <Footer profile={profile} />
         </div>
-        <Footer profile={profile} />
-      </div>
+      </SidebarContentWrapper>
     </>
   );
 }

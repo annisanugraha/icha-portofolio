@@ -4,18 +4,42 @@ import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Send, X, Bot, User, Loader2 } from 'lucide-react'
 import { askAI } from '@/actions/ai'
+import { useSidebar } from '@/contexts/SidebarContext'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
 
 export default function AIAssistant() {
-  const [isOpen, setIsOpen] = useState(false)
+  const { isOpen, open, close, sidebarWidth, setSidebarWidth } = useSidebar()
   const [query, setQuery] = useState('')
   const [messages, setMessages] = useState<{ role: 'user' | 'ai', content: string }[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
   const chatRef = useRef<HTMLDivElement>(null)
 
-  // Load history from sessionStorage on mount (clears when tab closes)
+  useEffect(() => {
+    if (!isDragging) return
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const newWidth = window.innerWidth - e.clientX
+      setSidebarWidth(Math.max(280, Math.min(600, newWidth)))
+    }
+
+    const handleMouseUp = () => {
+      setIsDragging(false)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isDragging])
+
   useEffect(() => {
     const saved = sessionStorage.getItem('icha-ai-history')
     if (saved) {
@@ -27,14 +51,12 @@ export default function AIAssistant() {
     }
   }, [])
 
-  // Save history to sessionStorage whenever it changes
   useEffect(() => {
     if (messages.length > 0) {
       sessionStorage.setItem('icha-ai-history', JSON.stringify(messages))
     }
   }, [messages])
 
-  // Auto-scroll to bottom
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight
@@ -46,12 +68,11 @@ export default function AIAssistant() {
 
     const userQuery = query
     setQuery('')
-    
+
     const newMessages = [...messages, { role: 'user', content: userQuery }] as const
     setMessages([...newMessages])
     setIsLoading(true)
 
-    // Send history to backend
     const result = await askAI(userQuery, messages)
 
     if (result.success) {
@@ -59,7 +80,7 @@ export default function AIAssistant() {
     } else {
       setMessages([...newMessages, { role: 'ai', content: 'Sorry, I am having trouble connecting. Please try again later.' }])
     }
-    
+
     setIsLoading(false)
   }
 
@@ -72,10 +93,9 @@ export default function AIAssistant() {
 
   return (
     <>
-      {/* Floating Button */}
-      <button 
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-8 right-8 z-50 p-4 bg-black text-white rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group"
+      <button
+        onClick={open}
+        className="fixed bottom-8 right-8 z-50 p-3 bg-black text-white rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group"
       >
         <Search size={20} />
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-in-out whitespace-nowrap">
@@ -83,44 +103,48 @@ export default function AIAssistant() {
         </span>
       </button>
 
-      {/* Chat Modal */}
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white w-full max-w-2xl h-[600px] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-100"
+          <div className="fixed inset-0 z-[60]">
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              style={{ width: sidebarWidth, right: 0 }}
+              className="fixed inset-y-0 bg-white border-l border-gray-200 flex flex-col overflow-hidden"
             >
-              {/* Header */}
-              <div className="p-4 border-b flex justify-between items-center bg-gray-50">
-                <div className="flex items-center gap-2">
+              {/* Drag handle */}
+              <div
+                onMouseDown={() => { setIsDragging(true); document.body.style.cursor = 'ew-resize'; document.body.style.userSelect = 'none'; }}
+                className="absolute left-0 top-0 bottom-0 w-1 cursor-ew-resize hover:bg-gray-300 transition-colors z-50 pointer-events-auto"
+              />
+              <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-white">
+                <div className="flex items-center gap-3">
                   <div className="p-2 bg-black text-white rounded-lg">
                     <Bot size={20} />
                   </div>
                   <div>
                     <h3 className="font-medium text-black text-sm">Icha&apos;s AI Assistant</h3>
-                    <p className="text-[10px] text-gray-500">Explore my journey and work through AI</p>
+                    <p className="text-[10px] text-gray-400">Explore my journey and work through AI</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-3">
                   {messages.length > 0 && (
-                    <button 
+                    <button
                       onClick={clearHistory}
-                      className="text-[10px] text-gray-400 hover:text-red-500 transition-colors px-2"
+                      className="text-xs text-gray-400 hover:text-red-500 transition-colors"
                     >
                       Clear Chat
                     </button>
                   )}
-                  <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+                  <button onClick={close} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                     <X size={20} />
                   </button>
                 </div>
               </div>
 
-              {/* Chat Body */}
-              <div 
+              <div
                 ref={chatRef}
                 className="flex-1 overflow-y-auto p-6 space-y-4 bg-white"
               >
@@ -136,13 +160,13 @@ export default function AIAssistant() {
                       </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-2">
-                      <button 
+                      <button
                         onClick={() => { setQuery("Tell me about Icha's projects"); }}
                         className="text-[10px] px-3 py-1 border border-gray-200 rounded-full hover:bg-black hover:text-white transition-colors"
                       >
                         Projects
                       </button>
-                      <button 
+                      <button
                         onClick={() => { setQuery("What is Icha's work experience?"); }}
                         className="text-[10px] px-3 py-1 border border-gray-200 rounded-full hover:bg-black hover:text-white transition-colors"
                       >
@@ -151,7 +175,7 @@ export default function AIAssistant() {
                     </div>
                   </div>
                 )}
-                
+
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[85%] flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
@@ -159,20 +183,17 @@ export default function AIAssistant() {
                         {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
                       </div>
                       <div className={`p-3 rounded-2xl text-[13px] leading-relaxed ${
-                        msg.role === 'user' 
-                        ? 'bg-gray-100 text-gray-800 rounded-tr-none' 
-                        : 'bg-gray-50 border border-gray-100 text-gray-700 rounded-tl-none'
+                        msg.role === 'user'
+                          ? 'bg-gray-100 text-gray-800 rounded-tr-none'
+                          : 'bg-gray-50 border border-gray-100 text-gray-700 rounded-tl-none'
                       }`}>
                         {msg.role === 'ai' ? (
                           <div className="prose prose-sm max-w-none prose-slate overflow-x-auto">
-                            <ReactMarkdown 
+                            <ReactMarkdown
                               remarkPlugins={[remarkGfm, remarkBreaks]}
                               components={{
-                                // --- 1. SETTING TABEL (Garis Horizontal & Vertikal Rapi) ---
                                 table: ({node, ...props}) => (
-                                  // 1. Pindahkan bg-white ke div pembungkus ini
                                   <div className="overflow-x-auto my-4 rounded-lg border border-gray-300 overflow-hidden bg-white">
-                                    {/* 2. Gunakan !m-0 (pakai tanda seru) untuk override paksa margin dari prose */}
                                     <table className="min-w-full !m-0 text-[12px] border-collapse" {...props} />
                                   </div>
                                 ),
@@ -191,8 +212,6 @@ export default function AIAssistant() {
                                 td: ({node, ...props}) => (
                                   <td className="px-3 py-2.5 text-gray-600 align-top" {...props} />
                                 ),
-
-                                // --- 2. SETTING LIST (Numbering & Bullets) ---
                                 ol: ({node, ...props}) => (
                                   <ol className="list-decimal pl-8 space-y-1.5 my-2" {...props} />
                                 ),
@@ -202,8 +221,6 @@ export default function AIAssistant() {
                                 li: ({node, ...props}) => (
                                   <li className="text-gray-700 leading-relaxed" {...props} />
                                 ),
-                                
-                                // --- 3. SETTING HEADINGS ---
                                 h3: ({node, ...props}) => <h3 className="text-sm font-semibold text-black mt-4 mb-2" {...props} />,
                                 h4: ({node, ...props}) => <h4 className="text-[13px] font-semibold text-gray-800 mt-3 mb-1" {...props} />,
                               }}
@@ -218,7 +235,7 @@ export default function AIAssistant() {
                     </div>
                   </div>
                 ))}
-                
+
                 {isLoading && (
                   <div className="flex justify-start">
                     <div className="bg-gray-50 border border-gray-100 p-3 rounded-2xl rounded-tl-none">
@@ -228,23 +245,22 @@ export default function AIAssistant() {
                 )}
               </div>
 
-              {/* Input Area */}
-              <div className="p-4 border-t bg-gray-50">
+              <div className="px-4 pb-4 bg-white">
                 <div className="relative flex items-center">
-                  <input 
+                  <input
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                     placeholder="Ask anything..."
-                    className="w-full p-4 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all text-xs"
+                    className="w-full h-12 pl-4 pr-10 rounded-full bg-gray-50 border border-gray-200/50 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-300 text-sm"
                   />
-                  <button 
+                  <button
                     onClick={handleSend}
                     disabled={isLoading || !query.trim()}
-                    className="absolute right-2 p-2 bg-black text-white rounded-lg disabled:bg-gray-300 transition-colors"
+                    className="absolute right-2 p-2 text-gray-400 hover:text-gray-600 disabled:text-gray-300 transition-colors"
                   >
-                    <Send size={16} />
+                    <Send size={18} />
                   </button>
                 </div>
               </div>
