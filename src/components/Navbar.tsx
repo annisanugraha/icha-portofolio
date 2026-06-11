@@ -7,6 +7,7 @@ const links = [
   { name: 'Work', path: '/' },
   { name: 'About', path: '/about' },
   { name: 'Archives', path: '/archives' },
+  { name: 'Play', path: '/play' },
 ];
 
 export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logoImage?: string | null }) => {

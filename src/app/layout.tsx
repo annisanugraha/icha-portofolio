@@ -33,10 +33,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white`}>
-        <SidebarProvider>
-          {children}
-          <AIAssistant />
-        </SidebarProvider>
+        {children}
       </body>
     </html>
   );
