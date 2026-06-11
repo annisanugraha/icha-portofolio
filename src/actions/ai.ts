@@ -31,7 +31,7 @@ const getCachedPortfolioContext = unstable_cache(
         ${experiences.map(e => `- ${e.year}: ${e.title} at ${e.company}. ${e.description}`).join('\n')}
 
         # PROJECTS:
-        ${projects.map(p => `- ${p.title} (${p.year}): ${p.shortDescription}. Details: ${p.fullDescription}`).join('\n')}
+        ${projects.map(p => `- ${p.title} (${p.year}): ${p.shortDescription}. Tech Stack: ${p.techStack.join(', ')}. Details: ${p.fullDescription}`).join('\n')}
 
         # CERTIFICATIONS:
         ${certificates.map(c => `- ${c.title}: ${c.description}`).join('\n')}

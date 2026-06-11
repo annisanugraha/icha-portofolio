@@ -242,6 +242,17 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
                     <p className="text-[14px] text-[#888] leading-relaxed line-clamp-2">
                       {project.shortDescription}
                     </p>
+
+                    {/* Tech Stack Badges */}
+                    {project.techStack && project.techStack.length > 0 && (
+                      <div className="flex flex-wrap gap-2 pt-2">
+                        {project.techStack.map((tech: string, i: number) => (
+                          <span key={i} className="text-[8px] tracking-[0.2em] uppercase px-2 py-1 bg-[#fafafa] border border-[#ebebeb] text-[#999] rounded-sm">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     
                     <div className="pt-4 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
                       <span className="text-[10px] font-mono font-medium uppercase tracking-[0.2em]">Full Case Study</span>

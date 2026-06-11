@@ -19,6 +19,7 @@ const emptyForm = {
   shortDescription: '', fullDescription: '',
   contextWhy: '', scopeWhat: '', outcomeHow: '',
   imageUrl: '', galleryImages: [] as string[],
+  techStack: [] as string[],
   links: [] as { label: string; url: string }[],
   featured: false,
 };
@@ -65,6 +66,7 @@ export default function ProjectsContent() {
       outcomeHow: p.outcomeHow || '',
       imageUrl: p.imageUrl || '', 
       galleryImages: p.galleryImages || [], 
+      techStack: p.techStack || [],
       links: p.links?.map((l: any) => ({ label: l.label, url: l.url })) || [],
       featured: p.featured || false 
     });
@@ -246,6 +248,27 @@ export default function ProjectsContent() {
               </label>
             </div>
           </div>
+
+          <Field label="Tech Stack (Comma Separated)">
+            <input 
+              type="text" 
+              placeholder="React, Next.js, Tailwind CSS..." 
+              value={form.techStack.join(', ')} 
+              onChange={e => {
+                const tags = e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+                set('techStack', tags);
+              }} 
+              className={inputCls} 
+            />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {form.techStack.map((tag, i) => (
+                <span key={i} className="px-2 py-1 bg-[#111] text-white text-[8px] tracking-widest uppercase rounded-sm flex items-center gap-2">
+                  {tag}
+                  <button type="button" onClick={() => set('techStack', form.techStack.filter((_, idx) => idx !== i))} className="hover:text-red-400">×</button>
+                </span>
+              ))}
+            </div>
+          </Field>
 
           <MultiImageUploader label="Gallery Photos" currentImages={form.galleryImages} onUpload={urls => set('galleryImages', urls)} />
 
