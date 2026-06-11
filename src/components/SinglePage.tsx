@@ -392,11 +392,10 @@ function PlaySection() {
                 <div className={`p-2 rounded-lg h-fit shrink-0 ${msg.role === 'user' ? 'bg-gray-50' : 'bg-black text-white'}`}>
                   {msg.role === 'user' ? <User size={12} /> : <Bot size={12} />}
                 </div>
-                <div className={`p-4 rounded-2xl text-[13px] leading-relaxed ${
-                  msg.role === 'user'
+                <div className={`p-4 rounded-2xl text-[13px] leading-relaxed ${msg.role === 'user'
                     ? 'bg-gray-50 text-gray-700 rounded-tr-none'
                     : 'bg-white border border-gray-100 text-gray-600 rounded-tl-none shadow-sm'
-                }`}>
+                  }`}>
                   {msg.role === 'ai' ? (
                     <div className="prose prose-sm max-w-none prose-slate overflow-x-auto">
                       <ReactMarkdown

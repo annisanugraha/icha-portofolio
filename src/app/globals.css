@@ -39,7 +39,10 @@ body {
 
 /* ── Typography System ── */
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: 'DM Serif Display', serif;
   font-weight: 400;
   line-height: 1.05;
@@ -47,10 +50,21 @@ h1, h2, h3, h4 {
   color: var(--ink);
 }
 
-h1 { font-size: clamp(2.4rem, 5vw, 4rem); }
-h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); }
-h3 { font-size: clamp(1.2rem, 2vw, 1.6rem); }
-h4 { font-size: 1.1rem; }
+h1 {
+  font-size: clamp(2.4rem, 5vw, 4rem);
+}
+
+h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+}
+
+h3 {
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+}
+
+h4 {
+  font-size: 1.1rem;
+}
 
 /* ── Utilities ── */
 
@@ -116,9 +130,10 @@ h4 { font-size: 1.1rem; }
 .hover-lift {
   transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease;
 }
+
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
 }
 
 /* Button press */
@@ -130,6 +145,7 @@ h4 { font-size: 1.1rem; }
 .link-underline {
   position: relative;
 }
+
 .link-underline::after {
   content: '';
   position: absolute;
@@ -140,6 +156,7 @@ h4 { font-size: 1.1rem; }
   background: var(--ink);
   transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
+
 .link-underline:hover::after {
   width: 100%;
 }
@@ -148,6 +165,7 @@ h4 { font-size: 1.1rem; }
 .card-border {
   position: relative;
 }
+
 .card-border::before {
   content: '';
   position: absolute;
@@ -155,6 +173,7 @@ h4 { font-size: 1.1rem; }
   border: 1px solid transparent;
   transition: border-color 0.4s ease;
 }
+
 .card-border:hover::before {
   border-color: var(--ink);
 }
@@ -163,27 +182,52 @@ h4 { font-size: 1.1rem; }
 .text-reveal {
   overflow: hidden;
 }
-.text-reveal > * {
+
+.text-reveal>* {
   transform: translateY(100%);
   animation: slideUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
 @keyframes slideUp {
-  to { transform: translateY(0); }
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* Stagger delay utilities */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
-.stagger-5 { animation-delay: 0.5s; }
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+
+.stagger-5 {
+  animation-delay: 0.5s;
+}
 
 /* Scroll indicator pulse */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
+
 .animate-pulse-slow {
   animation: pulse 2s ease-in-out infinite;
 }
@@ -204,13 +248,31 @@ h4 { font-size: 1.1rem; }
 /* ── Floating Animation Keyframes ── */
 
 @keyframes floatUp {
-  0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
-  50% { transform: translateY(-6px) scale(1.2); opacity: 0.4; }
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: translateY(-6px) scale(1.2);
+    opacity: 0.4;
+  }
 }
 
 @keyframes floatDown {
-  0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
-  50% { transform: translateY(6px) scale(0.8); opacity: 0.4; }
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: translateY(6px) scale(0.8);
+    opacity: 0.4;
+  }
 }
 
 .animate-float {
@@ -224,13 +286,23 @@ h4 { font-size: 1.1rem; }
 /* ── Marquee Animation (Snake/Ular) ── */
 
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(calc(-50% - 16px)); }
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - 16px));
+  }
 }
 
 @keyframes marquee-reverse {
-  from { transform: translateX(calc(-50% - 16px)); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(calc(-50% - 16px));
+  }
+
+  to {
+    transform: translateX(0);
+  }
 }
 
 .animate-marquee {
