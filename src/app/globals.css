@@ -313,6 +313,35 @@ h4 {
   animation: marquee-reverse 25s linear infinite;
 }
 
+/* Slow marquee for tech stack background */
+@keyframes marquee-slow {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - 32px));
+  }
+}
+
+@keyframes marquee-slow-reverse {
+  from {
+    transform: translateX(calc(-50% - 32px));
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee-slow {
+  animation: marquee-slow 60s linear infinite;
+}
+
+.animate-marquee-slow-reverse {
+  animation: marquee-slow-reverse 60s linear infinite;
+}
+
 /* Pause on hover */
 .animate-marquee:hover,
 .animate-marquee-reverse:hover {

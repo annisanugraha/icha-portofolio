@@ -10,7 +10,7 @@ import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { PageSectionHeader } from './PageSectionHeader';
 import { CertificateGrid } from './CertificateGrid';
-import { SkillsShowcase } from './SkillsShowcase';
+import { WorkAndSkills } from './WorkAndSkills';
 
 interface SinglePageProps {
   profile: any;
@@ -177,64 +177,11 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
             </div>
           </section>
 
-          {/* ── Skills ── */}
-          <section className="py-24 md:pt-16 border-t border-[#ebebeb]">
-            <div className="px-6 md:px-12">
-              <PageSectionHeader title="What I Work With" number="02.5" />
-              <div className="pt-6">
-                <SkillsShowcase />
-              </div>
-            </div>
+          {/* ── Skills + Work (merged, 3-layer sticky) ── */}
+          <section id="work" className="border-t border-[#ebebeb]">
+            <WorkAndSkills projects={projects} />
           </section>
 
-          {/* ── Work ── */}
-          <section
-            id="work"
-            className="py-24 md:pt-16 border-t border-[#ebebeb]"
-          >
-            <div className="px-6 md:px-12">
-              <PageSectionHeader title="Selected Work" number="03" />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-16 pt-6">
-                {projects.map((project: any, i: number) => (
-                  <motion.div
-                    key={project.id}
-                    initial={{ opacity: 0, y: 14 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ duration: 0.9, delay: (i % 2) * 0.12 }}
-                  >
-                    <Link
-                      href={`/work/${project.slug}`}
-                      className="group block space-y-4"
-                    >
-                      <div className="img-container aspect-[4/3] rounded-sm overflow-hidden">
-                        <img
-                          src={project.imageUrl || 'https://placehold.co/800x600/f5f5f5/999999?text=—'}
-                          alt={project.title}
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className="label text-[#bbb]">
-                            {String(i + 1).padStart(2, '0')}
-                          </span>
-                          <span className="label text-[#bbb]">
-                            {project.category}
-                          </span>
-                        </div>
-                        <h3 className="text-base font-serif group-hover:opacity-50 transition-opacity duration-500">
-                          {project.title}
-                        </h3>
-                        <p className="text-[11px] text-[#999] leading-relaxed line-clamp-2">
-                          {project.shortDescription}
-                        </p>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </section>
 
           {/* ── Archives (Certificates) ── */}
           {certificates && certificates.length > 0 && (
@@ -393,8 +340,8 @@ function PlaySection() {
                   {msg.role === 'user' ? <User size={12} /> : <Bot size={12} />}
                 </div>
                 <div className={`p-4 rounded-2xl text-[13px] leading-relaxed ${msg.role === 'user'
-                    ? 'bg-gray-50 text-gray-700 rounded-tr-none'
-                    : 'bg-white border border-gray-100 text-gray-600 rounded-tl-none shadow-sm'
+                  ? 'bg-gray-50 text-gray-700 rounded-tr-none'
+                  : 'bg-white border border-gray-100 text-gray-600 rounded-tl-none shadow-sm'
                   }`}>
                   {msg.role === 'ai' ? (
                     <div className="prose prose-sm max-w-none prose-slate overflow-x-auto">
