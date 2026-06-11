@@ -200,3 +200,49 @@ h4 { font-size: 1.1rem; }
   z-index: 0;
   opacity: 0.4;
 }
+
+/* ── Floating Animation Keyframes ── */
+
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
+  50% { transform: translateY(-6px) scale(1.2); opacity: 0.4; }
+}
+
+@keyframes floatDown {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
+  50% { transform: translateY(6px) scale(0.8); opacity: 0.4; }
+}
+
+.animate-float {
+  animation: floatUp 2s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: floatDown 2.5s ease-in-out infinite 0.5s;
+}
+
+/* ── Marquee Animation (Snake/Ular) ── */
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 16px)); }
+}
+
+@keyframes marquee-reverse {
+  from { transform: translateX(calc(-50% - 16px)); }
+  to { transform: translateX(0); }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 25s linear infinite;
+}
+
+/* Pause on hover */
+.animate-marquee:hover,
+.animate-marquee-reverse:hover {
+  animation-play-state: paused;
+}

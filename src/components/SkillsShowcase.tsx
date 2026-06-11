@@ -6,79 +6,125 @@ const skillCategories = [
   {
     title: 'Frontend',
     skills: [
-      { name: 'Next.js', level: 90 },
-      { name: 'React', level: 85 },
-      { name: 'TypeScript', level: 88 },
-      { name: 'Tailwind CSS', level: 92 },
-      { name: 'Framer Motion', level: 80 },
+      { name: 'Next.js', icon: '▲' },
+      { name: 'React', icon: '⚛' },
+      { name: 'TypeScript', icon: 'TS' },
+      { name: 'Tailwind CSS', icon: '◈' },
+      { name: 'Framer Motion', icon: '◉' },
     ],
   },
   {
     title: 'Backend',
     skills: [
-      { name: 'Node.js', level: 82 },
-      { name: 'Prisma', level: 85 },
-      { name: 'PostgreSQL', level: 80 },
-      { name: 'Supabase', level: 78 },
-      { name: 'REST API', level: 85 },
+      { name: 'Node.js', icon: '◆' },
+      { name: 'Prisma', icon: '◇' },
+      { name: 'PostgreSQL', icon: '▣' },
+      { name: 'Supabase', icon: '◐' },
+      { name: 'REST API', icon: '⬡' },
     ],
   },
   {
-    title: 'Tools & Design',
+    title: 'Design',
     skills: [
-      { name: 'Figma', level: 90 },
-      { name: 'Blender', level: 65 },
-      { name: 'Git', level: 85 },
-      { name: 'Vercel', level: 88 },
-      { name: 'UI/UX Design', level: 88 },
+      { name: 'Figma', icon: '✦' },
+      { name: 'Blender', icon: '◆' },
+      { name: 'UI/UX', icon: '◈' },
+      { name: 'Git', icon: '⬡' },
+      { name: 'Vercel', icon: '▲' },
     ],
   },
 ];
 
+function MarqueeRow({ skills, reverse = false }: { skills: typeof skillCategories[0]['skills']; reverse?: boolean }) {
+  const duplicatedSkills = [...skills, ...skills];
+
+  return (
+    <div className="relative overflow-hidden py-2">
+      <div
+        className={`flex gap-4 ${reverse ? 'animate-marquee-reverse' : 'animate-marquee'}`}
+        style={{ width: 'max-content' }}
+      >
+        {duplicatedSkills.map((skill, i) => (
+          <div
+            key={`${skill.name}-${i}`}
+            className="skill-card w-36 h-28 bg-gradient-to-br from-[#fafafa] to-white border border-[#e8e8e8] flex flex-col items-center justify-center gap-3 relative overflow-hidden group shrink-0 hover:border-[#111] transition-all duration-300"
+          >
+            {/* Floating dots */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="absolute top-2 left-2 w-1.5 h-1.5 bg-black opacity-20 rounded-full animate-float" />
+              <div className="absolute bottom-2 right-2 w-1 h-1 bg-black opacity-20 rounded-full animate-float-delayed" />
+            </div>
+
+            {/* Icon */}
+            <span className="text-2xl text-[#111] opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+              {skill.icon}
+            </span>
+
+            {/* Skill name */}
+            <span className="text-[10px] font-mono tracking-wider text-[#111] group-hover:font-medium transition-all">
+              {skill.name}
+            </span>
+
+            {/* Bottom accent line */}
+            <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-black group-hover:w-full transition-all duration-500" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function SkillsShowcase() {
   return (
-    <div className="space-y-12">
-      {skillCategories.map((category, catIndex) => (
-        <div key={category.title} className="space-y-4">
-          {/* Category Header */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: catIndex * 0.1 }}
-          >
-            <span className="label text-[10px] tracking-[0.4em]">{category.title}</span>
-            <div className="h-px bg-[#ebebeb] mt-2" />
-          </motion.div>
-
-          {/* Skills Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {category.skills.map((skill, skillIndex) => (
-              <motion.div
-                key={skill.name}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: catIndex * 0.1 + skillIndex * 0.05 }}
-                className="group relative"
-              >
-                <div className="flex items-center justify-between px-4 py-3 bg-[#fafafa] border border-[#ebebeb] hover:border-[#111] transition-all duration-300 hover:-translate-y-0.5 cursor-default">
-                  <span className="text-xs font-mono text-[#111] group-hover:font-medium transition-all">
-                    {skill.name}
-                  </span>
-                  <span className="text-[10px] text-[#bbb] font-mono group-hover:text-[#999] transition-colors">
-                    {skill.level}%
-                  </span>
-                </div>
-                {/* Progress bar */}
-                <div className="absolute bottom-0 left-0 h-0.5 bg-[#111] transition-all duration-500 group-hover:opacity-100 opacity-0"
-                  style={{ width: `${skill.level}%` }}
-                />
-              </motion.div>
-            ))}
-          </div>
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-4 items-start">
+      {/* Left: Big Text */}
+      <motion.div
+        initial={{ opacity: 0, x: -30 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="md:col-span-4 sticky top-24"
+      >
+        <div className="space-y-2">
+          <h2 className="text-5xl md:text-7xl font-serif text-black leading-[0.9] tracking-tight">
+            WHAT I
+          </h2>
+          <h2 className="text-5xl md:text-7xl font-serif text-black leading-[0.9] tracking-tight">
+            WORK
+          </h2>
+          <h2 className="text-5xl md:text-7xl font-serif text-black leading-[0.9] tracking-tight">
+            WITH.
+          </h2>
         </div>
-      ))}
+        <div className="mt-8 flex items-center gap-4">
+          <div className="w-12 h-px bg-gradient-to-r from-black to-transparent" />
+          <span className="text-[10px] font-mono tracking-[0.3em] text-[#999] uppercase">
+            Always moving
+          </span>
+        </div>
+      </motion.div>
+
+      {/* Right: Animated Marquee Rows */}
+      <div className="md:col-span-8 space-y-6 md:space-y-8 relative">
+        {skillCategories.map((category, catIndex) => (
+          <div key={category.title}>
+            {/* Category label */}
+            <span className="label text-[9px] tracking-[0.4em] text-[#bbb] block mb-3">
+              {category.title}
+            </span>
+
+            {/* Marquee row - alternating directions */}
+            <MarqueeRow
+              skills={category.skills}
+              reverse={catIndex % 2 === 1}
+            />
+          </div>
+        ))}
+
+        {/* Gradient overlays */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white to-transparent pointer-events-none z-10" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+      </div>
     </div>
   );
 }
