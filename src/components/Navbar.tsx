@@ -13,27 +13,50 @@ const navItems = [
 export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logoImage?: string | null }) => {
   const [activeSection, setActiveSection] = useState('hero');
 
-  // Scroll spy using scroll event
+  // Scroll spy using IntersectionObserver
   useEffect(() => {
     const sections = ['hero', 'about', 'work', 'archives', 'play'];
 
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight / 3;
-
-      let current = 'hero';
-      for (const id of sections) {
-        const el = document.getElementById(id);
-        if (el && el.offsetTop <= scrollPosition) {
-          current = id;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find the entry that's most visible (highest ratio) in the middle zone
+        const visibleEntries = entries.filter(e => e.isIntersecting);
+        if (visibleEntries.length > 0) {
+          // Sort by how close to center of viewport
+          const sorted = visibleEntries.sort((a, b) => {
+            const aRect = a.boundingClientRect;
+            const bRect = b.boundingClientRect;
+            const viewportCenter = window.innerHeight / 2;
+            const aCenter = Math.abs(aRect.top + aRect.height / 2 - viewportCenter);
+            const bCenter = Math.abs(bRect.top + bRect.height / 2 - viewportCenter);
+            return aCenter - bCenter;
+          });
+          setActiveSection(sorted[0].target.id);
         }
+      },
+      {
+        rootMargin: '-40% 0px -40% 0px', // Middle 20% of screen is the trigger zone
+        threshold: 0,
       }
-      setActiveSection(current);
-    };
+    );
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial check
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Initial active section
+    const initialSection = sections.find(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        return rect.top <= window.innerHeight * 0.4 && rect.bottom >= window.innerHeight * 0.4;
+      }
+      return false;
+    });
+    if (initialSection) setActiveSection(initialSection);
+
+    return () => observer.disconnect();
   }, []);
 
   const scrollTo = (id: string) => {
@@ -41,19 +64,24 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
     const hash = `#${id}`;
     const currentHash = window.location.hash;
 
-    if (currentHash !== hash) {
-      // Navigate to home with hash, then scroll
-      window.location.hash = hash;
-    } else {
-      // Already on the right page, just scroll
+    // Scroll helper function
+    const doScroll = () => {
       const el = document.getElementById(id);
       if (el) {
-        // Offset:64px for mobile top bar,0 for desktop sidebar (it's on the side)
         const isMobile = window.innerWidth < 768;
         const offset = isMobile ? 48 : 0;
         const top = el.getBoundingClientRect().top + window.scrollY - offset;
         window.scrollTo({ top, behavior: 'smooth' });
       }
+    };
+
+    if (currentHash !== hash) {
+      // Set hash and scroll with small delay to allow hash to take effect
+      window.location.hash = hash;
+      setTimeout(doScroll, 50);
+    } else {
+      // Already on the right page, just scroll
+      doScroll();
     }
   };
 
@@ -102,7 +130,7 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
         </button>
 
         {/* Nav Links - scroll to sections */}
-        <div className="flex flex-col items-center gap-8">
+        <div className="flex flex-col items-center gap-5">
           {navItems.map((item) => {
             const active = activeSection === item.id;
             return (

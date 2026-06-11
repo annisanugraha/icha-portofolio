@@ -10,6 +10,7 @@ import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { PageSectionHeader } from './PageSectionHeader';
 import { CertificateGrid } from './CertificateGrid';
+import { SkillsShowcase } from './SkillsShowcase';
 
 interface SinglePageProps {
   profile: any;
@@ -22,11 +23,11 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
   // Handle hash-based scroll on mount
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
-    if (hash && ['hero', 'about', 'work', 'play'].includes(hash)) {
+    if (hash && ['hero', 'about', 'work', 'archives', 'play', 'contact'].includes(hash)) {
       setTimeout(() => {
         const el = document.getElementById(hash);
         if (el) {
-          const offset = 80;
+          const offset = window.innerWidth < 768 ? 48 : 0;
           const top = el.getBoundingClientRect().top + window.scrollY - offset;
           window.scrollTo({ top, behavior: 'smooth' });
         }
@@ -38,13 +39,13 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
     <>
       {/* ── Content ── */}
       <main className="min-h-screen bg-white">
-        <div className="md:pl-16">
+        <div>
           {/* ── Hero ── */}
           <section
             id="hero"
             className="min-h-screen flex flex-col justify-center md:pt-0 pt-16"
           >
-            <div className="-mt-16 md:mt-0 px-6 md:px-12">
+            <div className="px-6 md:px-12">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -70,7 +71,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
           {/* ── About ── */}
           <section
             id="about"
-            className="min-h-screen flex flex-col justify-center py-24 pt-24 md:pt-16 border-t border-[#ebebeb]"
+            className="min-h-screen flex flex-col justify-center py-24 md:pt-16 border-t border-[#ebebeb]"
           >
             <div className="px-6 md:px-12">
               <motion.div
@@ -176,10 +177,20 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
             </div>
           </section>
 
+          {/* ── Skills ── */}
+          <section className="py-24 md:pt-16 border-t border-[#ebebeb]">
+            <div className="px-6 md:px-12">
+              <PageSectionHeader title="What I Work With" number="02.5" />
+              <div className="pt-6">
+                <SkillsShowcase />
+              </div>
+            </div>
+          </section>
+
           {/* ── Work ── */}
           <section
             id="work"
-            className="py-24 pt-24 md:pt-16 border-t border-[#ebebeb]"
+            className="py-24 md:pt-16 border-t border-[#ebebeb]"
           >
             <div className="px-6 md:px-12">
               <PageSectionHeader title="Selected Work" number="03" />
@@ -229,7 +240,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
           {certificates && certificates.length > 0 && (
             <section
               id="archives"
-              className="py-24 pt-24 md:pt-16 border-t border-[#ebebeb]"
+              className="py-24 md:pt-16 border-t border-[#ebebeb]"
             >
               <div className="px-6 md:px-12">
                 <PageSectionHeader title="Archives" number="04" />
@@ -243,7 +254,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
           {/* ── Play (AI Chat) ── */}
           <section
             id="play"
-            className="py-24 pt-24 md:pt-16 border-t border-[#ebebeb]"
+            className="py-24 md:pt-16 border-t border-[#ebebeb]"
           >
             <div className="px-6 md:px-12">
               <PageSectionHeader title="Play" number="05" />
@@ -252,7 +263,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
           </section>
 
           {/* ── Let's Talk ── */}
-          <section className="py-24 border-t border-[#ebebeb]">
+          <section id="contact" className="py-24 border-t border-[#ebebeb]">
             <div className="px-6 md:px-12 space-y-4 max-w-lg">
               <h2 className="text-6xl md:text-8xl font-serif text-black leading-none">
                 Let's talk.
