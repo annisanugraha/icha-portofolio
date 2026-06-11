@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, animate as motionAnimate } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform, animate as motionAnimate, MotionValue } from 'framer-motion';
 
 interface IntroSequenceProps {
   onComplete: () => void;
@@ -23,11 +23,11 @@ const TAPE_TEXTS = [
 
 // Each tape: rotation, y-position (%), direction of scroll, delay
 const TAPE_CONFIG = [
-  { rotate: -8,  yPct: 20, dir: 1,  delay: 0,    width: '160%' },
-  { rotate: -4,  yPct: 33, dir: -1, delay: 0.15, width: '160%' },
-  { rotate: -8,  yPct: 46, dir: 1,  delay: 0.05, width: '160%' },
-  { rotate: -4,  yPct: 59, dir: -1, delay: 0.2,  width: '160%' },
-  { rotate: -8,  yPct: 72, dir: 1,  delay: 0.1,  width: '160%' },
+  { rotate: -8, yPct: 20, dir: 1, delay: 0, width: '160%' },
+  { rotate: -4, yPct: 33, dir: -1, delay: 0.15, width: '160%' },
+  { rotate: -8, yPct: 46, dir: 1, delay: 0.05, width: '160%' },
+  { rotate: -4, yPct: 59, dir: -1, delay: 0.2, width: '160%' },
+  { rotate: -8, yPct: 72, dir: 1, delay: 0.1, width: '160%' },
 ];
 
 interface ScrollingTapeProps {
@@ -41,16 +41,12 @@ interface ScrollingTapeProps {
 }
 
 function ScrollingTape({ text, rotate, yPct, dir, delay, width, isExiting }: ScrollingTapeProps) {
-  const repeated = text.repeat(6);
+  const repeated = text.repeat(8);
 
+  // Split positioning/rotation into a static wrapper so framer-motion's
+  // x-animation doesn't fight with translateX(-50%) centering.
   return (
-    <motion.div
-      initial={{ x: dir > 0 ? '-110%' : '110%', opacity: 0 }}
-      animate={
-        isExiting
-          ? { x: dir > 0 ? '110%' : '-110%', opacity: 0, transition: { duration: 0.55, ease: [0.4, 0, 1, 1] } }
-          : { x: '0%', opacity: 1, transition: { duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] } }
-      }
+    <div
       style={{
         position: 'absolute',
         top: `${yPct}%`,
@@ -61,54 +57,63 @@ function ScrollingTape({ text, rotate, yPct, dir, delay, width, isExiting }: Scr
         overflow: 'hidden',
       }}
     >
-      {/* Tape body */}
-      <div
-        style={{
-          background: '#ffffff',
-          borderTop: '2px solid #000',
-          borderBottom: '2px solid #000',
-          padding: '10px 0',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
+      <motion.div
+        initial={{ x: dir > 0 ? '-100%' : '100%', opacity: 0 }}
+        animate={
+          isExiting
+            ? { x: dir > 0 ? '100%' : '-100%', opacity: 0, transition: { duration: 0.5, ease: [0.4, 0, 1, 1] } }
+            : { x: '0%', opacity: 1, transition: { duration: 0.65, delay, ease: [0.16, 1, 0.3, 1] } }
+        }
       >
-        {/* Diagonal stripe pattern overlay */}
+        {/* Tape body */}
         <div
           style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: `repeating-linear-gradient(
-              -45deg,
-              transparent 0px,
-              transparent 12px,
-              rgba(0,0,0,0.07) 12px,
-              rgba(0,0,0,0.07) 14px
-            )`,
-            pointerEvents: 'none',
+            background: '#ffffff',
+            borderTop: '2.5px solid #000',
+            borderBottom: '2.5px solid #000',
+            padding: '10px 0',
+            position: 'relative',
+            overflow: 'hidden',
           }}
-        />
-
-        {/* Scrolling text */}
-        <motion.div
-          animate={{ x: dir > 0 ? [0, -800] : [-800, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
-          style={{ display: 'flex', whiteSpace: 'nowrap' }}
         >
-          <span
+          {/* Diagonal stripe pattern overlay */}
+          <div
             style={{
-              fontFamily: '"Arial Black", "Impact", sans-serif',
-              fontWeight: 900,
-              fontSize: '13px',
-              letterSpacing: '0.15em',
-              color: '#000',
-              textTransform: 'uppercase',
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `repeating-linear-gradient(
+                -45deg,
+                transparent 0px,
+                transparent 14px,
+                rgba(0,0,0,0.06) 14px,
+                rgba(0,0,0,0.06) 16px
+              )`,
+              pointerEvents: 'none',
             }}
+          />
+
+          {/* Scrolling text */}
+          <motion.div
+            animate={{ x: dir > 0 ? [0, -900] : [-900, 0] }}
+            transition={{ duration: 14, repeat: Infinity, ease: 'linear' }}
+            style={{ display: 'flex', whiteSpace: 'nowrap' }}
           >
-            {repeated}
-          </span>
-        </motion.div>
-      </div>
-    </motion.div>
+            <span
+              style={{
+                fontFamily: '"Arial Black", "Impact", sans-serif',
+                fontWeight: 900,
+                fontSize: '13px',
+                letterSpacing: '0.15em',
+                color: '#000',
+                textTransform: 'uppercase',
+              }}
+            >
+              {repeated}
+            </span>
+          </motion.div>
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
@@ -252,20 +257,34 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
                     gap: 16,
                   }}
                 >
-                  {/* Big progress number */}
-                  <motion.span
+                  {/* Dark box with shadow behind progress % */}
+                  <div
                     style={{
-                      fontFamily: '"Arial Black", Impact, sans-serif',
-                      fontWeight: 900,
-                      fontSize: 'clamp(80px, 18vw, 160px)',
-                      color: '#fff',
-                      lineHeight: 1,
-                      letterSpacing: '-0.04em',
-                      fontVariantNumeric: 'tabular-nums',
+                      background: '#0a0a0a',
+                      boxShadow: '0 0 0 8px #0a0a0a, 0 0 40px 8px rgba(0,0,0,0.9), 0 0 80px 16px rgba(0,0,0,0.6)',
+                      padding: '16px 32px',
+                      position: 'relative',
+                      zIndex: 50,
                     }}
                   >
-                    <MotionNumber value={progressValue} />
-                  </motion.span>
+                    {/* Bounce animation vertical */}
+                    <motion.span
+                      animate={{ y: [0, -12, 0] }}
+                      transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut' }}
+                      style={{
+                        display: 'block',
+                        fontFamily: '"Arial Black", Impact, sans-serif',
+                        fontWeight: 900,
+                        fontSize: 'clamp(80px, 18vw, 160px)',
+                        color: '#fff',
+                        lineHeight: 1,
+                        letterSpacing: '-0.04em',
+                        fontVariantNumeric: 'tabular-nums',
+                      }}
+                    >
+                      <MotionNumber value={progressValue} />
+                    </motion.span>
+                  </div>
 
                   {/* Progress bar */}
                   <div
@@ -386,19 +405,19 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
             </AnimatePresence>
           </div>
 
-          {/* === FLASH TO WHITE === */}
+          {/* === CINEMATIC FADE OUT (dark → seamless into portfolio) === */}
           <AnimatePresence>
             {flashWhite && (
               <motion.div
-                key="flash"
+                key="fadeout"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.35, ease: 'easeIn' }}
+                transition={{ duration: 0.9, ease: [0.4, 0, 0.6, 1] }}
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  background: '#fff',
+                  // Fade to the same dark as the portfolio bg — no eye-shock
+                  background: '#0a0a0a',
                   zIndex: 100,
                 }}
               />
@@ -445,7 +464,7 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
               zIndex: 30,
             }}
           >
-            <div>Portfolio · 2025</div>
+            <div>Icha Present</div>
             <div style={{ opacity: 0.5 }}>Loading...</div>
           </motion.div>
 
@@ -479,11 +498,11 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
 }
 
 // Helper: animated number that reads from a MotionValue
-function MotionNumber({ value }: { value: ReturnType<typeof useMotionValue> }) {
+function MotionNumber({ value }: { value: MotionValue<number> }) {
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    const unsubscribe = value.on('change', (v) => {
+    const unsubscribe = value.on('change', (v: number) => {
       setDisplay(Math.floor(v));
     });
     return unsubscribe;
