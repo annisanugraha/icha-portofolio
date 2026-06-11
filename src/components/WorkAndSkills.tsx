@@ -110,33 +110,52 @@ interface WorkAndSkillsProps {
 export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastCardRef = useRef<HTMLDivElement>(null);
   const [scrollDistance, setScrollDistance] = useState(0);
+  const [sectionHeight, setSectionHeight] = useState('200vh'); // Fallback
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"]
   });
 
-  // Calculate exactly how far we need to scroll the list
-  const updateScrollDistance = () => {
-    if (containerRef.current) {
-      const contentHeight = containerRef.current.scrollHeight;
+  const updateMeasurements = () => {
+    if (containerRef.current && lastCardRef.current) {
       const viewportHeight = window.innerHeight;
-      // We want to scroll from the starting top-padding 
-      // until the bottom of the content (including its spacer) reaches the bottom of the screen.
-      // A more generous distance ensures the last item doesn't feel "cut off".
-      setScrollDistance(Math.max(0, contentHeight - viewportHeight + (viewportHeight * 0.1)));
+      
+      // offsetTop of the last card is relative to the container (Layer 3),
+      // which starts at top: 0. So it includes the pt-[30vh].
+      const lastCardTop = lastCardRef.current.offsetTop;
+      const lastCardHeight = lastCardRef.current.offsetHeight;
+      const lastCardMiddle = lastCardTop + (lastCardHeight / 2);
+      
+      // We want this middle point to end up at exactly viewportHeight / 2
+      const targetPos = viewportHeight / 2;
+      
+      // Distance to scroll is how far the middle is from the target
+      const distance = Math.max(0, lastCardMiddle - targetPos);
+      setScrollDistance(distance);
+      
+      // The section height determines the "duration" of the sticky scroll.
+      // Set it to distance + viewportHeight so the scroll finishes 
+      // exactly when the translation reaches -distance.
+      setSectionHeight(`${distance + viewportHeight}px`);
     }
   };
 
   useEffect(() => {
-    updateScrollDistance();
-    window.addEventListener('resize', updateScrollDistance);
-    // Extra check after a small delay to catch layout shifts
-    const timer = setTimeout(updateScrollDistance, 500);
+    // Initial measure
+    updateMeasurements();
+    
+    // Multiple checks to handle image loading and layout shifts
+    const observers = [100, 500, 1000, 2000].map(delay => 
+      setTimeout(updateMeasurements, delay)
+    );
+
+    window.addEventListener('resize', updateMeasurements);
     return () => {
-      window.removeEventListener('resize', updateScrollDistance);
-      clearTimeout(timer);
+      window.removeEventListener('resize', updateMeasurements);
+      observers.forEach(clearTimeout);
     };
   }, [projects]);
 
@@ -148,9 +167,7 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
       id="work"
       className="relative"
       style={{
-        // Give it more "weight" - 100vh per project ensures slow, high-quality scrolling
-        // and guarantees the sticky container doesn't release too early.
-        height: `${100 + projects.length * 80}vh`,
+        height: sectionHeight,
       }}
     >
       {/* ── Sticky Container ── */}
@@ -190,11 +207,12 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
           <motion.div
             ref={containerRef}
             style={{ y }}
-            className="px-6 md:px-12 py-[30vh] space-y-20"
+            className="px-6 md:px-12 pt-[30vh] pb-[10vh] space-y-20"
           >
             {projects.map((project: any, i: number) => (
               <motion.div
                 key={project.id}
+                ref={i === projects.length - 1 ? lastCardRef : null}
                 className="group"
               >
                 <Link
@@ -233,8 +251,6 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
                 </Link>
               </motion.div>
             ))}
-            {/* Generous bottom spacer ensures the last card stays in view comfortably */}
-            <div className="h-[40vh]" />
           </motion.div>
         </div>
       </div>
