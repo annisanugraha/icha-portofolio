@@ -42,6 +42,9 @@ export async function addProject(data: any) {
 
 export async function updateProject(id: string, data: any) {
   try {
+    console.log('UPDATING PROJECT:', id);
+    // console.log('DATA:', JSON.stringify(data, null, 2));
+
     const project = await prisma.project.update({
       where: { id },
       data: {
@@ -75,7 +78,18 @@ export async function updateProject(id: string, data: any) {
   } catch (error: any) {
     console.error('Update project error:', error)
     if (error.code === 'P2002') return { success: false, error: 'Slug already exists.' }
-    return { success: false, error: 'DB Error: ' + (error.message || 'Unknown') }
+    
+    // Return the full message if it's a validation error
+    let msg = error.message || 'Unknown';
+    if (msg.includes('Invalid prisma.project.update() invocation')) {
+      // Try to extract the useful part of the Prisma error
+      const parts = msg.split('\n');
+      if (parts.length > 1) {
+        msg = parts.slice(1).join('\n').trim();
+      }
+    }
+
+    return { success: false, error: 'DB Error:\n' + msg }
   }
 }
 

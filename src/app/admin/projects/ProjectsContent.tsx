@@ -31,8 +31,18 @@ export default function ProjectsContent() {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [techInput, setTechInput] = useState('');
 
-  const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
+  const set = (k: string, v: any) => {
+    setForm(f => ({ ...f, [k]: v }));
+    if (k === 'techStack' && Array.isArray(v)) {
+      // Sync techInput if it's not already in sync (e.g. from tag deletion)
+      const joined = v.join(', ');
+      if (techInput !== joined && !techInput.endsWith(',')) {
+        setTechInput(joined);
+      }
+    }
+  };
 
   useEffect(() => { load(); }, []);
   async function load() {
@@ -49,11 +59,13 @@ export default function ProjectsContent() {
   const openAdd = () => { 
     setEditId(null); 
     setForm(emptyForm); 
+    setTechInput('');
     setShowForm(true); 
   };
   
   const openEdit = (p: any) => {
     setEditId(p.id);
+    const techStack = p.techStack || [];
     setForm({ 
       title: p.title, 
       slug: p.slug, 
@@ -66,10 +78,11 @@ export default function ProjectsContent() {
       outcomeHow: p.outcomeHow || '',
       imageUrl: p.imageUrl || '', 
       galleryImages: p.galleryImages || [], 
-      techStack: p.techStack || [],
+      techStack: techStack,
       links: p.links?.map((l: any) => ({ label: l.label, url: l.url })) || [],
       featured: p.featured || false 
     });
+    setTechInput(techStack.join(', '));
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -253,10 +266,11 @@ export default function ProjectsContent() {
             <input 
               type="text" 
               placeholder="React, Next.js, Tailwind CSS..." 
-              value={form.techStack.join(', ')} 
+              value={techInput} 
               onChange={e => {
+                setTechInput(e.target.value);
                 const tags = e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
-                set('techStack', tags);
+                setForm(f => ({ ...f, techStack: tags }));
               }} 
               className={inputCls} 
             />

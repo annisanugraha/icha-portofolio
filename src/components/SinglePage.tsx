@@ -187,7 +187,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
           {certificates && certificates.length > 0 && (
             <section
               id="archives"
-              className="py-24 md:pt-16 border-t border-[#ebebeb]"
+              className="border-t border-[#ebebeb]"
             >
               <div className="px-6 md:px-12">
                 <PageSectionHeader title="Archives" number="04" />

@@ -7,7 +7,7 @@ const navItems = [
   { id: 'about', label: 'About' },
   { id: 'work', label: 'Work' },
   { id: 'archives', label: 'Archives' },
-  { id: 'play', label: 'Play' },
+  { id: 'play', label: '✤' },
 ];
 
 export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logoImage?: string | null }) => {

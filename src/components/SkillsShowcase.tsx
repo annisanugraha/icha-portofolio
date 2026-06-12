@@ -4,33 +4,36 @@ import { motion } from 'framer-motion';
 
 const skillCategories = [
   {
+    title: 'Tools',
+    skills: [
+      { name: 'GitHub',  icon: '⊕' },
+      { name: 'Docker',  icon: '⬡' },
+      { name: 'VSCode',  icon: '▣' },
+      { name: 'Postman', icon: '◆' },
+      { name: 'Vercel',  icon: '▲' },
+      { name: 'Prisma',  icon: '◇' },
+    ],
+  },
+  {
     title: 'Frontend',
     skills: [
-      { name: 'Next.js', icon: '▲' },
-      { name: 'React', icon: '⚛' },
-      { name: 'TypeScript', icon: 'TS' },
-      { name: 'Tailwind CSS', icon: '◈' },
+      { name: 'Next.js',       icon: '▲' },
+      { name: 'React',         icon: '⚛' },
+      { name: 'TypeScript',    icon: 'TS' },
+      { name: 'Tailwind CSS',  icon: '◈' },
       { name: 'Framer Motion', icon: '◉' },
+      { name: 'HTML / CSS',    icon: '◇' },
     ],
   },
   {
-    title: 'Backend',
+    title: 'UI/UX',
     skills: [
-      { name: 'Node.js', icon: '◆' },
-      { name: 'Prisma', icon: '◇' },
-      { name: 'PostgreSQL', icon: '▣' },
-      { name: 'Supabase', icon: '◐' },
-      { name: 'REST API', icon: '⬡' },
-    ],
-  },
-  {
-    title: 'Design',
-    skills: [
-      { name: 'Figma', icon: '✦' },
-      { name: 'Blender', icon: '◆' },
-      { name: 'UI/UX', icon: '◈' },
-      { name: 'Git', icon: '⬡' },
-      { name: 'Vercel', icon: '▲' },
+      { name: 'Figma',       icon: '✦' },
+      { name: 'CorelDraw',   icon: '◈' },
+      { name: 'Adobe XD',    icon: '◉' },
+      { name: 'Illustrator', icon: '◆' },
+      { name: 'Photoshop',   icon: '▣' },
+      { name: 'Blender',     icon: '⬡' },
     ],
   },
 ];
@@ -47,26 +50,20 @@ function MarqueeRow({ skills, reverse = false }: { skills: typeof skillCategorie
         {duplicatedSkills.map((skill, i) => (
           <div
             key={`${skill.name}-${i}`}
-            className="skill-card w-36 h-28 bg-gradient-to-br from-[#fafafa] to-white border border-[#e8e8e8] flex flex-col items-center justify-center gap-3 relative overflow-hidden group shrink-0 hover:border-[#111] transition-all duration-300"
+            className="w-36 h-28 bg-[#fafafa] border border-[#e8e8e8] flex flex-col items-center justify-center gap-2 relative overflow-hidden group shrink-0 hover:border-[#111] hover:bg-white transition-all duration-300"
           >
-            {/* Floating dots */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <div className="absolute top-2 left-2 w-1.5 h-1.5 bg-black opacity-20 rounded-full animate-float" />
-              <div className="absolute bottom-2 right-2 w-1 h-1 bg-black opacity-20 rounded-full animate-float-delayed" />
-            </div>
-
-            {/* Icon */}
-            <span className="text-2xl text-[#111] opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+            {/* Icon — muted by default, crisp on hover */}
+            <span className="text-[26px] leading-none text-[#ccc] group-hover:text-[#111] transition-colors duration-300">
               {skill.icon}
             </span>
 
-            {/* Skill name */}
-            <span className="text-[10px] font-mono tracking-wider text-[#111] group-hover:font-medium transition-all">
+            {/* Name — DM Mono, tight tracking, all caps */}
+            <span className="text-[8px] font-mono tracking-[0.28em] uppercase text-[#bbb] group-hover:text-[#111] transition-colors duration-300">
               {skill.name}
             </span>
 
-            {/* Bottom accent line */}
-            <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-black group-hover:w-full transition-all duration-500" />
+            {/* Bottom accent line on hover */}
+            <div className="absolute bottom-0 left-0 h-px w-0 bg-[#111] group-hover:w-full transition-all duration-500" />
           </div>
         ))}
       </div>
