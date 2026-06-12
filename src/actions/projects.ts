@@ -31,7 +31,7 @@ export async function addProject(data: any) {
       include: { links: true }
     })
     revalidatePath('/')
-    revalidatePath('/admin')
+    revalidatePath('/admin', 'layout')
     return { success: true, data: project }
   } catch (error: any) {
     console.error('Add project error:', error)
@@ -73,7 +73,7 @@ export async function updateProject(id: string, data: any) {
     })
     revalidatePath('/')
     revalidatePath(`/work/${data.slug}`)
-    revalidatePath('/admin')
+    revalidatePath('/admin', 'layout')
     return { success: true, data: project }
   } catch (error: any) {
     console.error('Update project error:', error)
@@ -136,7 +136,7 @@ export async function deleteProject(id: string) {
   try {
     await prisma.project.delete({ where: { id } });
     revalidatePath('/')
-    revalidatePath('/admin')
+    revalidatePath('/admin', 'layout')
     return { success: true }
   } catch (error: any) {
     console.error('Delete project error:', error)

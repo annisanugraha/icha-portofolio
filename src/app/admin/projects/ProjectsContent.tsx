@@ -35,13 +35,6 @@ export default function ProjectsContent() {
 
   const set = (k: string, v: any) => {
     setForm(f => ({ ...f, [k]: v }));
-    if (k === 'techStack' && Array.isArray(v)) {
-      // Sync techInput if it's not already in sync (e.g. from tag deletion)
-      const joined = v.join(', ');
-      if (techInput !== joined && !techInput.endsWith(',')) {
-        setTechInput(joined);
-      }
-    }
   };
 
   useEffect(() => { load(); }, []);
@@ -278,7 +271,11 @@ export default function ProjectsContent() {
               {form.techStack.map((tag, i) => (
                 <span key={i} className="px-2 py-1 bg-[#111] text-white text-[8px] tracking-widest uppercase rounded-sm flex items-center gap-2">
                   {tag}
-                  <button type="button" onClick={() => set('techStack', form.techStack.filter((_, idx) => idx !== i))} className="hover:text-red-400">×</button>
+                  <button type="button" onClick={() => {
+                    const newTags = form.techStack.filter((_, idx) => idx !== i);
+                    set('techStack', newTags);
+                    setTechInput(newTags.join(', '));
+                  }} className="hover:text-red-400">×</button>
                 </span>
               ))}
             </div>
