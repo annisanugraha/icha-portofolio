@@ -207,7 +207,7 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
           <motion.div
             ref={containerRef}
             style={{ y }}
-            className="px-6 md:px-12 pt-[30vh] pb-[10vh] space-y-20"
+            className="px-6 md:px-12 pt-[30vh] pb-[10vh] space-y-8"
           >
             {projects.map((project: any, i: number) => (
               <motion.div
@@ -217,9 +217,9 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
               >
                 <Link
                   href={`/work/${project.slug}`}
-                  className="block p-6 bg-white rounded-3xl border border-[#ebebeb] hover:border-[#111] hover:shadow-2xl transition-all duration-500 group"
+                  className="block p-4 bg-white rounded-md border border-[#ebebeb] hover:border-[#111] hover:shadow-2xl transition-all duration-500 group"
                 >
-                  <div className="img-container aspect-video rounded-2xl overflow-hidden mb-8">
+                  <div className="img-container aspect-video rounded-sm overflow-hidden mb-2">
                     <img
                       src={project.imageUrl || 'https://placehold.co/800x450/f5f5f5/999999?text=—'}
                       alt={project.title}
@@ -227,7 +227,7 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
                     />
                   </div>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="label text-[#bbb]">
                         {String(i + 1).padStart(2, '0')}
@@ -254,7 +254,7 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
                       </div>
                     )}
                     
-                    <div className="pt-4 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
+                    <div className="pt-2 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
                       <span className="text-[10px] font-mono font-medium uppercase tracking-[0.2em]">Full Case Study</span>
                       <div className="w-12 h-px bg-black origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 delay-100" />
                     </div>
