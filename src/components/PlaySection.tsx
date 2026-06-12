@@ -6,6 +6,7 @@ import { askAI } from '@/actions/ai'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
+import { SuikaGame } from './SuikaGame'
 
 export const PlaySection = () => {
   const [query, setQuery] = useState('')
@@ -70,18 +71,9 @@ export const PlaySection = () => {
   return (
     <div className="flex flex-col md:flex-row h-[600px] md:h-[700px] bg-white border border-[#ebebeb] rounded-sm overflow-hidden">
       {/* ── Kolom Kiri: Mini Game / Omikuji (60%) ── */}
-      <div className="flex-1 md:flex-[0.6] border-b md:border-b-0 md:border-r border-gray-100 flex flex-col items-center justify-center p-8 bg-[#fafafa] relative min-h-[300px]">
-        <div className="text-center space-y-6">
-          <div className="w-24 h-24 bg-white border border-gray-200 rounded-3xl flex items-center justify-center mx-auto shadow-sm">
-            <Sparkles className="text-gray-300" size={40} />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-2xl font-serif text-black">Omikuji Game</h2>
-            <p className="text-[10px] text-gray-400 font-mono uppercase tracking-[0.3em]">Placeholder for your 3D/2D Game</p>
-          </div>
-          <button className="px-10 py-4 bg-black text-white text-[10px] tracking-[0.4em] uppercase font-mono hover:bg-gray-800 transition-all hover:scale-105 active:scale-95">
-            Draw Fortune
-          </button>
+      <div className="flex-1 md:flex-[0.6] border-b md:border-b-0 md:border-r border-[#ebebeb] flex flex-col items-center justify-center p-4 md:p-8 bg-[#fafafa] relative min-h-[400px]">
+        <div className="w-full h-full max-h-[600px] flex items-center justify-center overflow-hidden">
+          <SuikaGame />
         </div>
       </div>
 

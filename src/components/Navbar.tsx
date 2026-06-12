@@ -1,17 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const navItems = [
-  { id: 'hero', label: 'Home' },
-  { id: 'about', label: 'About' },
-  { id: 'work', label: 'Work' },
-  { id: 'archives', label: 'Archives' },
-  { id: 'play', label: '✤' },
+  { id: 'hero', label: 'Home', chapter: '01' },
+  { id: 'about', label: 'About', chapter: '02' },
+  { id: 'work', label: 'Work', chapter: '03' },
+  { id: 'archives', label: 'Archives', chapter: '04' },
+  { id: 'play', label: '✤', chapter: '05' },
 ];
 
 export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logoImage?: string | null }) => {
   const [activeSection, setActiveSection] = useState('hero');
+  const { scrollYProgress } = useScroll();
+  
+  // Desktop sidebar border opacity based on scroll
+  const borderOpacity = useTransform(scrollYProgress, [0, 0.05], [0, 1]);
 
   // Scroll spy using IntersectionObserver
   useEffect(() => {
@@ -122,7 +127,10 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
   return (
     <>
       {/* ── Desktop Sidebar Nav ── */}
-      <nav className="fixed left-0 top-0 bottom-0 w-16 hidden md:flex flex-col items-center justify-between py-10 bg-white border-r border-[#ebebeb] z-50">
+      <motion.nav 
+        className="fixed left-0 top-0 bottom-0 w-16 hidden md:flex flex-col items-center justify-between py-10 bg-white/95 backdrop-blur-sm border-r border-[#ebebeb] z-50"
+        style={{ borderRightColor: useTransform(borderOpacity, v => `rgba(235,235,235,${v})`) }}
+      >
 
         {/* Logo - scroll to top */}
         <button onClick={() => scrollTo('hero')} className="transition-transform hover:scale-105 active:scale-95 cursor-pointer">
@@ -137,44 +145,78 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
               <button
                 key={item.id}
                 onClick={() => scrollTo(item.id)}
-                className="group flex flex-col items-center gap-1.5 cursor-pointer"
+                className="group flex flex-col items-center gap-1.5 cursor-pointer relative"
               >
-                {/* Active dot */}
-                <div className={`w-px h-3 transition-all duration-500 ${active ? 'bg-[#111]' : 'bg-transparent'}`} />
-                <span
-                  className={`text-[9px] tracking-[0.3em] [writing-mode:vertical-lr] rotate-180 transition-colors duration-300 uppercase font-mono ${
+                {/* Active indicator — animated line */}
+                <motion.div 
+                  className="w-px bg-[#111]"
+                  animate={{ height: active ? 12 : 0, opacity: active ? 1 : 0 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                />
+                
+                {/* Chapter number — appears on active */}
+                <motion.span
+                  animate={{ opacity: active ? 0.4 : 0, height: active ? 'auto' : 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="text-[7px] font-mono tracking-[0.3em] text-[#999] overflow-hidden"
+                >
+                  {item.chapter}
+                </motion.span>
+
+                {/* Label with letter-spacing hover */}
+                <motion.span
+                  animate={{
+                    letterSpacing: active ? '0.4em' : '0.3em',
+                  }}
+                  whileHover={{
+                    letterSpacing: '0.45em',
+                  }}
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className={`text-[9px] [writing-mode:vertical-lr] rotate-180 transition-colors duration-300 uppercase font-mono ${
                     active ? 'text-[#111] font-medium' : 'text-[#ccc] group-hover:text-[#111]'
                   }`}
                 >
                   {item.label}
-                </span>
+                </motion.span>
               </button>
             );
           })}
         </div>
 
         <div className="h-10" />
-      </nav>
+      </motion.nav>
 
       {/* ── Mobile Top Bar ── */}
-      <nav className="fixed top-0 left-0 right-0 h-12 bg-white/90 backdrop-blur-sm border-b border-[#ebebeb] flex md:hidden items-center justify-between px-6 z-50">
+      <motion.nav 
+        className="fixed top-0 left-0 right-0 h-12 bg-white/90 backdrop-blur-sm border-b border-[#ebebeb] flex md:hidden items-center justify-between px-6 z-50"
+      >
         <button onClick={() => scrollTo('hero')} className="shrink-0 cursor-pointer">
           {mobileLogoContent}
         </button>
         <div className="flex gap-6 overflow-x-auto no-scrollbar py-2 ml-4">
           {navItems.map((item) => (
-<button
+            <button
               key={item.id}
               onClick={() => scrollTo(item.id)}
-              className={`text-[9px] tracking-widest font-mono transition-colors shrink-0 ${
-                activeSection === item.id ? 'text-[#111]' : 'text-[#ccc]'
-              }`}
+              className="relative shrink-0 cursor-pointer"
             >
-              {item.label}
+              <span className={`text-[9px] tracking-widest font-mono transition-colors ${
+                activeSection === item.id ? 'text-[#111]' : 'text-[#ccc]'
+              }`}>
+                {item.label}
+              </span>
+              {/* Mobile active underline */}
+              {activeSection === item.id && (
+                <motion.div
+                  layoutId="mobile-nav-underline"
+                  className="absolute -bottom-1 left-0 right-0 h-px bg-[#111]"
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+              )}
             </button>
           ))}
         </div>
-      </nav>
+      </motion.nav>
     </>
   );
 };

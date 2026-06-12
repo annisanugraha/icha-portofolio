@@ -7,6 +7,7 @@ import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { IntroSequence } from "@/components/animations/IntroSequence";
 import { GrainOverlay } from "@/components/GrainOverlay";
 import { ScrollChapterIndicator } from "@/components/ScrollChapterIndicator";
+import { SmoothCursor } from "@/components/SmoothCursor";
 
 interface PublicLayoutClientProps {
   profile: any;
@@ -25,6 +26,7 @@ export function PublicLayoutClient({ profile, children }: PublicLayoutClientProp
           <AnimatedBackground />
           <GrainOverlay />
           <ScrollChapterIndicator />
+          <SmoothCursor />
           <Navbar logoText={profile?.logoText} logoImage={profile?.logoImage} />
           {/* Padding md:pl-16 untuk memberikan ruang bagi sidebar desktop */}
           <div className="md:pl-16 flex flex-col min-h-screen">

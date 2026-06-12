@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, animate as motionAnimate, MotionValue } from 'framer-motion';
 
 interface IntroSequenceProps {
@@ -10,8 +10,8 @@ interface IntroSequenceProps {
 // CINEMATIC TAPE INTRO TIMELINE:
 // Stage 0 (0–2.5s):   Diagonal tapes sweep in from left/right, stamping text
 // Stage 1 (2.5–4.2s): Tapes hold — name punches through the gap
-// Stage 2 (4.2–5.5s): Everything tears apart — tapes fly off screen
-// Stage 3 (5.5–6.1s): Flash to white → complete
+// Stage 2 (4.2–5.5s): Everything tears apart — tapes fly off (with motion blur)
+// Stage 3 (5.5–6.5s): Dark → White gradient fade → seamless into portfolio
 
 const TAPE_TEXTS = [
   'ANNISA NUGRAHA — PORTFOLIO — ANNISA NUGRAHA — PORTFOLIO — ',
@@ -61,8 +61,8 @@ function ScrollingTape({ text, rotate, yPct, dir, delay, width, isExiting }: Scr
         initial={{ x: dir > 0 ? '-100%' : '100%', opacity: 0 }}
         animate={
           isExiting
-            ? { x: dir > 0 ? '100%' : '-100%', opacity: 0, transition: { duration: 0.5, ease: [0.4, 0, 1, 1] } }
-            : { x: '0%', opacity: 1, transition: { duration: 0.65, delay, ease: [0.16, 1, 0.3, 1] } }
+            ? { x: dir > 0 ? '100%' : '-100%', opacity: 0, filter: 'blur(8px)', transition: { duration: 0.6, ease: [0.4, 0, 1, 1] } }
+            : { x: '0%', opacity: 1, filter: 'blur(0px)', transition: { duration: 0.65, delay, ease: [0.16, 1, 0.3, 1] } }
         }
       >
         {/* Tape body */}
@@ -120,15 +120,17 @@ function ScrollingTape({ text, rotate, yPct, dir, delay, width, isExiting }: Scr
 export function IntroSequence({ onComplete }: IntroSequenceProps) {
   const [stage, setStage] = useState<0 | 1 | 2 | 3>(0);
   const [isVisible, setIsVisible] = useState(true);
-  const [flashWhite, setFlashWhite] = useState(false);
+  const [bgPhase, setBgPhase] = useState<'dark' | 'lighten' | 'white'>('dark');
   const progressValue = useMotionValue(0);
   const progressScaleX = useTransform(progressValue, [0, 100], [0, 1]);
+
+  const stableOnComplete = useCallback(onComplete, [onComplete]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const hasSeenIntro = sessionStorage.getItem('icha-intro-seen');
       if (hasSeenIntro) {
-        onComplete();
+        stableOnComplete();
         return;
       }
     }
@@ -137,15 +139,18 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
     const controls = motionAnimate(progressValue, 100, { duration: 2.2, ease: 'easeInOut' });
 
     const t1 = setTimeout(() => setStage(1), 2500);   // name reveal through tape gap
-    const t2 = setTimeout(() => setStage(2), 4200);   // tapes tear away
+    const t2 = setTimeout(() => setStage(2), 4200);   // tapes tear away with motion blur
     const t3 = setTimeout(() => {
-      setFlashWhite(true);                             // flash to white
-    }, 5200);
+      setBgPhase('lighten');                            // dark → gray transition
+    }, 4800);
     const t4 = setTimeout(() => {
+      setBgPhase('white');                              // gray → white flash (matches portfolio bg)
+    }, 5400);
+    const t5 = setTimeout(() => {
       sessionStorage.setItem('icha-intro-seen', 'true');
       setIsVisible(false);
-      setTimeout(onComplete, 300);
-    }, 5800);
+      setTimeout(stableOnComplete, 300);
+    }, 6100);
 
     return () => {
       controls.stop?.();
@@ -153,8 +158,9 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
       clearTimeout(t2);
       clearTimeout(t3);
       clearTimeout(t4);
+      clearTimeout(t5);
     };
-  }, [onComplete, progressValue]);
+  }, [stableOnComplete, progressValue]);
 
   const handleSkip = () => {
     sessionStorage.setItem('icha-intro-seen', 'true');
@@ -168,21 +174,23 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 1 }}
+          initial={{ opacity: 1, backgroundColor: '#0a0a0a' }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
           onClick={handleSkip}
           style={{
             position: 'fixed',
             inset: 0,
             zIndex: 9999,
-            backgroundColor: '#0a0a0a',
             overflow: 'hidden',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
+          animate={{
+            backgroundColor: bgPhase === 'dark' ? '#0a0a0a' : bgPhase === 'lighten' ? '#333333' : '#ffffff',
+          }}
+          transition={{ duration: bgPhase === 'white' ? 0.7 : 0.5, ease: [0.4, 0, 0.2, 1] }}
         >
           {/* === BACKGROUND GRID === */}
           <div
@@ -405,19 +413,18 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
             </AnimatePresence>
           </div>
 
-          {/* === CINEMATIC FADE OUT (dark → seamless into portfolio) === */}
+          {/* === CINEMATIC FADE OUT (dark → white, seamless into portfolio) === */}
           <AnimatePresence>
-            {flashWhite && (
+            {bgPhase === 'white' && (
               <motion.div
                 key="fadeout"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.9, ease: [0.4, 0, 0.6, 1] }}
+                transition={{ duration: 0.7, ease: [0.4, 0, 0.6, 1] }}
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  // Fade to the same dark as the portfolio bg — no eye-shock
-                  background: '#0a0a0a',
+                  background: '#ffffff',
                   zIndex: 100,
                 }}
               />

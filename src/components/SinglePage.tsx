@@ -1,9 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Bot, Sparkles, Send, User, Loader2, RotateCcw } from 'lucide-react';
+import { Bot, Sparkles, Send, User, Loader2, RotateCcw, ChevronDown } from 'lucide-react';
 import { askAI } from '@/actions/ai';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -11,6 +11,7 @@ import remarkBreaks from 'remark-breaks';
 import { PageSectionHeader } from './PageSectionHeader';
 import { CertificateGrid } from './CertificateGrid';
 import { WorkAndSkills } from './WorkAndSkills';
+import { SuikaGame } from './SuikaGame';
 
 interface SinglePageProps {
   profile: any;
@@ -19,7 +20,50 @@ interface SinglePageProps {
   experiences: any[];
 }
 
+// ── Reusable Section Transition Line ──
+function SectionTransition() {
+  return (
+    <motion.div
+      initial={{ scaleX: 0 }}
+      whileInView={{ scaleX: 1 }}
+      viewport={{ once: false, margin: '-10%' }}
+      transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+      className="h-px bg-gradient-to-r from-transparent via-[#111] to-transparent origin-center"
+    />
+  );
+}
+
+// ── Chapter Label ──
+function ChapterLabel({ number, title }: { number: string; title: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: false, margin: '-10%' }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="flex items-center gap-3 mb-8"
+    >
+      <span className="chapter-label">CH.{number}</span>
+      <div className="w-8 h-px bg-[#ddd]" />
+      <span className="chapter-label">{title}</span>
+    </motion.div>
+  );
+}
+
 export function SinglePage({ profile, projects, certificates, experiences }: SinglePageProps) {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: heroScrollProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+
+  const heroTitleY = useTransform(heroScrollProgress, [0, 1], [0, -100]);
+  const heroSubtitleY = useTransform(heroScrollProgress, [0, 1], [0, -50]);
+  const heroOpacity = useTransform(heroScrollProgress, [0, 0.5], [1, 0]);
+
+  const portraitRef = useRef<HTMLDivElement>(null);
+  const isPortraitInView = useInView(portraitRef, { once: false, margin: "-10%", amount: 0.5 });
+
   // Handle hash-based scroll on mount
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
@@ -40,86 +84,177 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
       {/* ── Content ── */}
       <main className="min-h-screen bg-white">
         <div>
-          {/* ── Hero ── */}
+          {/* ══════════════════════════════════════════════════
+              CHAPTER 1: HERO — First Impression
+              ══════════════════════════════════════════════════ */}
           <section
+            ref={heroRef}
             id="hero"
-            className="min-h-screen flex flex-col justify-center md:pt-0 pt-16"
+            className="min-h-screen flex flex-col justify-center md:pt-0 pt-16 relative overflow-hidden"
           >
             <div className="px-6 md:px-12">
-              <motion.div
+              {/* Chapter label */}
+              <motion.span
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1.2 }}
-                className="space-y-8 max-w-2xl"
+                animate={{ opacity: 0.4 }}
+                transition={{ delay: 0.5, duration: 1 }}
+                className="chapter-label block mb-6"
               >
-                <span className="label">
-                  {profile?.heroRole || 'Software Engineer'}
-                </span>
-                <h1 className="leading-[1.0] whitespace-pre-line">
+                CH.01 — FIRST IMPRESSION
+              </motion.span>
+
+              <motion.div style={{ y: heroTitleY, opacity: heroOpacity }} className="space-y-8 max-w-2xl">
+                {/* Role label with line draw */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <span className="label">
+                    {profile?.heroRole || 'Software Engineer'}
+                  </span>
+                </motion.div>
+
+                {/* Title with staggered word reveal */}
+                <motion.h1
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="leading-[1.0] whitespace-pre-line"
+                >
                   {profile?.heroTitle || 'Building things that matter.'}
-                </h1>
-                <div className="flex items-center gap-4 pt-2">
-                  <div className="w-6 h-px bg-[#111]" />
+                </motion.h1>
+
+                {/* Subtitle with delayed entrance */}
+                <motion.div
+                  style={{ y: heroSubtitleY }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex items-center gap-4 pt-2"
+                >
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.6, delay: 1, ease: [0.16, 1, 0.3, 1] }}
+                    className="w-6 h-px bg-[#111] origin-left"
+                  />
                   <p className="text-xs text-[#999] tracking-wide">
-                    {profile?.heroSubtitle || 'Engineering& minimal design.'}
+                    {profile?.heroSubtitle || 'Engineering & minimal design.'}
                   </p>
-                </div>
+                </motion.div>
               </motion.div>
             </div>
+
+            {/* Scroll indicator */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5, duration: 0.8 }}
+              style={{ opacity: heroOpacity }}
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+            >
+              <span className="text-[8px] font-mono tracking-[0.5em] text-[#bbb] uppercase">
+                Scroll to explore
+              </span>
+              <ChevronDown size={14} className="text-[#ccc] scroll-indicator" />
+            </motion.div>
           </section>
 
-          {/* ── About ── */}
+          {/* ══════════════════════════════════════════════════
+              TRANSITION: Hero → About
+              ══════════════════════════════════════════════════ */}
+          <SectionTransition />
+
+          {/* ══════════════════════════════════════════════════
+              CHAPTER 2: ABOUT — Behind The Screen
+              ══════════════════════════════════════════════════ */}
           <section
             id="about"
-            className="min-h-screen flex flex-col justify-center py-24 md:pt-16 border-t border-[#ebebeb]"
+            className="min-h-screen flex flex-col justify-center py-24 md:pt-16"
           >
             <div className="px-6 md:px-12">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
-                className="grid grid-cols-1 md:grid-cols-10 gap-8 md:gap-4 items-center w-full"
-              >
-                {/* Text Content */}
+              <ChapterLabel number="02" title="BEHIND THE SCREEN" />
+
+              <div className="grid grid-cols-1 md:grid-cols-10 gap-8 md:gap-4 items-center w-full">
+                {/* Text Content — Staggered reveal */}
                 <div className="md:col-span-6 space-y-6">
-                  <div className="space-y-2">
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false, margin: '-10%' }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="space-y-2"
+                  >
                     <span className="label">Persona</span>
                     <h2 className="text-4xl md:text-5xl font-serif text-[#111] tracking-tight">
                       Who I Am.
                     </h2>
-                  </div>
+                  </motion.div>
 
                   <div className="space-y-4 max-w-xl">
-                    <p className="text-sm italic text-[#111] border-l border-[#111] pl-5 leading-relaxed">
-                      "{profile?.aboutQuote || 'Crafting digital clarity through intentional code.'}"
-                    </p>
-                    <p className="text-xs text-[#777] leading-relaxed whitespace-pre-line">
+                    {/* Quote with underline draw */}
+                    <motion.p
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: false, margin: '-5%' }}
+                      transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                      className="text-sm italic text-[#111] border-l-2 border-[#111] pl-5 leading-relaxed"
+                    >
+                      &ldquo;{profile?.aboutQuote || 'Crafting digital clarity through intentional code.'}&rdquo;
+                    </motion.p>
+
+                    {/* Bio paragraphs — staggered */}
+                    <motion.p
+                      initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+                      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      viewport={{ once: false, margin: '-5%' }}
+                      transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      className="text-xs text-[#777] leading-relaxed whitespace-pre-line"
+                    >
                       {profile?.aboutBio1}
-                    </p>
-                    <p className="text-xs text-[#777] leading-relaxed whitespace-pre-line">
+                    </motion.p>
+                    <motion.p
+                      initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+                      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      viewport={{ once: false, margin: '-5%' }}
+                      transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                      className="text-xs text-[#777] leading-relaxed whitespace-pre-line"
+                    >
                       {profile?.aboutBio2}
-                    </p>
+                    </motion.p>
                   </div>
                 </div>
 
-                {/* Portrait - Desktop */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1.4, delay: 0.3 }}
-                  className="hidden md:flex md:col-span-4 justify-center md:justify-start"
-                >
-                  <div className="img-container aspect-square w-full max-w-[380px] rounded-sm overflow-hidden">
-                    <img
+                {/* Portrait - Desktop — Curtain reveal */}
+                <div ref={portraitRef} className="hidden md:flex md:col-span-4 justify-center md:justify-start">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isPortraitInView ? 1 : 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="relative aspect-square w-full max-w-[380px] rounded-sm overflow-hidden group"
+                  >
+                    {/* Curtain overlay */}
+                    <motion.div
+                      initial={{ x: 0 }}
+                      animate={{ x: isPortraitInView ? '101%' : 0 }}
+                      transition={{ duration: 1.0, delay: 0.3, ease: [0.76, 0, 0.24, 1] }}
+                      style={{ willChange: 'transform' }}
+                      className="absolute inset-0 bg-[#111] z-10"
+                    />
+                    <motion.img
+                      initial={{ scale: 1.15 }}
+                      animate={{ scale: isPortraitInView ? 1 : 1.15 }}
+                      transition={{ duration: 1.2, delay: 0.3, ease: [0.76, 0, 0.24, 1] }}
                       src={profile?.aboutImage || 'https://placehold.co/600x600/f5f5f5/999999?text=—'}
                       alt="Portrait"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000"
                     />
-                  </div>
-                </motion.div>
-              </motion.div>
+                  </motion.div>
+                </div>
+              </div>
 
-              {/* Timeline */}
+              {/* Timeline — Enhanced with staggered reveals and pulsing dots */}
               {experiences && experiences.length > 0 && (
                 <div className="mt-16 space-y-0">
                   <PageSectionHeader title="Chronology" number="02" />
@@ -129,10 +264,10 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                       return (
                         <motion.div
                           key={exp.id}
-                          initial={{ opacity: 0, y: 15 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true, margin: '-5%' }}
-                          transition={{ duration: 0.8, delay: i * 0.1 }}
+                          initial={{ opacity: 0, y: 25, filter: 'blur(4px)' }}
+                          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                          viewport={{ once: false, margin: '-5%' }}
+                          transition={{ duration: 0.8, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
                           className="flex items-start group"
                         >
                           <div className="hidden md:block w-48 shrink-0 pt-1">
@@ -148,7 +283,12 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                           </div>
 
                           <div className="flex flex-col items-center mr-6 md:mx-10 shrink-0 self-stretch">
-                            <div className="w-2 h-2 rounded-full bg-[#111] group-hover:bg-[#ddd] transition-colors duration-500 mt-[5px]" />
+                            <motion.div
+                              whileInView={{ scale: [0, 1.3, 1] }}
+                              viewport={{ once: false }}
+                              transition={{ duration: 0.5, delay: i * 0.12 + 0.2 }}
+                              className="w-2 h-2 rounded-full bg-[#111] group-hover:bg-[#ddd] transition-colors duration-500 mt-[5px]"
+                            />
                             <div className={`w-[0.5px] bg-[#ebebeb] flex-1 ${isLast ? 'opacity-0' : 'opacity-100'}`} />
                           </div>
 
@@ -177,19 +317,30 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
             </div>
           </section>
 
-          {/* ── Skills + Work (merged, 3-layer sticky) ── */}
-          <section id="work" className="border-t border-[#ebebeb]">
+          {/* ══════════════════════════════════════════════════
+              TRANSITION: About → Work
+              ══════════════════════════════════════════════════ */}
+          <SectionTransition />
+
+          {/* ══════════════════════════════════════════════════
+              CHAPTER 3: WORK — The Craft (light polish only)
+              ══════════════════════════════════════════════════ */}
+          <section id="work">
             <WorkAndSkills projects={projects} />
           </section>
 
+          {/* ══════════════════════════════════════════════════
+              TRANSITION: Work → Archives
+              ══════════════════════════════════════════════════ */}
+          <SectionTransition />
 
-          {/* ── Archives (Certificates) ── */}
+          {/* ══════════════════════════════════════════════════
+              CHAPTER 4: ARCHIVES — The Evidence
+              ══════════════════════════════════════════════════ */}
           {certificates && certificates.length > 0 && (
-            <section
-              id="archives"
-              className="border-t border-[#ebebeb]"
-            >
+            <section id="archives" className="py-24 md:pt-16">
               <div className="px-6 md:px-12">
+                <ChapterLabel number="04" title="THE EVIDENCE" />
                 <PageSectionHeader title="Archives" number="04" />
                 <div className="pt-6">
                   <CertificateGrid certificates={certificates} />
@@ -198,26 +349,116 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
             </section>
           )}
 
-          {/* ── Play (AI Chat) ── */}
+          {/* ══════════════════════════════════════════════════
+              TRANSITION: Archives → Play
+              ══════════════════════════════════════════════════ */}
+          <SectionTransition />
+
+          {/* ══════════════════════════════════════════════════
+              CHAPTER 5: PLAY — Let's Have Fun
+              ══════════════════════════════════════════════════ */}
           <section
             id="play"
-            className="py-24 md:pt-16 border-t border-[#ebebeb]"
+            className="py-24 md:pt-16"
           >
             <div className="px-6 md:px-12">
+              <ChapterLabel number="05" title="LET'S HAVE FUN" />
               <PageSectionHeader title="Play" number="05" />
-              <PlaySection />
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, margin: '-5%' }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <PlaySection />
+              </motion.div>
             </div>
           </section>
 
-          {/* ── Let's Talk ── */}
-          <section id="contact" className="py-24 border-t border-[#ebebeb]">
-            <div className="px-6 md:px-12 space-y-4 max-w-lg">
-              <h2 className="text-6xl md:text-8xl font-serif text-black leading-none">
-                Let's talk.
-              </h2>
-              <p className="text-base text-gray-400 font-light italic">
-                Available for new opportunities.
-              </p>
+          {/* ══════════════════════════════════════════════════
+              TRANSITION: Play → Contact
+              ══════════════════════════════════════════════════ */}
+          <SectionTransition />
+
+          {/* ══════════════════════════════════════════════════
+              CHAPTER 6: CONTACT — Let's Talk
+              ══════════════════════════════════════════════════ */}
+          <section id="contact" className="py-24 min-h-[60vh] flex flex-col justify-center relative">
+            <div className="px-6 md:px-12">
+              <ChapterLabel number="06" title="LET'S TALK" />
+
+              <div className="space-y-6 max-w-lg">
+                {/* Scale-from-huge entrance */}
+                <motion.h2
+                  initial={{ opacity: 0, scale: 1.5, y: 30, filter: 'blur(8px)' }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
+                  viewport={{ once: false, margin: '-10%' }}
+                  transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-6xl md:text-8xl font-serif text-black leading-none"
+                >
+                  Let&apos;s talk.
+                </motion.h2>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, margin: '-5%' }}
+                  transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-base text-gray-400 font-light italic"
+                >
+                  Available for new opportunities.
+                </motion.p>
+
+                {/* CTA with pulse glow */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, margin: '-5%' }}
+                  transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex items-center gap-6 pt-4"
+                >
+                  {profile?.emailAddress && (
+                    <a
+                      href={`https://mail.google.com/mail/?view=cm&fs=1&to=${profile.emailAddress}&su=${encodeURIComponent(profile.emailSubject || '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center gap-3 px-8 py-4 bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase font-mono hover:bg-[#333] transition-all duration-500 pulse-glow"
+                    >
+                      <span>Say Hello</span>
+                      <motion.span
+                        animate={{ x: [0, 4, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                      >
+                        →
+                      </motion.span>
+                    </a>
+                  )}
+                  {profile?.linkedinUrl && (
+                    <a
+                      href={profile.linkedinUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] font-mono tracking-[0.3em] text-[#999] hover:text-[#111] transition-colors duration-300 uppercase link-underline"
+                    >
+                      LinkedIn
+                    </a>
+                  )}
+                </motion.div>
+              </div>
+
+              {/* Spotlight gradient */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: false }}
+                  transition={{ duration: 2, delay: 0.5 }}
+                  className="absolute -bottom-1/2 left-1/4 w-[600px] h-[600px] rounded-full"
+                  style={{
+                    background: 'radial-gradient(circle, rgba(0,0,0,0.03) 0%, transparent 70%)',
+                  }}
+                />
+              </div>
             </div>
           </section>
         </div>
@@ -281,21 +522,10 @@ function PlaySection() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0 md:border border-[#ebebeb] md:rounded-sm overflow-hidden">
-      {/* ── Left: Omikuji Placeholder ── */}
-      <div className="bg-[#fafafa] flex flex-col items-center justify-center p-12 min-h-[300px]">
-        <div className="text-center space-y-6">
-          <div className="w-24 h-24 bg-white border border-gray-200 rounded-3xl flex items-center justify-center mx-auto shadow-sm">
-            <Sparkles className="text-gray-300" size={40} />
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-2xl font-serif text-black">Omikuji</h3>
-            <p className="text-[10px] text-gray-400 font-mono uppercase tracking-[0.3em]">
-              Fortune teller coming soon
-            </p>
-          </div>
-          <button className="px-10 py-4 bg-black text-white text-[10px] tracking-[0.4em] uppercase font-mono hover:bg-gray-800 transition-all hover:scale-105 active:scale-95">
-            Draw Fortune
-          </button>
+      {/* ── Left: Game ── */}
+      <div className="bg-[#fafafa] flex flex-col items-center justify-center p-4 md:p-8 min-h-[400px]">
+        <div className="w-full h-full max-h-[600px] flex items-center justify-center overflow-hidden">
+          <SuikaGame />
         </div>
       </div>
 
@@ -308,7 +538,7 @@ function PlaySection() {
             </div>
             <div>
               <h3 className="font-medium text-black text-sm tracking-tight">
-                Icha's Assistant
+                Icha&apos;s Assistant
               </h3>
             </div>
           </div>
@@ -328,13 +558,19 @@ function PlaySection() {
             <div className="h-full flex flex-col items-center justify-center text-center max-w-xs mx-auto space-y-4">
               <Bot size={32} className="text-gray-200" />
               <p className="text-xs text-gray-500 leading-relaxed font-light italic">
-                "Hi! I'm Icha's Digital Assistant. Feel free to ask about my work, skills, or even my cats."
+                &ldquo;Hi! I&apos;m Icha&apos;s Digital Assistant. Feel free to ask about my work, skills, or even my cats.&rdquo;
               </p>
             </div>
           )}
 
           {messages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
               <div className={`max-w-[90%] flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                 <div className={`p-2 rounded-lg h-fit shrink-0 ${msg.role === 'user' ? 'bg-gray-50' : 'bg-black text-white'}`}>
                   {msg.role === 'user' ? <User size={12} /> : <Bot size={12} />}
@@ -369,15 +605,19 @@ function PlaySection() {
                   )}
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
 
           {isLoading && (
-            <div className="flex justify-start">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-start"
+            >
               <div className="bg-white border border-gray-100 p-3 rounded-2xl rounded-tl-none shadow-sm">
                 <Loader2 size={16} className="animate-spin text-gray-300" />
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
 

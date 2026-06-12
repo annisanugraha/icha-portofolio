@@ -78,7 +78,7 @@ export function SkillsShowcase() {
       <motion.div
         initial={{ opacity: 0, x: -30 }}
         whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
+        viewport={{ once: false }}
         transition={{ duration: 0.8 }}
         className="md:col-span-4 sticky top-24"
       >
