@@ -55,10 +55,8 @@ export function PlaySection() {
   };
 
   const clearHistory = () => {
-    if (confirm('Clear chat history?')) {
-      setMessages([]);
-      sessionStorage.removeItem('icha-ai-history');
-    }
+    setMessages([]);
+    sessionStorage.removeItem('icha-ai-history');
   };
 
   return (
@@ -74,12 +72,9 @@ export function PlaySection() {
       <div className="flex flex-col bg-white h-full min-h-[400px] md:min-h-0">
         <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-black text-white rounded-xl">
-              <Bot size={16} />
-            </div>
             <div>
               <h3 className="font-medium text-black text-sm tracking-tight">
-                Icha&apos;s Assistant
+                Ask me a secret
               </h3>
             </div>
           </div>
@@ -97,9 +92,8 @@ export function PlaySection() {
         <div ref={chatRef} className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-white">
           {messages.length === 0 && (
             <div className="h-full flex flex-col items-center justify-center text-center max-w-xs mx-auto space-y-4">
-              <Bot size={32} className="text-gray-200" />
               <p className="text-xs text-gray-500 leading-relaxed font-light italic">
-                &ldquo;Hi! I&apos;m Icha&apos;s Digital Assistant. Feel free to ask about my work, skills, or even my cats.&rdquo;
+                &ldquo;Hi! I&apos;m TheAI, Icha&apos;s digital companion. Feel free to ask about her work, skills, or projects.&rdquo;
               </p>
             </div>
           )}
@@ -114,7 +108,7 @@ export function PlaySection() {
             >
               <div className={`max-w-[90%] flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                 <div className={`p-2 rounded-lg h-fit shrink-0 ${msg.role === 'user' ? 'bg-gray-50' : 'bg-black text-white'}`}>
-                  {msg.role === 'user' ? <User size={12} /> : <Bot size={12} />}
+                  {msg.role === 'user' ? <User size={12} /> : <span className="text-[12px] leading-none text-white flex items-center justify-center w-[12px] h-[12px]">☘</span>}
                 </div>
                 <div className={`p-4 rounded-2xl text-[13px] leading-relaxed ${msg.role === 'user'
                   ? 'bg-gray-50 text-gray-700 rounded-tr-none'

@@ -101,15 +101,16 @@ export const SuikaGame = () => {
       if (!entries.length) return;
       const { width, height } = entries[0].contentRect;
       if (width === 0 || height === 0) return;
-      
+
       gameWidthRef.current = width;
       gameHeightRef.current = height;
-      
+
       render.options.width = width;
       render.options.height = height;
-      render.canvas.width = width * render.options.pixelRatio;
-      render.canvas.height = height * render.options.pixelRatio;
-      
+      const pixelRatio = render.options.pixelRatio || (typeof window !== 'undefined' ? window.devicePixelRatio : 1);
+      render.canvas.width = width * pixelRatio;
+      render.canvas.height = height * pixelRatio;
+
       Matter.Body.setPosition(ground, { x: width / 2, y: height - 10 });
       Matter.Body.setPosition(leftWall, { x: -30, y: height / 2 });
       Matter.Body.setPosition(rightWall, { x: width + 30, y: height / 2 });
@@ -369,31 +370,31 @@ export const SuikaGame = () => {
 
       {/* Game Container Wrapper - completely fluid */}
       <div className="w-full flex-1 min-h-0 flex items-center justify-center relative overflow-hidden">
-        <div 
+        <div
           className="relative bg-white/60 backdrop-blur-md border border-white/80 rounded-[2rem] overflow-hidden shadow-[inset_0_2px_20px_rgba(255,255,255,0.4),0_8px_32px_rgba(0,0,0,0.03)] w-full h-full"
         >
-          <div 
-            ref={sceneRef} 
+          <div
+            ref={sceneRef}
             onMouseMove={handleMouseMove}
             onClick={handleDrop}
             className={`absolute inset-0 [&>canvas]:!w-full [&>canvas]:!h-full cursor-crosshair transition-opacity duration-300 ${gameOver ? 'opacity-30' : 'opacity-100'}`}
           />
 
-        {/* Game Over Overlay */}
-        {gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/50 backdrop-blur-md z-10">
-            <h3 className="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">Game Over</h3>
-            <p className="text-[11px] font-mono text-gray-600 uppercase tracking-[0.2em] mb-8 font-medium">
-              Final Score: {score}
-            </p>
-            <button
-              onClick={restartGame}
-              className="px-8 py-3 bg-gradient-to-tr from-gray-900 to-black text-white text-[11px] tracking-[0.2em] uppercase font-mono hover:scale-105 active:scale-95 transition-all rounded-full shadow-lg shadow-black/10"
-            >
-              Play Again
-            </button>
-          </div>
-        )}
+          {/* Game Over Overlay */}
+          {gameOver && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/50 backdrop-blur-md z-10">
+              <h3 className="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">Game Over</h3>
+              <p className="text-[11px] font-mono text-gray-600 uppercase tracking-[0.2em] mb-8 font-medium">
+                Final Score: {score}
+              </p>
+              <button
+                onClick={restartGame}
+                className="px-8 py-3 bg-gradient-to-tr from-gray-900 to-black text-white text-[11px] tracking-[0.2em] uppercase font-mono hover:scale-105 active:scale-95 transition-all rounded-full shadow-lg shadow-black/10"
+              >
+                Play Again
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
