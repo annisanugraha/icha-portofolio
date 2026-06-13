@@ -60,14 +60,20 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
     if (hash && ['hero', 'about', 'work', 'archives', 'play', 'contact'].includes(hash)) {
-      setTimeout(() => {
+      const scrollToHash = () => {
         const el = document.getElementById(hash);
         if (el) {
           const offset = window.innerWidth < 768 ? 48 : 0;
           const top = el.getBoundingClientRect().top + window.scrollY - offset;
-          window.scrollTo({ top, behavior: 'smooth' });
+          window.scrollTo({ top, behavior: 'auto' });
         }
-      }, 100);
+      };
+
+      // Try scrolling immediately, then retry as images and dynamic content (like Canvas) load
+      scrollToHash();
+      setTimeout(scrollToHash, 100);
+      setTimeout(scrollToHash, 500);
+      setTimeout(scrollToHash, 1500);
     }
   }, []);
 
@@ -378,9 +384,9 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                     whileInView={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
                     viewport={{ once: false, margin: '-10%' }}
                     transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-6xl md:text-8xl font-serif text-black leading-none"
+                    className="text-5xl md:text-7xl font-serif text-black leading-none uppercase tracking-tight"
                   >
-                    Let&apos;s talk.
+                    YOU MADE IT.
                   </motion.h2>
 
                   <motion.p
@@ -388,9 +394,9 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: false, margin: '-5%' }}
                     transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-base text-gray-400 font-light italic"
+                    className="text-base text-gray-500 font-light"
                   >
-                    Available for new opportunities.
+                    Thanks for scrolling all the way down! Since you&apos;re already here, we should definitely talk, right?
                   </motion.p>
 
                   {/* CTA with pulse glow */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
@@ -17,10 +17,25 @@ interface PublicLayoutClientProps {
 export function PublicLayoutClient({ profile, children }: PublicLayoutClientProps) {
   const [showIntro, setShowIntro] = useState(true);
 
+  useEffect(() => {
+    const hash = window.location.hash;
+    const hasSeenIntro = sessionStorage.getItem('icha-has-seen-intro');
+    
+    // Skip intro if there is a hash link (e.g. #play) or already seen in this session
+    if (hash || hasSeenIntro) {
+      setShowIntro(false);
+    }
+  }, []);
+
+  const handleIntroComplete = () => {
+    setShowIntro(false);
+    sessionStorage.setItem('icha-has-seen-intro', 'true');
+  };
+
   return (
     <>
       {showIntro ? (
-        <IntroSequence onComplete={() => setShowIntro(false)} />
+        <IntroSequence onComplete={handleIntroComplete} />
       ) : (
         <>
           <AnimatedBackground />
