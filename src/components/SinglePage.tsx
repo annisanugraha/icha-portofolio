@@ -62,7 +62,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
   const heroOpacity = useTransform(heroScrollProgress, [0, 0.5], [1, 0]);
 
   const portraitRef = useRef<HTMLDivElement>(null);
-  const isPortraitInView = useInView(portraitRef, { once: false, margin: "-10%", amount: 0.5 });
+  const isPortraitInView = useInView(portraitRef, { once: false, margin: "-10%", amount: 0.3 });
 
   // Handle hash-based scroll on mount
   useEffect(() => {
@@ -164,15 +164,15 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
           {/* ══════════════════════════════════════════════════
               TRANSITION: Hero → About
               ══════════════════════════════════════════════════ */}
-          <SectionTransition />
+          <div id="about">
+            <SectionTransition />
 
-          {/* ══════════════════════════════════════════════════
-              CHAPTER 2: ABOUT — Behind The Screen
-              ══════════════════════════════════════════════════ */}
-          <section
-            id="about"
-            className="min-h-screen flex flex-col justify-center py-24 md:pt-16"
-          >
+            {/* ══════════════════════════════════════════════════
+                CHAPTER 2: ABOUT — Behind The Screen
+                ══════════════════════════════════════════════════ */}
+            <section
+              className="min-h-screen flex flex-col justify-center py-24 md:pt-16"
+            >
             <div className="px-6 md:px-12">
               <ChapterLabel number="02" title="BEHIND THE SCREEN" />
 
@@ -316,74 +316,79 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
               )}
             </div>
           </section>
+        </div>
 
           {/* ══════════════════════════════════════════════════
               TRANSITION: About → Work
               ══════════════════════════════════════════════════ */}
-          <SectionTransition />
+          <div id="work">
+            <SectionTransition />
 
-          {/* ══════════════════════════════════════════════════
-              CHAPTER 3: WORK — The Craft (light polish only)
-              ══════════════════════════════════════════════════ */}
-          <section id="work">
+            {/* ══════════════════════════════════════════════════
+                CHAPTER 3: WORK — The Craft (light polish only)
+                ══════════════════════════════════════════════════ */}
             <WorkAndSkills projects={projects} />
-          </section>
+          </div>
 
           {/* ══════════════════════════════════════════════════
               TRANSITION: Work → Archives
               ══════════════════════════════════════════════════ */}
-          <SectionTransition />
+          <div id="archives">
+            <SectionTransition />
 
-          {/* ══════════════════════════════════════════════════
-              CHAPTER 4: ARCHIVES — The Evidence
-              ══════════════════════════════════════════════════ */}
-          {certificates && certificates.length > 0 && (
-            <section id="archives" className="py-24 md:pt-16">
-              <div className="px-6 md:px-12">
-                <ChapterLabel number="04" title="THE EVIDENCE" />
-                <PageSectionHeader title="Archives" number="04" />
-                <div className="pt-6">
-                  <CertificateGrid certificates={certificates} />
+            {/* ══════════════════════════════════════════════════
+                CHAPTER 4: ARCHIVES — The Evidence
+                ══════════════════════════════════════════════════ */}
+            {certificates && certificates.length > 0 && (
+              <section className="py-24 md:pt-16">
+                <div className="px-6 md:px-12">
+                  <ChapterLabel number="04" title="THE EVIDENCE" />
+                  <PageSectionHeader title="Archives" number="04" />
+                  <div className="pt-6">
+                    <CertificateGrid certificates={certificates} />
+                  </div>
                 </div>
-              </div>
-            </section>
-          )}
+              </section>
+            )}
+          </div>
 
           {/* ══════════════════════════════════════════════════
               TRANSITION: Archives → Play
               ══════════════════════════════════════════════════ */}
-          <SectionTransition />
+          <div id="play">
+            <SectionTransition />
 
-          {/* ══════════════════════════════════════════════════
-              CHAPTER 5: PLAY — Let's Have Fun
-              ══════════════════════════════════════════════════ */}
-          <section
-            id="play"
-            className="py-24 md:pt-16"
-          >
-            <div className="px-6 md:px-12">
-              <ChapterLabel number="05" title="LET'S HAVE FUN" />
-              <PageSectionHeader title="Play" number="05" />
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: false, margin: '-5%' }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <PlaySection />
-              </motion.div>
-            </div>
-          </section>
+            {/* ══════════════════════════════════════════════════
+                CHAPTER 5: PLAY — Let's Have Fun
+                ══════════════════════════════════════════════════ */}
+            <section
+              className="py-24 md:pt-16"
+            >
+              <div className="px-6 md:px-12">
+                <ChapterLabel number="05" title="LET'S HAVE FUN" />
+                <PageSectionHeader title="Play" number="05" />
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, margin: '-5%' }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <PlaySection />
+                </motion.div>
+              </div>
+            </section>
+          </div>
 
           {/* ══════════════════════════════════════════════════
               TRANSITION: Play → Contact
               ══════════════════════════════════════════════════ */}
-          <SectionTransition />
+          <div id="contact">
+            <SectionTransition />
 
-          {/* ══════════════════════════════════════════════════
-              CHAPTER 6: CONTACT — Let's Talk
-              ══════════════════════════════════════════════════ */}
-          <section id="contact" className="py-24 min-h-[60vh] flex flex-col justify-center relative">
+            {/* ══════════════════════════════════════════════════
+                CHAPTER 6: CONTACT — Let's Talk
+                ══════════════════════════════════════════════════ */}
+            <section className="py-24 min-h-[60vh] flex flex-col justify-center relative">
             <div className="px-6 md:px-12">
               <ChapterLabel number="06" title="LET'S TALK" />
 
@@ -461,6 +466,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
               </div>
             </div>
           </section>
+        </div>
         </div>
       </main>
     </>

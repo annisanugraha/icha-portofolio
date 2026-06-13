@@ -164,7 +164,6 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
   return (
     <section
       ref={sectionRef}
-      id="work"
       className="relative"
       style={{
         height: sectionHeight,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, animate } from 'framer-motion';
 
 const navItems = [
   { id: 'hero', label: 'Home', chapter: '01' },
@@ -24,20 +24,11 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find the entry that's most visible (highest ratio) in the middle zone
-        const visibleEntries = entries.filter(e => e.isIntersecting);
-        if (visibleEntries.length > 0) {
-          // Sort by how close to center of viewport
-          const sorted = visibleEntries.sort((a, b) => {
-            const aRect = a.boundingClientRect;
-            const bRect = b.boundingClientRect;
-            const viewportCenter = window.innerHeight / 2;
-            const aCenter = Math.abs(aRect.top + aRect.height / 2 - viewportCenter);
-            const bCenter = Math.abs(bRect.top + bRect.height / 2 - viewportCenter);
-            return aCenter - bCenter;
-          });
-          setActiveSection(sorted[0].target.id);
-        }
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
       },
       {
         rootMargin: '-40% 0px -40% 0px', // Middle 20% of screen is the trigger zone
@@ -65,28 +56,32 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
   }, []);
 
   const scrollTo = (id: string) => {
-    // Use hash-based navigation for cross-page scrolling
     const hash = `#${id}`;
     const currentHash = window.location.hash;
 
-    // Scroll helper function
-    const doScroll = () => {
-      const el = document.getElementById(id);
-      if (el) {
-        const isMobile = window.innerWidth < 768;
-        const offset = isMobile ? 48 : 0;
-        const top = el.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top, behavior: 'smooth' });
-      }
-    };
-
     if (currentHash !== hash) {
-      // Set hash and scroll with small delay to allow hash to take effect
-      window.location.hash = hash;
-      setTimeout(doScroll, 50);
-    } else {
-      // Already on the right page, just scroll
-      doScroll();
+      window.history.pushState(null, '', hash);
+    }
+
+    const el = document.getElementById(id);
+    if (el) {
+      const isMobile = window.innerWidth < 768;
+      const offset = isMobile ? 48 : 0;
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
+      
+      // Temporarily disable CSS scroll-behavior to prevent conflict with JS animation
+      document.documentElement.style.scrollBehavior = 'auto';
+      
+      // Use framer-motion's animate for reliable long-distance scrolling
+      // (Bypasses native chromium smooth scroll bugs on long pages)
+      animate(window.scrollY, top, {
+        duration: 1.2,
+        ease: [0.16, 1, 0.3, 1],
+        onUpdate: (latest) => window.scrollTo(0, latest),
+        onComplete: () => {
+          document.documentElement.style.scrollBehavior = '';
+        }
+      });
     }
   };
 
