@@ -10,7 +10,7 @@ interface PageSectionHeaderProps {
 
 export const PageSectionHeader = ({ title, number }: PageSectionHeaderProps) => {
   return (
-    <div className="w-full mb-12">
+    <div className="w-full mb-6">
       <div className="flex items-end justify-between mb-5">
         <span className="label text-[#111]">{title}</span>
         {number !== undefined && (

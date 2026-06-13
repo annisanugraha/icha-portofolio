@@ -180,9 +180,6 @@ export function PlaySection() {
               <Send size={18} />
             </button>
           </div>
-          <p className="text-center text-[10px] text-gray-400 mt-4 font-mono tracking-wide">
-            POWERED BY GEMINI 1.5 FLASH
-          </p>
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
  */
 
 const CHAPTERS = [
-  { id: 'hero', label: 'FIRST IMPRESSION', number: '01' },
+  { id: 'hero', label: 'NICE TO MEET YOU', number: '01' },
   { id: 'about', label: 'BEHIND THE SCREEN', number: '02' },
   { id: 'work', label: 'THE CRAFT', number: '03' },
   { id: 'archives', label: 'THE EVIDENCE', number: '04' },

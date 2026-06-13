@@ -14,7 +14,7 @@ export default function AboutContentClient({ profile }: { profile: any }) {
         {/* Text Content */}
         <div className="md:col-span-6 space-y-6">
           <div className="space-y-2">
-            <span className="label">Persona</span>
+            <span className="label">About</span>
             <h1 className="text-4xl md:text-5xl font-serif text-[#111] tracking-tight">Who I Am.</h1>
           </div>
 

@@ -16,7 +16,7 @@ const TIERS = [
   { symbol: '❋', size: 152, color: '#111111', stroke: '#111111', textCol: '#ffffff' }, 
 ]
 
-const GAME_WIDTH = 320;
+const GAME_WIDTH = 400;
 const GAME_HEIGHT = 440;
 
 export const SuikaGame = () => {
@@ -83,7 +83,7 @@ export const SuikaGame = () => {
       render: { fillStyle: '#f0f0f0', strokeStyle: '#e5e5e5', lineWidth: 1 }
     }
     
-    const ground = Bodies.rectangle(GAME_WIDTH / 2, GAME_HEIGHT + 30, GAME_WIDTH + 100, 60, wallOptions)
+    const ground = Bodies.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 10, GAME_WIDTH + 100, 60, wallOptions)
     const leftWall = Bodies.rectangle(-30, GAME_HEIGHT / 2, 60, GAME_HEIGHT + 100, wallOptions)
     const rightWall = Bodies.rectangle(GAME_WIDTH + 30, GAME_HEIGHT / 2, 60, GAME_HEIGHT + 100, wallOptions)
 
@@ -96,7 +96,7 @@ export const SuikaGame = () => {
 
     Events.on(engine, 'collisionStart', (event) => {
       const pairs = event.pairs;
-      const pairsToRemove: Matter.Body[] = [];
+      const bodiesToRemove = new Set<Matter.Body>();
       const pairsToAdd: { x: number, y: number, tier: number }[] = [];
 
       for (let i = 0; i < pairs.length; i++) {
@@ -105,29 +105,34 @@ export const SuikaGame = () => {
 
         if (bodyA.plugin.tier !== undefined && bodyB.plugin.tier !== undefined) {
           if (bodyA.plugin.tier === bodyB.plugin.tier) {
-            const currentTier = bodyA.plugin.tier;
-            if (currentTier < TIERS.length - 1) {
-              pairsToRemove.push(bodyA, bodyB);
-              const midX = (bodyA.position.x + bodyB.position.x) / 2;
-              const midY = (bodyA.position.y + bodyB.position.y) / 2;
-              pairsToAdd.push({ x: midX, y: midY, tier: currentTier + 1 });
-              
-              const points = (currentTier + 1) * 2;
-              scoreRef.current += points;
-              setScore(scoreRef.current);
+            // Prevent multiple merges involving the same body
+            if (!bodiesToRemove.has(bodyA) && !bodiesToRemove.has(bodyB)) {
+              const currentTier = bodyA.plugin.tier;
+              if (currentTier < TIERS.length - 1) {
+                bodiesToRemove.add(bodyA);
+                bodiesToRemove.add(bodyB);
+                
+                const midX = (bodyA.position.x + bodyB.position.x) / 2;
+                const midY = (bodyA.position.y + bodyB.position.y) / 2;
+                pairsToAdd.push({ x: midX, y: midY, tier: currentTier + 1 });
+                
+                // Suika-like scoring formula: Triangular numbers
+                const points = ((currentTier + 1) * (currentTier + 2)) / 2;
+                scoreRef.current += points;
+                setScore(scoreRef.current);
+              }
             }
           }
         }
       }
 
-      if (pairsToRemove.length > 0) {
-        const uniqueToRemove = Array.from(new Set(pairsToRemove));
-        Composite.remove(engine.world, uniqueToRemove);
+      if (bodiesToRemove.size > 0) {
+        Composite.remove(engine.world, Array.from(bodiesToRemove));
 
         pairsToAdd.forEach(p => {
           const newTier = TIERS[p.tier];
           const newBody = Bodies.circle(p.x, p.y, newTier.size, {
-            restitution: 0.1,
+            restitution: 0.2, // slightly bouncy
             friction: 0.1,
             density: 0.002 * (p.tier + 1),
             render: {
@@ -292,7 +297,7 @@ export const SuikaGame = () => {
     if (engineRef.current) {
       Matter.Composite.clear(engineRef.current.world, false);
       const wallOptions = { isStatic: true, render: { fillStyle: '#f0f0f0', strokeStyle: '#e5e5e5', lineWidth: 1 } }
-      const ground = Matter.Bodies.rectangle(GAME_WIDTH / 2, GAME_HEIGHT + 30, GAME_WIDTH + 100, 60, wallOptions)
+      const ground = Matter.Bodies.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 10, GAME_WIDTH + 100, 60, wallOptions)
       const leftWall = Matter.Bodies.rectangle(-30, GAME_HEIGHT / 2, 60, GAME_HEIGHT + 100, wallOptions)
       const rightWall = Matter.Bodies.rectangle(GAME_WIDTH + 30, GAME_HEIGHT / 2, 60, GAME_HEIGHT + 100, wallOptions)
       Matter.Composite.add(engineRef.current.world, [ground, leftWall, rightWall]);
@@ -311,11 +316,10 @@ export const SuikaGame = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-[320px] mx-auto py-2 relative z-10">
+    <div className="flex flex-col items-center w-full max-w-[400px] mx-auto py-2 relative z-10">
       {/* Header Info */}
       <div className="w-full flex justify-between items-end mb-5 px-2">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-900 tracking-tight leading-none m-0 p-0">Merge!</h2>
           <div className="flex items-center gap-2 mt-2.5">
             <span className="text-[10px] text-gray-400 tracking-[0.15em] uppercase font-mono font-medium">
               Next

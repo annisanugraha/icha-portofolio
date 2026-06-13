@@ -183,15 +183,26 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
             transition={{ duration: 0.8 }}
             className="space-y-2 pointer-events-auto"
           >
-            <h2 className="text-5xl md:text-7xl lg:text-8xl font-serif text-black leading-[0.9] tracking-tight">
-              WHAT I
-            </h2>
-            <h2 className="text-5xl md:text-7xl lg:text-8xl font-serif text-black leading-[0.9] tracking-tight">
-              WORK
-            </h2>
-            <h2 className="text-5xl md:text-7xl lg:text-8xl font-serif text-black leading-[0.9] tracking-tight">
-              WITH.
-            </h2>
+            <div className="relative inline-block">
+              {/* Layer 1: Background Blur & Pudar (Di belakang) */}
+              <div 
+                className="absolute -inset-6 bg-white/90 backdrop-blur-sm pointer-events-none"
+                style={{
+                  maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
+                  WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)'
+                }}
+              />
+
+              {/* Layer 2: Teks Utama (Tetap tajam di atas) */}
+              <div className="relative z-10">
+                <h2 className="text-5xl md:text-7xl lg:text-8xl font-serif text-black leading-[0.9] tracking-tight">
+                  LET'S
+                </h2>
+                <h2 className="text-5xl md:text-7xl lg:text-8xl font-serif text-black leading-[0.9] tracking-tight">
+                  TAKE A LOOK
+                </h2>
+              </div>
+            </div>
           </motion.div>
           <div className="mt-8 flex items-center gap-4 pointer-events-auto">
             <div className="w-12 h-px bg-gradient-to-r from-black to-transparent" />
@@ -267,4 +278,3 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
     </section>
   );
 }
-

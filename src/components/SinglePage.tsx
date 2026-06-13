@@ -22,15 +22,7 @@ interface SinglePageProps {
 
 // ── Reusable Section Transition Line ──
 function SectionTransition() {
-  return (
-    <motion.div
-      initial={{ scaleX: 0 }}
-      whileInView={{ scaleX: 1 }}
-      viewport={{ once: false, margin: '-10%' }}
-      transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-      className="h-px bg-gradient-to-r from-transparent via-[#111] to-transparent origin-center"
-    />
-  );
+  return null;
 }
 
 // ── Chapter Label ──
@@ -62,7 +54,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
   const heroOpacity = useTransform(heroScrollProgress, [0, 0.5], [1, 0]);
 
   const portraitRef = useRef<HTMLDivElement>(null);
-  const isPortraitInView = useInView(portraitRef, { once: false, margin: "-10%", amount: 0.3 });
+  const isPortraitInView = useInView(portraitRef, { once: false, margin: "0px" });
 
   // Handle hash-based scroll on mount
   useEffect(() => {
@@ -93,15 +85,6 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
             className="min-h-screen flex flex-col justify-center md:pt-0 pt-16 relative overflow-hidden"
           >
             <div className="px-6 md:px-12">
-              {/* Chapter label */}
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.4 }}
-                transition={{ delay: 0.5, duration: 1 }}
-                className="chapter-label block mb-6"
-              >
-                CH.01 — FIRST IMPRESSION
-              </motion.span>
 
               <motion.div style={{ y: heroTitleY, opacity: heroOpacity }} className="space-y-8 max-w-2xl">
                 {/* Role label with line draw */}
@@ -174,8 +157,6 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
               className="min-h-screen flex flex-col justify-center py-24 md:pt-16"
             >
             <div className="px-6 md:px-12">
-              <ChapterLabel number="02" title="BEHIND THE SCREEN" />
-
               <div className="grid grid-cols-1 md:grid-cols-10 gap-8 md:gap-4 items-center w-full">
                 {/* Text Content — Staggered reveal */}
                 <div className="md:col-span-6 space-y-6">
@@ -186,7 +167,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     className="space-y-2"
                   >
-                    <span className="label">Persona</span>
+                    <span className="label">About</span>
                     <h2 className="text-4xl md:text-5xl font-serif text-[#111] tracking-tight">
                       Who I Am.
                     </h2>
@@ -340,9 +321,8 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                 CHAPTER 4: ARCHIVES — The Evidence
                 ══════════════════════════════════════════════════ */}
             {certificates && certificates.length > 0 && (
-              <section className="py-24 md:pt-16">
+              <section className="py-24 md:pt-6">
                 <div className="px-6 md:px-12">
-                  <ChapterLabel number="04" title="THE EVIDENCE" />
                   <PageSectionHeader title="Archives" number="04" />
                   <div className="pt-6">
                     <CertificateGrid certificates={certificates} />
@@ -362,11 +342,10 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                 CHAPTER 5: PLAY — Let's Have Fun
                 ══════════════════════════════════════════════════ */}
             <section
-              className="min-h-screen py-12 flex flex-col justify-center relative"
+              className="min-h-screen py-6 flex flex-col justify-center relative"
             >
               <div className="px-6 md:px-12">
-                <ChapterLabel number="05" title="LET'S HAVE FUN" />
-                <PageSectionHeader title="Play" number="05" />
+                <PageSectionHeader title="LET'S TAKE A BREAK" number="05" />
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -390,8 +369,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                 ══════════════════════════════════════════════════ */}
             <section className="py-24 min-h-[60vh] flex flex-col justify-center relative">
             <div className="px-6 md:px-12">
-              <ChapterLabel number="06" title="LET'S TALK" />
-
+              
               <div className="space-y-6 max-w-lg">
                 {/* Scale-from-huge entrance */}
                 <motion.h2
