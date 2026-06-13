@@ -311,31 +311,31 @@ export const SuikaGame = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-[320px] mx-auto py-4">
+    <div className="flex flex-col items-center w-full max-w-[320px] mx-auto py-2 relative z-10">
       {/* Header Info */}
-      <div className="w-full flex justify-between items-end mb-4 px-1">
+      <div className="w-full flex justify-between items-end mb-5 px-2">
         <div>
-          <h2 className="text-xl md:text-2xl font-serif text-[#111] leading-none m-0 p-0">Merge!</h2>
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-[9px] text-[#999] tracking-[0.2em] uppercase font-mono">
-              Next:
+          <h2 className="text-2xl font-semibold text-gray-900 tracking-tight leading-none m-0 p-0">Merge!</h2>
+          <div className="flex items-center gap-2 mt-2.5">
+            <span className="text-[10px] text-gray-400 tracking-[0.15em] uppercase font-mono font-medium">
+              Next
             </span>
             <div 
-              className="w-6 h-6 rounded-full border border-[#ddd] bg-[#f5f5f5] flex items-center justify-center text-[10px] text-[#111]"
+              className="w-7 h-7 rounded-full border border-white/80 bg-white/60 shadow-sm flex items-center justify-center text-[11px] text-gray-800"
             >
               {TIERS[nextTier]?.symbol}
             </div>
           </div>
         </div>
-        <div className="text-right font-mono flex flex-col justify-end">
-          <p className="text-[10px] text-[#999] tracking-widest uppercase m-0 leading-tight">Score: {score}</p>
-          <p className="text-[10px] text-[#ccc] tracking-widest uppercase m-0 leading-tight">Best: {bestScore}</p>
+        <div className="text-right font-mono flex flex-col justify-end gap-1">
+          <p className="text-[11px] text-gray-500 tracking-widest uppercase m-0 leading-tight">Score <span className="text-gray-900 font-semibold">{score}</span></p>
+          <p className="text-[10px] text-gray-400 tracking-widest uppercase m-0 leading-tight">Best <span className="text-gray-600">{bestScore}</span></p>
         </div>
       </div>
 
       {/* Game Container */}
       <div 
-        className="relative bg-white border border-[#ebebeb] rounded-xl overflow-hidden shadow-sm flex items-center justify-center" 
+        className="relative bg-white/60 backdrop-blur-md border border-white/80 rounded-[2rem] overflow-hidden shadow-[inset_0_2px_20px_rgba(255,255,255,0.4),0_8px_32px_rgba(0,0,0,0.03)] flex items-center justify-center" 
         style={{ width: GAME_WIDTH, height: GAME_HEIGHT }}
       >
         <div 
@@ -347,14 +347,14 @@ export const SuikaGame = () => {
 
         {/* Game Over Overlay */}
         {gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/70 backdrop-blur-[2px] z-10">
-            <h3 className="text-2xl font-serif text-[#111] mb-2">Game Over</h3>
-            <p className="text-[10px] font-mono text-[#777] uppercase tracking-widest mb-6">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/50 backdrop-blur-md z-10">
+            <h3 className="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">Game Over</h3>
+            <p className="text-[11px] font-mono text-gray-600 uppercase tracking-[0.2em] mb-8 font-medium">
               Final Score: {score}
             </p>
             <button 
               onClick={restartGame}
-              className="px-8 py-3 bg-[#111] text-white text-[10px] tracking-[0.3em] uppercase font-mono hover:bg-[#333] transition-colors rounded-sm"
+              className="px-8 py-3 bg-gradient-to-tr from-gray-900 to-black text-white text-[11px] tracking-[0.2em] uppercase font-mono hover:scale-105 active:scale-95 transition-all rounded-full shadow-lg shadow-black/10"
             >
               Play Again
             </button>
