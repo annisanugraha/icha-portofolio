@@ -62,16 +62,16 @@ export function PlaySection() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0 md:border border-[#ebebeb] md:rounded-sm overflow-hidden bg-white md:h-[80vh] md:max-h-[700px] md:min-h-[480px]">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0 md:border border-[#ebebeb] md:rounded-sm overflow-hidden bg-white h-full min-h-0">
       {/* ── Left: Game ── */}
       <div className="bg-[#fafafa] flex flex-col items-center justify-center p-4 md:p-8 min-h-[400px] md:min-h-0 h-full">
-        <div className="w-full h-full max-h-[600px] flex items-center justify-center overflow-hidden transform scale-[0.85] sm:scale-95 lg:scale-100 origin-center -my-4 lg:my-0">
+        <div className="w-full h-full flex items-center justify-center overflow-hidden">
           <SuikaGame />
         </div>
       </div>
 
       {/* ── Right: AI Chat ── */}
-      <div className="flex flex-col bg-white h-[65vh] md:h-full min-h-[400px] md:min-h-0">
+      <div className="flex flex-col bg-white h-full min-h-[400px] md:min-h-0">
         <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-black text-white rounded-xl">
