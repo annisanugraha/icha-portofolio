@@ -57,7 +57,7 @@ export const Footer = ({ profile }: FooterProps) => {
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="border-t border-[#ebebeb] py-8 mt-12"
     >
-      <div className="main-container flex justify-between items-center gap-4">
+      <div className="px-6 md:px-12 w-full flex justify-between items-center  gap-4">
         
         {/* Social Links — staggered entrance with hover micro-animations */}
         <div className="flex items-center gap-6 md:gap-10">

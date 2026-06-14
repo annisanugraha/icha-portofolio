@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ProjectGallery } from '@/components/ProjectGallery';
 import { PageSectionHeader } from '@/components/PageSectionHeader';
+import { FadeIn } from '@/components/animations/FadeIn';
 
 export default async function ProjectDetailPage({
   params,
@@ -25,16 +26,15 @@ export default async function ProjectDetailPage({
       {/* ── SECTION 1: HERO SPLIT ── */}
       <section className="flex flex-col md:flex-row items-center min-h-screen">
         {/* Left Column: Info */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center p-8 md:py-16 md:pl-16 md:pr-6 lg:py-20 lg:pl-20 lg:pr-8 bg-white">
-
-          <div className="space-y-3 md:space-y-4">
-            <span className="text-[9px] tracking-[0.4em] uppercase text-[#bbb] block">
+        <div className="w-full md:w-1/2 flex flex-col justify-center px-6 py-8 md:py-16 md:pl-12 md:pr-6 lg:py-20 lg:pl-12 bg-white">
+          <FadeIn delay={0.1} once={true} className="space-y-3 md:space-y-4">
+            <span className="text-[10px] tracking-[0.4em] uppercase text-[#bbb] block">
               {project.category} · {project.year}
             </span>
             <h3 className="text-xl md:text-2xl font-medium tracking-tight text-[#111] leading-tight pb-4">
               {project.title}
             </h3>
-            <p className="text-[11px] text-[#888] italic leading-relaxed">
+            <p className="text-xs text-[#888] leading-relaxed">
               {project.shortDescription}
             </p>
             {/* Tech Stack Badges */}
@@ -47,66 +47,76 @@ export default async function ProjectDetailPage({
                 ))}
               </div>
             )}
-          </div>
+          </FadeIn>
         </div>
 
         {/* Right Column: Hero Image (4:3 Aspect) */}
-        <div className="w-full md:w-1/2 p-8 md:py-16 md:pr-16 md:pl-6 lg:py-20 lg:pr-20 lg:pl-8 flex items-center justify-center">
-          <div className="w-full aspect-[4/3] overflow-hidden border border-[#f5f5f5] shadow-sm md:shadow-none">
+        <div className="w-full md:w-1/2 px-6 py-8 md:py-16 md:pr-12 md:pl-6 lg:py-20 flex items-center justify-center">
+          <FadeIn delay={0.3} once={true} className="w-full aspect-[4/3] overflow-hidden border border-[#f5f5f5] shadow-sm md:shadow-none">
             <img
               src={project.imageUrl || 'https://placehold.co/800x600/fcfcfc/eee?text=—'}
               alt={project.title}
               className="w-full h-full object-cover"
             />
-          </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* ── SECTION 2: PROCESS GRID ── */}
-      <section className="main-container py-6 pb-8">
-        <PageSectionHeader title="Case Study" number="02" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 lg:gap-20">
+      <section className="px-6 md:px-12 w-full py-6 pb-8">
+        <FadeIn>
+          <PageSectionHeader title="Case Study" number="02" />
+        </FadeIn>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 lg:gap-20 mt-6">
           {[
             { label: 'WHY', text: project.contextWhy },
             { label: 'WHAT', text: project.scopeWhat },
             { label: 'HOW', text: project.outcomeHow },
-          ].map(({ label, text }) => (
-            
-            <div key={label} className="space-y-2">
-              <p className="text-xs tracking-[0.2em] uppercase text-[#777]">
+          ].map(({ label, text }, index) => (
+            <FadeIn key={label} delay={0.1 * (index + 1)} className="space-y-2">
+              <p className="text-sm tracking-[0.2em] uppercase text-[#777]">
                 {label}
               </p>
-              <p className="text-[10px] text-[#777] leading-relaxed whitespace-pre-wrap">
+              <p className="text-xs text-[#777] leading-relaxed whitespace-pre-wrap">
                 {text || '—'}
               </p>
-            </div>
+            </FadeIn>
           ))}
         </div>
       </section>
 
       {/* ── SECTION 3: DESCRIPTION ── */}
-      <section className="main-container py-6 pb-8">
-        <PageSectionHeader title="The Deep Dive" number="03" />
-        <div className="w-full">
-          <div className="text-[10px] text-[#555] leading-[1.8] font-light whitespace-pre-wrap max-w-none">
-            {project.fullDescription}
-          </div>
-        </div>
-      </section>
+      {project.fullDescription && (
+        <section className="px-6 md:px-12 w-full py-6 pb-8">
+          <FadeIn>
+            <PageSectionHeader title="The Deep Dive" number="03" />
+          </FadeIn>
+          <FadeIn delay={0.2} className="w-full mt-6">
+            <div className="text-xs text-[#555] leading-[1.8] font-light whitespace-pre-wrap max-w-none">
+              {project.fullDescription}
+            </div>
+          </FadeIn>
+        </section>
+      )}
 
       {/* ── SECTION 4: GALLERY ── */}
       {galleryImages.length > 0 && (
-        
-        <section className="main-container py-6 pb-8">
-          <PageSectionHeader title="Gallery" number="04" />
-          <ProjectGallery images={galleryImages} title={project.title} />
+        <section className="px-6 md:px-12 w-full py-6 pb-8">
+          <FadeIn>
+            <PageSectionHeader title="Gallery" number="04" />
+          </FadeIn>
+          <FadeIn delay={0.2} className="mt-6">
+            <ProjectGallery images={galleryImages} title={project.title} />
+          </FadeIn>
         </section>
       )}
 
       {/* ── SECTION 5: RESOURCES ── */}
-      <section className="main-container py-6 pb-12">
-        <PageSectionHeader title="Resources" number="05" />
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+      <section className="px-6 md:px-12 w-full py-6 pb-12">
+        <FadeIn>
+          <PageSectionHeader title="Resources" number={galleryImages.length > 0 ? "05" : "04"} />
+        </FadeIn>
+        <FadeIn delay={0.2} className="flex flex-wrap items-center gap-x-6 gap-y-4 mt-6">
           {project.links && project.links.length > 0 ? (
             project.links.map((link: any, i: number) => (
               <React.Fragment key={link.id}>
@@ -126,11 +136,11 @@ export default async function ProjectDetailPage({
           ) : (
             <span className="text-[10px] text-[#ddd] italic font-mono uppercase tracking-widest">No resources available.</span>
           )}
-        </div>
+        </FadeIn>
       </section>
 
       {/* ── SECTION 6: NAVIGATION ── */}
-      <section className="main-container pt-6">
+      <section className="px-6 md:px-12 w-full pt-6">
         <div className="flex justify-between items-center">
           {/* Tombol Prev */}
           {project.prevProject ? (
