@@ -60,7 +60,7 @@ export const Footer = ({ profile }: FooterProps) => {
       <div className="px-6 md:px-12 w-full flex justify-between items-center gap-4">
 
         {/* Social Links — staggered entrance with hover micro-animations */}
-        <div className="flex items-center mt-12 gap-6 md:gap-10">
+        <div className="flex items-center gap-6 md:gap-10">
           {socialLinks.map((link, i) => (
             <motion.a
               key={link.name}
