@@ -31,7 +31,7 @@ function ChapterLabel({ number, title }: { number: string; title: string }) {
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true, margin: '-10%' }}
+      viewport={{ once: false, margin: '-10%' }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="flex items-center gap-3 mb-8"
     >
@@ -54,7 +54,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
   const heroOpacity = useTransform(heroScrollProgress, [0, 0.5], [1, 0]);
 
   const portraitRef = useRef<HTMLDivElement>(null);
-  const isPortraitInView = useInView(portraitRef, { once: true, margin: "0px" });
+  const isPortraitInView = useInView(portraitRef, { once: false, margin: "0px" });
 
   // Handle hash-based scroll on mount
   useEffect(() => {
@@ -169,7 +169,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                     <motion.div
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: '-10%' }}
+                      viewport={{ once: false, margin: '-10%' }}
                       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                       className="space-y-2"
                     >
@@ -184,7 +184,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                       <motion.p
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true, margin: '-5%' }}
+                        viewport={{ once: false, margin: '-5%' }}
                         transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                         className="text-sm italic text-[#111] border-l-2 border-[#111] pl-5 leading-relaxed"
                       >
@@ -195,7 +195,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                       <motion.p
                         initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
                         whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                        viewport={{ once: true, margin: '-5%' }}
+                        viewport={{ once: false, margin: '-5%' }}
                         transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         className="text-xs text-[#777] leading-relaxed whitespace-pre-line"
                       >
@@ -204,7 +204,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                       <motion.p
                         initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
                         whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                        viewport={{ once: true, margin: '-5%' }}
+                        viewport={{ once: false, margin: '-5%' }}
                         transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
                         className="text-xs text-[#777] leading-relaxed whitespace-pre-line"
                       >
@@ -253,7 +253,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                             key={exp.id}
                             initial={{ opacity: 0, y: 25, filter: 'blur(4px)' }}
                             whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                            viewport={{ once: true, margin: '-5%' }}
+                            viewport={{ once: false, margin: '-5%' }}
                             transition={{ duration: 0.8, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
                             className="flex items-start group"
                           >
@@ -272,7 +272,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                             <div className="flex flex-col items-center mr-6 md:mx-10 shrink-0 self-stretch">
                               <motion.div
                                 whileInView={{ scale: [0, 1.3, 1] }}
-                                viewport={{ once: true }}
+                                viewport={{ once: false }}
                                 transition={{ duration: 0.5, delay: i * 0.12 + 0.2 }}
                                 className="w-2 h-2 rounded-full bg-[#111] group-hover:bg-[#ddd] transition-colors duration-500 mt-[5px]"
                               />
@@ -318,44 +318,23 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
           </div>
 
           {/* ══════════════════════════════════════════════════
-              TRANSITION: Work → Archives
-              ══════════════════════════════════════════════════ */}
-          <div id="archives">
-            <SectionTransition />
-
-            {/* ══════════════════════════════════════════════════
-                CHAPTER 4: ARCHIVES — The Evidence
-                ══════════════════════════════════════════════════ */}
-            {certificates && certificates.length > 0 && (
-              <section className="py-24 md:pt-6">
-                <div className="px-6 md:px-12">
-                  <PageSectionHeader title="Archives" number="04" />
-                  <div className="pt-6">
-                    <CertificateGrid certificates={certificates} />
-                  </div>
-                </div>
-              </section>
-            )}
-          </div>
-
-          {/* ══════════════════════════════════════════════════
-              TRANSITION: Archives → Play
+              TRANSITION: Work → Play
               ══════════════════════════════════════════════════ */}
           <div id="play">
             <SectionTransition />
 
             {/* ══════════════════════════════════════════════════
-                CHAPTER 5: PLAY — Let's Have Fun
+                CHAPTER 4: PLAY — Let's Have Fun
                 ══════════════════════════════════════════════════ */}
             <section
               className="h-[100dvh] pt-6 pb-6 flex flex-col relative"
             >
               <div className="px-6 md:px-12 flex-1 flex flex-col min-h-0">
-                <PageSectionHeader title="LET'S TAKE A BREAK" number="05" />
+                <PageSectionHeader title="LET'S TAKE A BREAK" number="04" />
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-5%' }}
+                  viewport={{ once: false, margin: '-5%' }}
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                   className="flex-1 flex flex-col min-h-0 mt-4"
                 >
@@ -363,6 +342,27 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                 </motion.div>
               </div>
             </section>
+          </div>
+
+          {/* ══════════════════════════════════════════════════
+              TRANSITION: Play → Archives
+              ══════════════════════════════════════════════════ */}
+          <div id="archives">
+            <SectionTransition />
+
+            {/* ══════════════════════════════════════════════════
+                CHAPTER 5: ARCHIVES — The Evidence
+                ══════════════════════════════════════════════════ */}
+            {certificates && certificates.length > 0 && (
+              <section className="py-24 md:pt-6">
+                <div className="px-6 md:px-12">
+                  <PageSectionHeader title="Archives" number="05" />
+                  <div className="pt-6">
+                    <CertificateGrid certificates={certificates} />
+                  </div>
+                </div>
+              </section>
+            )}
           </div>
 
           {/* ══════════════════════════════════════════════════
@@ -382,7 +382,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   <motion.h2
                     initial={{ opacity: 0, scale: 1.5, y: 30, filter: 'blur(8px)' }}
                     whileInView={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
-                    viewport={{ once: true, margin: '-10%' }}
+                    viewport={{ once: false, margin: '-10%' }}
                     transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                     className="text-5xl md:text-7xl font-serif text-black leading-none uppercase tracking-tight"
                   >
@@ -392,7 +392,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-5%' }}
+                    viewport={{ once: false, margin: '-5%' }}
                     transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     className="text-base text-gray-500 font-light"
                   >
@@ -403,7 +403,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-5%' }}
+                    viewport={{ once: false, margin: '-5%' }}
                     transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
                     className="flex items-center gap-6 pt-4"
                   >
@@ -448,7 +448,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false }}
                     transition={{ duration: 2, delay: 0.5 }}
                     className="absolute -bottom-1/2 left-1/4 w-[600px] h-[600px] rounded-full"
                     style={{

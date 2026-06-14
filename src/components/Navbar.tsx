@@ -7,8 +7,8 @@ const navItems = [
   { id: 'hero', label: 'Home', chapter: '01' },
   { id: 'about', label: 'About', chapter: '02' },
   { id: 'work', label: 'Work', chapter: '03' },
-  { id: 'archives', label: 'Archives', chapter: '04' },
-  { id: 'play', label: '✤', chapter: '05' },
+  { id: 'play', label: '✤', chapter: '04' },
+  { id: 'archives', label: 'Archives', chapter: '05' },
 ];
 
 export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logoImage?: string | null }) => {
@@ -20,7 +20,7 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
 
   // Scroll spy using IntersectionObserver
   useEffect(() => {
-    const sections = ['hero', 'about', 'work', 'archives', 'play'];
+    const sections = ['hero', 'about', 'work', 'play', 'archives'];
 
     const observer = new IntersectionObserver(
       (entries) => {

@@ -13,8 +13,8 @@ const CHAPTERS = [
   { id: 'hero', label: 'NICE TO MEET YOU', number: '01' },
   { id: 'about', label: 'BEHIND THE SCREEN', number: '02' },
   { id: 'work', label: 'THE CRAFT', number: '03' },
-  { id: 'archives', label: 'THE EVIDENCE', number: '04' },
-  { id: 'play', label: "LET'S HAVE FUN", number: '05' },
+  { id: 'play', label: "LET'S HAVE FUN", number: '04' },
+  { id: 'archives', label: 'THE EVIDENCE', number: '05' },
   { id: 'contact', label: "LET'S TALK", number: '06' },
 ];
 
