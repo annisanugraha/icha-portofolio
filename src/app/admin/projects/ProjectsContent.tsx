@@ -19,6 +19,7 @@ const emptyForm = {
   shortDescription: '', fullDescription: '',
   contextWhy: '', scopeWhat: '', outcomeHow: '',
   imageUrl: '', galleryImages: [] as string[],
+  techStack: [] as string[],
   links: [] as { label: string; url: string }[],
   featured: false,
 };
@@ -30,8 +31,11 @@ export default function ProjectsContent() {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [techInput, setTechInput] = useState('');
 
-  const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
+  const set = (k: string, v: any) => {
+    setForm(f => ({ ...f, [k]: v }));
+  };
 
   useEffect(() => { load(); }, []);
   async function load() {
@@ -48,11 +52,13 @@ export default function ProjectsContent() {
   const openAdd = () => { 
     setEditId(null); 
     setForm(emptyForm); 
+    setTechInput('');
     setShowForm(true); 
   };
   
   const openEdit = (p: any) => {
     setEditId(p.id);
+    const techStack = p.techStack || [];
     setForm({ 
       title: p.title, 
       slug: p.slug, 
@@ -65,9 +71,11 @@ export default function ProjectsContent() {
       outcomeHow: p.outcomeHow || '',
       imageUrl: p.imageUrl || '', 
       galleryImages: p.galleryImages || [], 
+      techStack: techStack,
       links: p.links?.map((l: any) => ({ label: l.label, url: l.url })) || [],
       featured: p.featured || false 
     });
+    setTechInput(techStack.join(', '));
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -246,6 +254,32 @@ export default function ProjectsContent() {
               </label>
             </div>
           </div>
+
+          <Field label="Tech Stack (Comma Separated)">
+            <input 
+              type="text" 
+              placeholder="React, Next.js, Tailwind CSS..." 
+              value={techInput} 
+              onChange={e => {
+                setTechInput(e.target.value);
+                const tags = e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+                setForm(f => ({ ...f, techStack: tags }));
+              }} 
+              className={inputCls} 
+            />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {form.techStack.map((tag, i) => (
+                <span key={i} className="px-2 py-1 bg-[#111] text-white text-[8px] tracking-widest uppercase rounded-sm flex items-center gap-2">
+                  {tag}
+                  <button type="button" onClick={() => {
+                    const newTags = form.techStack.filter((_, idx) => idx !== i);
+                    set('techStack', newTags);
+                    setTechInput(newTags.join(', '));
+                  }} className="hover:text-red-400">×</button>
+                </span>
+              ))}
+            </div>
+          </Field>
 
           <MultiImageUploader label="Gallery Photos" currentImages={form.galleryImages} onUpload={urls => set('galleryImages', urls)} />
 

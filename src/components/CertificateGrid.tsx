@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CertificateData {
@@ -14,6 +14,83 @@ interface CertificateData {
 
 interface CertificateGridProps {
   certificates: CertificateData[];
+}
+
+// ── Spotlight Card Component ──
+function SpotlightCard({ 
+  item, 
+  index, 
+  onClick 
+}: { 
+  item: CertificateData; 
+  index: number; 
+  onClick: () => void;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    setSpotlightPos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 30, scale: 0.95, filter: 'blur(8px)' }}
+      whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      viewport={{ once: false, margin: '-5%' }}
+      transition={{ 
+        duration: 0.8, 
+        delay: (index % 4) * 0.12,
+        ease: [0.16, 1, 0.3, 1]
+      }}
+      className="group space-y-4 cursor-pointer relative"
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Image Container with Spotlight */}
+      <div className="img-container aspect-[3/2] rounded-sm overflow-hidden bg-[#fafafa] relative">
+        <img
+          src={item.imageUrl || 'https://placehold.co/900x600/f5f5f5/999999?text=—'}
+          alt={item.title}
+          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+        />
+        {/* Spotlight overlay */}
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          style={{
+            background: isHovered
+              ? `radial-gradient(circle 150px at ${spotlightPos.x}px ${spotlightPos.y}px, rgba(255,255,255,0.25), transparent 80%)`
+              : 'none',
+          }}
+        />
+        {/* Hover border glow */}
+        <div className="absolute inset-0 border border-transparent group-hover:border-white/20 transition-all duration-500 pointer-events-none" />
+      </div>
+
+      {/* Meta */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <span className="label">{item.category}</span>
+          <span className="label text-[#ddd]">{String(index + 1).padStart(2, '0')}</span>
+        </div>
+        <p className="text-base font-serif group-hover:opacity-50 transition-opacity duration-500">
+          {item.title}
+        </p>
+        <p className="text-[11px] text-[#999] leading-relaxed line-clamp-2">
+          {item.description}
+        </p>
+      </div>
+    </motion.div>
+  );
 }
 
 export const CertificateGrid = ({ certificates }: CertificateGridProps) => {
@@ -49,39 +126,12 @@ export const CertificateGrid = ({ certificates }: CertificateGridProps) => {
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-14">
         {certificates.map((item, i) => (
-          <motion.div
+          <SpotlightCard
             key={item.id}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: (i % 4) * 0.1 }}
-            className="group space-y-4 cursor-pointer"
+            item={item}
+            index={i}
             onClick={() => setSelectedIndex(i)}
-          >
-            {/* Image Container */}
-            <div className="img-container aspect-[3/2] rounded-sm overflow-hidden bg-[#fafafa] relative">
-              <img
-                src={item.imageUrl || 'https://placehold.co/900x600/f5f5f5/999999?text=—'}
-                alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-500" />
-            </div>
-
-            {/* Meta */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="label">{item.category}</span>
-                <span className="label text-[#ddd]">{String(i + 1).padStart(2, '0')}</span>
-              </div>
-              <p className="text-base font-serif group-hover:opacity-50 transition-opacity duration-500">
-                {item.title}
-              </p>
-              <p className="text-[11px] text-[#999] leading-relaxed line-clamp-2">
-                {item.description}
-              </p>
-            </div>
-          </motion.div>
+          />
         ))}
       </div>
 

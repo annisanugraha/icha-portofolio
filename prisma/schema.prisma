@@ -27,6 +27,7 @@ model Project {
 
   imageUrl         String?
   galleryImages    String[] @default([]) // Array of image URLs for gallery
+  techStack        String[] @default([]) // Technologies used (e.g., ["React", "Tailwind"])
   
   // Legacy links (keeping for data safety, but will use ProjectLink moving forward)
   githubUrl        String?
@@ -87,6 +88,8 @@ model Profile {
   githubUrl       String   @default("#")
   emailAddress    String   @default("")
   emailSubject    String   @default("")
+  
+  resumeUrl       String?  @default("")
   
   updatedAt       DateTime @updatedAt
 }
