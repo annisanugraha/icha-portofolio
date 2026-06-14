@@ -31,7 +31,7 @@ function ChapterLabel({ number, title }: { number: string; title: string }) {
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: false, margin: '-10%' }}
+      viewport={{ once: true, margin: '-10%' }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="flex items-center gap-3 mb-8"
     >
@@ -54,7 +54,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
   const heroOpacity = useTransform(heroScrollProgress, [0, 0.5], [1, 0]);
 
   const portraitRef = useRef<HTMLDivElement>(null);
-  const isPortraitInView = useInView(portraitRef, { once: false, margin: "0px" });
+  const isPortraitInView = useInView(portraitRef, { once: true, margin: "0px" });
 
   // Handle hash-based scroll on mount
   useEffect(() => {
@@ -169,7 +169,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                     <motion.div
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: false, margin: '-10%' }}
+                      viewport={{ once: true, margin: '-10%' }}
                       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                       className="space-y-2"
                     >
@@ -184,7 +184,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                       <motion.p
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: false, margin: '-5%' }}
+                        viewport={{ once: true, margin: '-5%' }}
                         transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                         className="text-sm italic text-[#111] border-l-2 border-[#111] pl-5 leading-relaxed"
                       >
@@ -195,7 +195,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                       <motion.p
                         initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
                         whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                        viewport={{ once: false, margin: '-5%' }}
+                        viewport={{ once: true, margin: '-5%' }}
                         transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         className="text-xs text-[#777] leading-relaxed whitespace-pre-line"
                       >
@@ -204,7 +204,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                       <motion.p
                         initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
                         whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                        viewport={{ once: false, margin: '-5%' }}
+                        viewport={{ once: true, margin: '-5%' }}
                         transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
                         className="text-xs text-[#777] leading-relaxed whitespace-pre-line"
                       >
@@ -253,7 +253,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                             key={exp.id}
                             initial={{ opacity: 0, y: 25, filter: 'blur(4px)' }}
                             whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                            viewport={{ once: false, margin: '-5%' }}
+                            viewport={{ once: true, margin: '-5%' }}
                             transition={{ duration: 0.8, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
                             className="flex items-start group"
                           >
@@ -272,7 +272,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                             <div className="flex flex-col items-center mr-6 md:mx-10 shrink-0 self-stretch">
                               <motion.div
                                 whileInView={{ scale: [0, 1.3, 1] }}
-                                viewport={{ once: false }}
+                                viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: i * 0.12 + 0.2 }}
                                 className="w-2 h-2 rounded-full bg-[#111] group-hover:bg-[#ddd] transition-colors duration-500 mt-[5px]"
                               />
@@ -355,7 +355,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, margin: '-5%' }}
+                  viewport={{ once: true, margin: '-5%' }}
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                   className="flex-1 flex flex-col min-h-0 mt-4"
                 >
@@ -382,7 +382,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   <motion.h2
                     initial={{ opacity: 0, scale: 1.5, y: 30, filter: 'blur(8px)' }}
                     whileInView={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
-                    viewport={{ once: false, margin: '-10%' }}
+                    viewport={{ once: true, margin: '-10%' }}
                     transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                     className="text-5xl md:text-7xl font-serif text-black leading-none uppercase tracking-tight"
                   >
@@ -392,7 +392,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: false, margin: '-5%' }}
+                    viewport={{ once: true, margin: '-5%' }}
                     transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     className="text-base text-gray-500 font-light"
                   >
@@ -403,35 +403,42 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: false, margin: '-5%' }}
+                    viewport={{ once: true, margin: '-5%' }}
                     transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
                     className="flex items-center gap-6 pt-4"
                   >
-                    {profile?.emailAddress && (
-                      <a
-                        href={`https://mail.google.com/mail/?view=cm&fs=1&to=${profile.emailAddress}&su=${encodeURIComponent(profile.emailSubject || '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group inline-flex items-center gap-3 px-8 py-4 bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase font-mono hover:bg-[#333] transition-all duration-500 pulse-glow"
+                    {profile?.resumeUrl ? (
+                      <button
+                        onClick={async () => {
+                          try {
+                            const response = await fetch(profile.resumeUrl);
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'Resume_Annisa Angelica Nugraha.pdf';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            window.URL.revokeObjectURL(url);
+                          } catch (err) {
+                            window.open(profile.resumeUrl, '_blank');
+                          }
+                        }}
+                        className="group inline-flex items-center gap-3 px-8 py-4 bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase font-mono hover:bg-[#333] transition-all duration-500 pulse-glow cursor-pointer"
                       >
-                        <span>Say Hello</span>
+                        <span>Save My Resume</span>
                         <motion.span
-                          animate={{ x: [0, 4, 0] }}
+                          animate={{ y: [0, 3, 0] }}
                           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
                         >
-                          →
+                          ↓
                         </motion.span>
-                      </a>
-                    )}
-                    {profile?.linkedinUrl && (
-                      <a
-                        href={profile.linkedinUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[10px] font-mono tracking-[0.3em] text-[#999] hover:text-[#111] transition-colors duration-300 uppercase link-underline"
-                      >
-                        LinkedIn
-                      </a>
+                      </button>
+                    ) : (
+                      <span className="text-[10px] text-[#999] tracking-[0.3em] uppercase italic">
+                        Resume not available yet
+                      </span>
                     )}
                   </motion.div>
                 </div>
@@ -441,7 +448,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
-                    viewport={{ once: false }}
+                    viewport={{ once: true }}
                     transition={{ duration: 2, delay: 0.5 }}
                     className="absolute -bottom-1/2 left-1/4 w-[600px] h-[600px] rounded-full"
                     style={{

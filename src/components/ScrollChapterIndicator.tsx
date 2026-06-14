@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence, animate } from 'framer-motion';
 
 /**
  * ScrollChapterIndicator — HoYoverse-inspired scroll progress indicator
@@ -76,7 +76,13 @@ export function ScrollChapterIndicator() {
     const el = document.getElementById(id);
     if (el) {
       const top = el.getBoundingClientRect().top + window.scrollY;
-      window.scrollTo({ top, behavior: 'smooth' });
+      document.documentElement.style.scrollBehavior = 'auto';
+      animate(window.scrollY, top, {
+        duration: 1.2,
+        ease: [0.16, 1, 0.3, 1],
+        onUpdate: (latest) => window.scrollTo(0, latest),
+        onComplete: () => { document.documentElement.style.scrollBehavior = ''; }
+      });
     }
   };
 

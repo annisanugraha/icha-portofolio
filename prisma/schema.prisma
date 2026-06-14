@@ -89,6 +89,8 @@ model Profile {
   emailAddress    String   @default("")
   emailSubject    String   @default("")
   
+  resumeUrl       String?  @default("")
+  
   updatedAt       DateTime @updatedAt
 }
 

@@ -44,7 +44,7 @@ function SpotlightCard({
       ref={cardRef}
       initial={{ opacity: 0, y: 30, scale: 0.95, filter: 'blur(8px)' }}
       whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-      viewport={{ once: false, margin: '-5%' }}
+      viewport={{ once: true, margin: '-5%' }}
       transition={{ 
         duration: 0.8, 
         delay: (index % 4) * 0.12,

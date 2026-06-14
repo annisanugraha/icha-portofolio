@@ -30,7 +30,7 @@ export const WorkList = ({ projects }: { projects: ProjectData[] }) => {
             key={project.id}
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: '-40px' }}
+            viewport={{ once: true, margin: '-40px' }}
             transition={{ duration: 0.9, delay: (i % 2) * 0.12 }}
           >
             <Link href={`/work/${project.slug}`} className="group block space-y-4">

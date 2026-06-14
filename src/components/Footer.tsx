@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, animate } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
 
 interface FooterProps {
@@ -10,7 +10,13 @@ interface FooterProps {
 
 export const Footer = ({ profile }: FooterProps) => {
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.documentElement.style.scrollBehavior = 'auto';
+    animate(window.scrollY, 0, {
+      duration: 1.2,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (latest) => window.scrollTo(0, latest),
+      onComplete: () => { document.documentElement.style.scrollBehavior = ''; }
+    });
   };
 
   const socialLinks = [
@@ -47,7 +53,7 @@ export const Footer = ({ profile }: FooterProps) => {
     <motion.footer
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      viewport={{ once: false, margin: '-5%' }}
+      viewport={{ once: true, margin: '-5%' }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="border-t border-[#ebebeb] py-8 mt-12"
     >
@@ -64,7 +70,7 @@ export const Footer = ({ profile }: FooterProps) => {
               className="group flex items-center gap-2 text-[#999] hover:text-black transition-colors"
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
+              viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ scale: 1.05, rotate: -2 }}
               whileTap={{ scale: 0.95 }}

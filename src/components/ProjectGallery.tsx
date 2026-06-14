@@ -59,7 +59,7 @@ export const ProjectGallery = ({ images, title }: ProjectGalleryProps) => {
             key={i}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
+            viewport={{ once: true }}
             transition={{ duration: 0.8, delay: i * 0.05 }}
             className="break-inside-avoid mb-2 cursor-zoom-in"
             onClick={() => setSelectedIndex(i)}

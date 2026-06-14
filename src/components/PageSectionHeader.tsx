@@ -24,7 +24,7 @@ export const PageSectionHeader = ({ title, number }: PageSectionHeaderProps) => 
       <motion.div
         initial={{ scaleX: 0, originX: 0 }}
         whileInView={{ scaleX: 1 }}
-        viewport={{ once: false }}
+        viewport={{ once: true }}
         transition={{ duration: 1.5, ease: [0.19, 1, 0.22, 1], delay: 0.1 }}
         className="h-[1px] bg-[#ebebeb] w-full"
       />

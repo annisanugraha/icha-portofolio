@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { getProfile, updateProfile } from '@/actions/profile';
 import { ImageUploader } from '@/components/admin/ImageUploader';
+import { FileUploader } from '@/components/admin/FileUploader';
 
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="space-y-2">
@@ -157,12 +158,18 @@ export default function ProfileContent() {
                 <textarea rows={4} value={profile.aboutBio2} onChange={e => set('aboutBio2', e.target.value)} className={`${inputCls} resize-none`} />
               </Field>
             </div>
-            <div className="order-1 lg:order-2">
+            <div className="order-1 lg:order-2 space-y-8">
               <ImageUploader
                 label="Portrait Photo"
                 currentImage={profile.aboutImage}
                 onUpload={(url) => set('aboutImage', url)}
                 onDelete={() => set('aboutImage', null)}
+              />
+              <FileUploader
+                label="Resume / CV (PDF)"
+                currentFile={profile.resumeUrl}
+                onUpload={(url) => set('resumeUrl', url)}
+                onDelete={() => set('resumeUrl', null)}
               />
             </div>
           </div>
