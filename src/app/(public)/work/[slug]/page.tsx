@@ -37,6 +37,16 @@ export default async function ProjectDetailPage({
             <p className="text-[11px] text-[#888] italic leading-relaxed">
               {project.shortDescription}
             </p>
+            {/* Tech Stack Badges */}
+            {project.techStack && project.techStack.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-3">
+                {project.techStack.map((tech: string, i: number) => (
+                  <span key={i} className="text-[9px] tracking-[0.2em] uppercase px-3 py-1.5 bg-[#fafafa] border border-[#ebebeb] text-[#777] rounded-sm">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

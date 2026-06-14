@@ -37,6 +37,7 @@ export async function updateProfile(data: any) {
         githubUrl: data.githubUrl,
         emailAddress: data.emailAddress,
         emailSubject: data.emailSubject,
+        resumeUrl: data.resumeUrl,
       }
     });
     revalidatePath('/', 'layout');

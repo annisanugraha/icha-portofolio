@@ -45,4 +45,5 @@ next-env.d.ts
 # custom ignore
 /.context/
 GEMINI.md
+CLAUDE.md
 .gitignore

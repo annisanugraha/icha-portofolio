@@ -10,7 +10,7 @@ interface PageSectionHeaderProps {
 
 export const PageSectionHeader = ({ title, number }: PageSectionHeaderProps) => {
   return (
-    <div className="w-full mb-12">
+    <div className="w-full mb-6">
       <div className="flex items-end justify-between mb-5">
         <span className="label text-[#111]">{title}</span>
         {number !== undefined && (
@@ -24,7 +24,7 @@ export const PageSectionHeader = ({ title, number }: PageSectionHeaderProps) => 
       <motion.div
         initial={{ scaleX: 0, originX: 0 }}
         whileInView={{ scaleX: 1 }}
-        viewport={{ once: true }}
+        viewport={{ once: false }}
         transition={{ duration: 1.5, ease: [0.19, 1, 0.22, 1], delay: 0.1 }}
         className="h-[1px] bg-[#ebebeb] w-full"
       />

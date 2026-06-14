@@ -18,6 +18,7 @@ export async function addProject(data: any) {
         outcomeHow: data.outcomeHow || null,
         imageUrl: data.imageUrl || null,
         galleryImages: data.galleryImages || [],
+        techStack: data.techStack || [],
         githubUrl: data.githubUrl || null,
         demoUrl: data.demoUrl || null,
         year: data.year,
@@ -30,7 +31,7 @@ export async function addProject(data: any) {
       include: { links: true }
     })
     revalidatePath('/')
-    revalidatePath('/admin')
+    revalidatePath('/admin', 'layout')
     return { success: true, data: project }
   } catch (error: any) {
     console.error('Add project error:', error)
@@ -41,6 +42,9 @@ export async function addProject(data: any) {
 
 export async function updateProject(id: string, data: any) {
   try {
+    console.log('UPDATING PROJECT:', id);
+    // console.log('DATA:', JSON.stringify(data, null, 2));
+
     const project = await prisma.project.update({
       where: { id },
       data: {
@@ -54,6 +58,7 @@ export async function updateProject(id: string, data: any) {
         outcomeHow: data.outcomeHow || null,
         imageUrl: data.imageUrl || null,
         galleryImages: data.galleryImages || [],
+        techStack: data.techStack || [],
         githubUrl: data.githubUrl || null,
         demoUrl: data.demoUrl || null,
         year: data.year,
@@ -68,12 +73,23 @@ export async function updateProject(id: string, data: any) {
     })
     revalidatePath('/')
     revalidatePath(`/work/${data.slug}`)
-    revalidatePath('/admin')
+    revalidatePath('/admin', 'layout')
     return { success: true, data: project }
   } catch (error: any) {
     console.error('Update project error:', error)
     if (error.code === 'P2002') return { success: false, error: 'Slug already exists.' }
-    return { success: false, error: 'DB Error: ' + (error.message || 'Unknown') }
+    
+    // Return the full message if it's a validation error
+    let msg = error.message || 'Unknown';
+    if (msg.includes('Invalid prisma.project.update() invocation')) {
+      // Try to extract the useful part of the Prisma error
+      const parts = msg.split('\n');
+      if (parts.length > 1) {
+        msg = parts.slice(1).join('\n').trim();
+      }
+    }
+
+    return { success: false, error: 'DB Error:\n' + msg }
   }
 }
 
@@ -120,7 +136,7 @@ export async function deleteProject(id: string) {
   try {
     await prisma.project.delete({ where: { id } });
     revalidatePath('/')
-    revalidatePath('/admin')
+    revalidatePath('/admin', 'layout')
     return { success: true }
   } catch (error: any) {
     console.error('Delete project error:', error)

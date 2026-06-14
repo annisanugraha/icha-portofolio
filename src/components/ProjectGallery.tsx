@@ -59,7 +59,7 @@ export const ProjectGallery = ({ images, title }: ProjectGalleryProps) => {
             key={i}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false }}
             transition={{ duration: 0.8, delay: i * 0.05 }}
             className="break-inside-avoid mb-2 cursor-zoom-in"
             onClick={() => setSelectedIndex(i)}
@@ -84,7 +84,7 @@ export const ProjectGallery = ({ images, title }: ProjectGalleryProps) => {
             onClick={handleClose}
           >
             {/* Close button */}
-            <button 
+            <button
               onClick={handleClose}
               className="absolute top-6 right-6 md:top-10 md:right-10 p-2 text-[#111] hover:opacity-50 transition-opacity z-[110]"
             >
@@ -92,14 +92,14 @@ export const ProjectGallery = ({ images, title }: ProjectGalleryProps) => {
             </button>
 
             {/* Navigation buttons */}
-            <div className="absolute inset-x-4 md:inset-x-10 flex justify-between items-center pointer-events-none z-[110]">
-              <button 
+            <div className="absolute inset-x-4 md:inset-x-10 flex justify-between items-center z-[110]">
+              <button
                 onClick={(e) => { e.stopPropagation(); handlePrev(); }}
                 className="p-3 bg-white/10 backdrop-blur-md rounded-full text-[#111] hover:bg-white/20 transition-all pointer-events-auto"
               >
                 <ChevronLeft size={20} strokeWidth={1.5} />
               </button>
-              <button 
+              <button
                 onClick={(e) => { e.stopPropagation(); handleNext(); }}
                 className="p-3 bg-white/10 backdrop-blur-md rounded-full text-[#111] hover:bg-white/20 transition-all pointer-events-auto"
               >

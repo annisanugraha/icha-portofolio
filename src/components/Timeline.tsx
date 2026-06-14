@@ -57,7 +57,7 @@ export const Timeline = ({ experiences }: { experiences: ExperienceData[] }) => 
                 key={exp.id}
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-5%" }}
+                viewport={{ once: false, margin: "-5%" }}
                 transition={{ duration: 0.8, delay: i * 0.1 }}
                 className="flex items-start group cursor-pointer"
                 onClick={() => setSelectedIndex(i)}
