@@ -19,7 +19,7 @@ export async function addCertificate(title: string, category: string, descriptio
     await prisma.certificate.create({
       data: { title, category, description, imageUrl, order }
     });
-    revalidatePath('/', 'layout');
+    revalidatePath('/');
     revalidatePath('/archives');
     return { success: true };
   } catch (error: any) {
@@ -40,7 +40,7 @@ export async function updateCertificate(id: string, data: any) {
         order: data.order
       }
     });
-    revalidatePath('/', 'layout');
+    revalidatePath('/');
     revalidatePath('/archives');
     return { success: true };
   } catch (error: any) {
@@ -58,7 +58,7 @@ export async function reorderCertificates(orders: { id: string, order: number }[
       })
     );
     await prisma.$transaction(transactions);
-    revalidatePath('/', 'layout');
+    revalidatePath('/');
     revalidatePath('/archives');
     return { success: true };
   } catch (error: any) {
@@ -70,7 +70,7 @@ export async function reorderCertificates(orders: { id: string, order: number }[
 export async function deleteCertificate(id: string) {
   try {
     await prisma.certificate.delete({ where: { id } });
-    revalidatePath('/', 'layout');
+    revalidatePath('/');
     revalidatePath('/archives');
     return { success: true };
   } catch (error: any) {

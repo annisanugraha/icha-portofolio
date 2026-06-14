@@ -40,7 +40,7 @@ export async function updateProfile(data: any) {
         resumeUrl: data.resumeUrl,
       }
     });
-    revalidatePath('/', 'layout');
+    revalidatePath('/');
     revalidatePath('/about');
     return { success: true };
   } catch (error: any) {
@@ -70,7 +70,7 @@ export async function addExperience(data: any) {
         order: data.order || 0
       } 
     });
-    revalidatePath('/', 'layout');
+    revalidatePath('/');
     revalidatePath('/about');
     return { success: true };
   } catch (error: any) {
@@ -91,7 +91,7 @@ export async function updateExperience(id: string, data: any) {
         imageUrl: data.imageUrl || null,
       }
     });
-    revalidatePath('/', 'layout');
+    revalidatePath('/');
     revalidatePath('/about');
     return { success: true };
   } catch (error: any) {
@@ -109,7 +109,7 @@ export async function reorderExperiences(orders: { id: string, order: number }[]
       })
     );
     await prisma.$transaction(transactions);
-    revalidatePath('/', 'layout');
+    revalidatePath('/');
     revalidatePath('/about');
     return { success: true };
   } catch (error: any) {
@@ -121,7 +121,7 @@ export async function reorderExperiences(orders: { id: string, order: number }[]
 export async function deleteExperience(id: string) {
   try {
     await prisma.experience.delete({ where: { id } });
-    revalidatePath('/', 'layout');
+    revalidatePath('/');
     revalidatePath('/about');
     return { success: true };
   } catch (error: any) {
