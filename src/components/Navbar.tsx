@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, animate } from 'framer-motion';
+import { usePathname, useRouter } from 'next/navigation';
 
 const navItems = [
   { id: 'hero', label: 'Home', chapter: '01' },
@@ -14,6 +15,8 @@ const navItems = [
 export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logoImage?: string | null }) => {
   const [activeSection, setActiveSection] = useState('hero');
   const { scrollYProgress } = useScroll();
+  const pathname = usePathname();
+  const router = useRouter();
   
   // Desktop sidebar border opacity based on scroll
   const borderOpacity = useTransform(scrollYProgress, [0, 0.05], [0, 1]);
@@ -56,6 +59,11 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
   }, []);
 
   const scrollTo = (id: string) => {
+    if (pathname !== '/') {
+      router.push(`/#${id}`);
+      return;
+    }
+
     const hash = `#${id}`;
     const currentHash = window.location.hash;
 
