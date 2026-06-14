@@ -16,13 +16,13 @@ export default async function ProjectDetailPage({
 
   if (!project) notFound();
 
-  const galleryImages = project.galleryImages && project.galleryImages.length > 0 
-    ? project.galleryImages 
+  const galleryImages = project.galleryImages && project.galleryImages.length > 0
+    ? project.galleryImages
     : [];
 
   return (
     <main className="min-h-screen bg-white pt-16 md:pt-0">
-      
+
       {/* ── SECTION 1: HERO SPLIT ── */}
       <section className="flex flex-col md:flex-row items-center min-h-screen">
         {/* Left Column: Info */}
@@ -31,9 +31,9 @@ export default async function ProjectDetailPage({
             <span className="text-[10px] tracking-[0.4em] uppercase text-[#bbb] block">
               {project.category} · {project.year}
             </span>
-            <h3 className="text-xl md:text-2xl font-medium tracking-tight text-[#111] leading-tight pb-4">
+            <p className="font-serif text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight text-[#111] leading-[1.1] pb-4">
               {project.title}
-            </h3>
+            </p>
             <p className="text-xs text-[#888] leading-relaxed">
               {project.shortDescription}
             </p>
@@ -120,9 +120,9 @@ export default async function ProjectDetailPage({
           {project.links && project.links.length > 0 ? (
             project.links.map((link: any, i: number) => (
               <React.Fragment key={link.id}>
-                <a 
-                  href={link.url} 
-                  target="_blank" 
+                <a
+                  href={link.url}
+                  target="_blank"
                   rel="noreferrer"
                   className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-[#555] hover:text-[#999] transition-colors"
                 >
@@ -144,7 +144,7 @@ export default async function ProjectDetailPage({
         <div className="flex justify-between items-center">
           {/* Tombol Prev */}
           {project.prevProject ? (
-            <Link 
+            <Link
               href={`/work/${project.prevProject.slug}`}
               className="bg-white text-[#555] border border-[#888] text-[9px] tracking-[0.4em] uppercase px-8 py-3 hover:bg-[#111] hover:text-white transition-all cursor-pointer inline-flex items-center gap-2 group"
             >
@@ -155,7 +155,7 @@ export default async function ProjectDetailPage({
 
           {/* Tombol Next */}
           {project.nextProject ? (
-            <Link 
+            <Link
               href={`/work/${project.nextProject.slug}`}
               className="bg-white text-[#555] border border-[#888] text-[9px] tracking-[0.4em] uppercase px-8 py-3 hover:bg-[#111] hover:text-white transition-all cursor-pointer inline-flex items-center gap-2 group"
             >
