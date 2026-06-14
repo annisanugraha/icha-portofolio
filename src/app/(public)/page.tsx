@@ -3,6 +3,8 @@ import { getProfile, getExperiences } from "@/actions/profile";
 import { getFeaturedProjects } from "@/actions/projects";
 import { getCertificates } from "@/actions/certificate";
 
+export const revalidate = 30;
+
 export default async function Home() {
   const [profile, projects, certificates, experiences] = await Promise.all([
     getProfile(),
