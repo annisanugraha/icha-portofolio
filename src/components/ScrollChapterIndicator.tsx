@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, animate } from 'framer-motion';
+import { usePathname, useRouter } from 'next/navigation';
 
 /**
  * ScrollChapterIndicator — HoYoverse-inspired scroll progress indicator
@@ -22,6 +23,8 @@ export function ScrollChapterIndicator() {
   const [activeChapter, setActiveChapter] = useState('hero');
   const [showLabel, setShowLabel] = useState(false);
   const [prevChapter, setPrevChapter] = useState('hero');
+  const pathname = usePathname();
+  const router = useRouter();
   const { scrollYProgress } = useScroll();
   const progressHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
 
@@ -73,6 +76,11 @@ export function ScrollChapterIndicator() {
   }, [activeChapter, prevChapter]);
 
   const scrollTo = (id: string) => {
+    if (pathname !== '/') {
+      router.push(`/#${id}`);
+      return;
+    }
+
     const el = document.getElementById(id);
     if (el) {
       const top = el.getBoundingClientRect().top + window.scrollY;
