@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 interface CertificateData {
   id: string;
@@ -58,10 +59,12 @@ function SpotlightCard({
     >
       {/* Image Container with Spotlight */}
       <div className="img-container aspect-[3/2] rounded-sm overflow-hidden bg-[#fafafa] relative">
-        <img
+        <Image
           src={item.imageUrl || 'https://placehold.co/900x600/f5f5f5/999999?text=—'}
           alt={item.title}
-          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 50vw, 25vw"
+          className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
         />
         {/* Spotlight overlay */}
         <div
@@ -187,11 +190,13 @@ export const CertificateGrid = ({ certificates }: CertificateGridProps) => {
               className="relative w-full max-w-5xl bg-white border border-[#ebebeb] shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-full touch-none"
             >
               {/* Image Side */}
-              <div className="flex-[1.5] bg-[#fafafa] flex items-center justify-center overflow-hidden min-h-[250px] md:min-h-0">
-                <img 
+              <div className="flex-[1.5] bg-[#fafafa] flex items-center justify-center overflow-hidden min-h-[250px] md:min-h-0 relative">
+                <Image 
                   src={selected.imageUrl || 'https://placehold.co/900x600/f5f5f5/999999?text=—'} 
                   alt={selected.title}
-                  className="w-full h-full object-contain p-4 md:p-8"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 60vw"
+                  className="object-contain p-4 md:p-8"
                 />
               </div>
 

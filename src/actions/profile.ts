@@ -45,6 +45,7 @@ export async function updateProfile(data: any) {
     });
     revalidatePath('/');
     revalidatePath('/about');
+    revalidatePath('/work', 'layout');
     return { success: true };
   } catch (error: any) {
     console.error('Update profile error:', error);

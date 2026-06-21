@@ -49,7 +49,8 @@ export function PlaySection() {
     if (result.success) {
       setMessages([...newMessages, { role: 'ai', content: result.answer || '' }]);
     } else {
-      setMessages([...newMessages, { role: 'ai', content: 'Sorry, I am having trouble connecting. Please try again later.' }]);
+      const errorMsg = result.error || 'Sorry, I am having trouble connecting. Please try again later.';
+      setMessages([...newMessages, { role: 'ai', content: `⚠️ ${errorMsg}` }]);
     }
     setIsLoading(false);
   };

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { PageSectionHeader } from './PageSectionHeader';
 
 interface ExperienceData {
@@ -65,11 +66,13 @@ export const Timeline = ({ experiences }: { experiences: ExperienceData[] }) => 
                 {/* 1. GAMBAR MEMORI - DESKTOP ONLY (KIRI) */}
                 <div className="hidden md:block w-48 shrink-0 pt-1">
                   {exp.imageUrl ? (
-                    <div className="aspect-video w-full bg-[#fafafa] border border-[#ebebeb] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out opacity-80 group-hover:opacity-100">
-                      <img 
+                    <div className="aspect-video w-full bg-[#fafafa] border border-[#ebebeb] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out opacity-80 group-hover:opacity-100 relative">
+                      <Image 
                         src={exp.imageUrl} 
                         alt={exp.title} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        fill
+                        sizes="192px"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     </div>
                   ) : (
@@ -98,11 +101,13 @@ export const Timeline = ({ experiences }: { experiences: ExperienceData[] }) => 
                   {/* GAMBAR MEMORI - MOBILE ONLY (TUMPUK) */}
                   <div className="md:hidden w-full">
                     {exp.imageUrl ? (
-                      <div className="aspect-video w-full bg-[#fafafa] border border-[#ebebeb] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out opacity-80 group-hover:opacity-100">
-                        <img 
+                      <div className="aspect-video w-full bg-[#fafafa] border border-[#ebebeb] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out opacity-80 group-hover:opacity-100 relative">
+                        <Image 
                           src={exp.imageUrl} 
                           alt={exp.title} 
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          fill
+                          sizes="100vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                       </div>
                     ) : (
@@ -182,12 +187,16 @@ export const Timeline = ({ experiences }: { experiences: ExperienceData[] }) => 
             >
               {/* Image Side */}
               <div className="flex-[1.5] bg-[#fafafa] flex items-center justify-center overflow-hidden min-h-[250px] md:min-h-0">
-                {selected.imageUrl ? (
-                  <img 
-                    src={selected.imageUrl} 
-                    alt={selected.title}
-                    className="w-full h-full object-contain p-4 md:p-8"
-                  />
+                  {selected.imageUrl ? (
+                    <div className="relative w-full h-full min-h-[250px] md:min-h-0">
+                      <Image 
+                        src={selected.imageUrl} 
+                        alt={selected.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 60vw"
+                        className="object-contain p-4 md:p-8"
+                      />
+                    </div>
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-[#ddd] gap-4">
                     <div className="w-12 h-px bg-[#eee]" />

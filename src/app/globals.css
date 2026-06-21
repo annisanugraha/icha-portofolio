@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
@@ -45,6 +44,13 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Activated by SmoothCursor component on non-touch devices */
+html.smooth-cursor-active *,
+html.smooth-cursor-active *::before,
+html.smooth-cursor-active *::after {
+  cursor: none !important;
 }
 
 body {

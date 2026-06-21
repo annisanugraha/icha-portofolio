@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, animate } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const navItems = [
   { id: 'hero', label: 'Home', chapter: '01' },
@@ -96,10 +97,12 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
   const logoContent = (
 <div className="flex flex-col items-center gap-2">
       {logoImage && (
-        <img
+        <Image
           src={logoImage}
           alt={logoText || "Logo"}
-          className="w-8 h-8 object-contain transition-opacity duration-500 hover:opacity-80"
+          width={32}
+          height={32}
+          className="object-contain transition-opacity duration-500 hover:opacity-80"
         />
       )}
       {logoText && (
@@ -113,10 +116,12 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
   const mobileLogoContent = (
     <div className="flex items-center gap-3">
       {logoImage && (
-        <img
+        <Image
           src={logoImage}
           alt={logoText || "Logo"}
-          className="w-6 h-6 object-contain"
+          width={24}
+          height={24}
+          className="object-contain"
         />
       )}
       {logoText && (

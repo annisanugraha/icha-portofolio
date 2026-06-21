@@ -43,7 +43,6 @@ export async function addProject(data: any) {
 
 export async function updateProject(id: string, data: any) {
   try {
-    console.log('UPDATING PROJECT:', id);
     // console.log('DATA:', JSON.stringify(data, null, 2));
 
     const project = await prisma.project.update({

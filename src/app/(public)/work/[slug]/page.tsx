@@ -7,6 +7,38 @@ import { ProjectGallery } from '@/components/ProjectGallery';
 import { PageSectionHeader } from '@/components/PageSectionHeader';
 import { FadeIn } from '@/components/animations/FadeIn';
 
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await getProjectBySlug(slug) as any;
+
+  if (!project) {
+    return { title: 'Project Not Found' };
+  }
+
+  return {
+    title: `${project.title} — Icha's Portfolio`,
+    description: project.shortDescription || `A project by Annisa Angelica Nugraha.`,
+    openGraph: {
+      title: project.title,
+      description: project.shortDescription || '',
+      images: project.imageUrl ? [{ url: project.imageUrl, width: 1200, height: 630, alt: project.title }] : [],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: project.title,
+      description: project.shortDescription || '',
+      images: project.imageUrl ? [project.imageUrl] : [],
+    },
+  };
+}
+
 export default async function ProjectDetailPage({
   params,
 }: {
@@ -14,6 +46,7 @@ export default async function ProjectDetailPage({
 }) {
   const { slug } = await params;
   const project = (await getProjectBySlug(slug)) as any;
+
 
   if (!project) notFound();
 

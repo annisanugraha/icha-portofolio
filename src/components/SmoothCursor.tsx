@@ -30,6 +30,9 @@ export function SmoothCursor() {
       return;
     }
 
+    // Hide native cursor globally when smooth cursor is active
+    document.documentElement.classList.add('smooth-cursor-active');
+
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
@@ -69,6 +72,7 @@ export function SmoothCursor() {
     document.documentElement.addEventListener('mouseenter', handleMouseOver);
 
     return () => {
+      document.documentElement.classList.remove('smooth-cursor-active');
       window.removeEventListener('mousemove', moveCursor);
       document.removeEventListener('mouseover', handleMouseEnter, true);
       document.removeEventListener('mouseout', handleMouseLeave, true);
@@ -82,12 +86,6 @@ export function SmoothCursor() {
 
   return (
     <>
-      {/* Hide default cursor globally */}
-      <style jsx global>{`
-        * {
-          cursor: none !important;
-        }
-      `}</style>
 
       {/* Trailing dot */}
       <motion.div

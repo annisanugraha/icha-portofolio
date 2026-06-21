@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { PageSectionHeader } from './PageSectionHeader';
 
 interface ProjectData {
@@ -36,10 +37,13 @@ export const WorkList = ({ projects }: { projects: ProjectData[] }) => {
             <Link href={`/work/${project.slug}`} className="group block space-y-4">
 
               {/* Image */}
-              <div className="img-container aspect-[4/3] rounded-sm overflow-hidden">
-                <img
+              <div className="img-container aspect-[4/3] rounded-sm overflow-hidden relative">
+                <Image
                   src={project.imageUrl || 'https://placehold.co/800x600/f5f5f5/999999?text=—'}
                   alt={project.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
                 />
               </div>
 
