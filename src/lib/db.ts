@@ -23,8 +23,20 @@ const prismaClientSingleton = () => {
     finalUrl += finalUrl.includes('?') ? '&uselibpqcompat=true' : '?uselibpqcompat=true'
   }
 
-  // Gunakan Connection Pool untuk stabilitas koneksi cloud
-  const pool = new pg.Pool({ connectionString: finalUrl })
+  // Pool config konservatif untuk Supabase free tier (limit 15 koneksi)
+  const pool = new pg.Pool({ 
+    connectionString: finalUrl,
+    max: 5,                        // Konservatif: sisakan ruang untuk migrations/studio
+    min: 1,                        // Keep 1 warm connection untuk cold start
+    idleTimeoutMillis: 20000,      // Release idle connections lebih cepat
+    connectionTimeoutMillis: 5000, // Timeout 5 detik, jangan hang selamanya
+  })
+
+  // Prevent unhandled pool errors from crashing the server
+  pool.on('error', (err) => {
+    console.error('Unexpected PG pool error:', err.message)
+  })
+
   const adapter = new PrismaPg(pool as any)
   
   return new PrismaClient({ adapter })

@@ -1,9 +1,12 @@
 'use server'
 
+import { cache } from 'react'
 import prisma from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
-export async function getProfile() {
+// React cache() deduplicates calls within the same request lifecycle.
+// getProfile() is called ~3x per page load (metadata + layout + page).
+export const getProfile = cache(async () => {
   try {
     let profile = await prisma.profile.findFirst({ where: { id: 'singleton' } });
     if (!profile) {
@@ -14,7 +17,7 @@ export async function getProfile() {
     console.error('Fetch profile error:', error);
     return null;
   }
-}
+})
 
 export async function updateProfile(data: any) {
   try {
@@ -49,14 +52,14 @@ export async function updateProfile(data: any) {
   }
 }
 
-export async function getExperiences() {
+export const getExperiences = cache(async () => {
   try {
     return await prisma.experience.findMany({ orderBy: { order: 'asc' } });
   } catch (error) {
     console.error('Fetch experiences error:', error);
     return [];
   }
-}
+})
 
 export async function addExperience(data: any) {
   try {

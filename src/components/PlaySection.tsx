@@ -60,16 +60,16 @@ export function PlaySection() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0 md:border border-[#ebebeb] md:rounded-sm overflow-hidden bg-white h-full min-h-0">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0 md:border border-[#ebebeb] md:rounded-sm md:overflow-hidden bg-white md:h-full md:min-h-0">
       {/* ── Left: Game ── */}
-      <div className="bg-[#fafafa] flex flex-col items-center justify-center p-4 md:p-8 min-h-[400px] md:min-h-0 h-full">
+      <div className="bg-[#fafafa] flex flex-col items-center justify-center p-4 md:p-8 min-h-[400px] md:min-h-0 md:h-full rounded-xl md:rounded-none">
         <div className="w-full h-full flex items-center justify-center overflow-hidden">
           <SuikaGame />
         </div>
       </div>
 
       {/* ── Right: AI Chat ── */}
-      <div className="flex flex-col bg-white h-full min-h-[400px] md:min-h-0">
+      <div className="flex flex-col bg-white h-[500px] md:h-full md:min-h-0 border border-gray-100 md:border-none rounded-xl md:rounded-none overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div>
@@ -157,19 +157,19 @@ export function PlaySection() {
         </div>
 
         <div className="px-6 pb-6 pt-4 bg-white shrink-0">
-          <div className="relative flex items-center group">
+          <div className="relative flex items-center group z-10">
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Ask anything..."
-              className="w-full h-12 pl-5 pr-12 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-200 text-sm transition-all"
+              className="w-full h-12 pl-5 pr-12 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-200 text-base md:text-sm transition-all text-[#111] relative z-10"
             />
             <button
               onClick={handleSend}
               disabled={isLoading || !query.trim()}
-              className="absolute right-3 p-2 text-gray-300 hover:text-black disabled:text-gray-200 transition-colors"
+              className="absolute right-3 p-2 text-gray-400 hover:text-[#111] disabled:text-gray-200 transition-colors z-20"
             >
               <Send size={18} />
             </button>

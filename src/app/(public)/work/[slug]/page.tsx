@@ -2,6 +2,7 @@ import React from 'react';
 import { getProjectBySlug } from '@/actions/projects';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ProjectGallery } from '@/components/ProjectGallery';
 import { PageSectionHeader } from '@/components/PageSectionHeader';
 import { FadeIn } from '@/components/animations/FadeIn';
@@ -52,11 +53,14 @@ export default async function ProjectDetailPage({
 
         {/* Right Column: Hero Image (4:3 Aspect) */}
         <div className="w-full md:w-1/2 px-6 py-8 md:py-16 md:pr-12 md:pl-6 lg:py-20 flex items-center justify-center">
-          <FadeIn delay={0.3} once={true} className="w-full aspect-[4/3] overflow-hidden border border-[#f5f5f5] shadow-sm md:shadow-none">
-            <img
+          <FadeIn delay={0.3} once={true} className="w-full aspect-[4/3] overflow-hidden border border-[#f5f5f5] shadow-sm md:shadow-none relative">
+            <Image
               src={project.imageUrl || 'https://placehold.co/800x600/fcfcfc/eee?text=—'}
               alt={project.title}
-              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              priority
             />
           </FadeIn>
         </div>

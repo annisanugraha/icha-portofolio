@@ -3,7 +3,7 @@ import { Timeline } from '@/components/Timeline';
 import { getProfile, getExperiences } from '@/actions/profile';
 import AboutContentClient from './AboutContentClient';
 
-export const revalidate = 30;
+export const revalidate = 3600;
 
 export default async function AboutPage() {
   const profile = await getProfile();

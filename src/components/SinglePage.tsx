@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Bot, Sparkles, Send, User, Loader2, RotateCcw, ChevronDown } from 'lucide-react';
 import { askAI } from '@/actions/ai';
 import ReactMarkdown from 'react-markdown';
@@ -213,6 +214,25 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                     </div>
                   </div>
 
+                  {/* Portrait - Mobile Only — Simple fade-in */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false, margin: '-5%' }}
+                    transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex md:hidden justify-center w-full"
+                  >
+                    <div className="img-container aspect-square w-full max-w-[320px] rounded-sm overflow-hidden relative">
+                      <Image
+                        src={profile?.aboutImage || 'https://placehold.co/600x600/f5f5f5/999999?text=—'}
+                        alt="Portrait"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 320px"
+                        className="object-cover"
+                      />
+                    </div>
+                  </motion.div>
+
                   {/* Portrait - Desktop — Curtain reveal */}
                   <div ref={portraitRef} className="hidden md:flex md:col-span-4 justify-center md:justify-start">
                     <motion.div
@@ -229,14 +249,20 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                         style={{ willChange: 'transform' }}
                         className="absolute inset-0 bg-[#111] z-10"
                       />
-                      <motion.img
+                      <motion.div
                         initial={{ scale: 1.15 }}
                         animate={{ scale: isPortraitInView ? 1 : 1.15 }}
                         transition={{ duration: 1.2, delay: 0.3, ease: [0.76, 0, 0.24, 1] }}
-                        src={profile?.aboutImage || 'https://placehold.co/600x600/f5f5f5/999999?text=—'}
-                        alt="Portrait"
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000"
-                      />
+                        className="w-full h-full relative grayscale group-hover:grayscale-0 transition-all duration-1000"
+                      >
+                        <Image
+                          src={profile?.aboutImage || 'https://placehold.co/600x600/f5f5f5/999999?text=—'}
+                          alt="Portrait"
+                          fill
+                          sizes="(min-width: 768px) 380px, 100vw"
+                          className="object-cover"
+                        />
+                      </motion.div>
                     </motion.div>
                   </div>
                 </div>
@@ -327,16 +353,16 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                 CHAPTER 4: PLAY — Let's Have Fun
                 ══════════════════════════════════════════════════ */}
             <section
-              className="h-[100dvh] pt-6 pb-6 flex flex-col relative"
+              className="min-h-screen md:h-[100dvh] pt-6 pb-6 flex flex-col relative"
             >
-              <div className="px-6 md:px-12 flex-1 flex flex-col min-h-0">
+              <div className="px-6 md:px-12 flex-1 flex flex-col md:min-h-0">
                 <PageSectionHeader title="LET'S TAKE A BREAK" number="04" />
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: false, margin: '-5%' }}
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex-1 flex flex-col min-h-0 mt-4"
+                  className="flex-1 flex flex-col md:min-h-0 mt-4"
                 >
                   <PlaySection />
                 </motion.div>

@@ -1,9 +1,10 @@
 'use server'
 
+import { cache } from 'react'
 import prisma from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
-export async function getCertificates() {
+export const getCertificates = cache(async () => {
   try {
     return await prisma.certificate.findMany({
       orderBy: { order: 'asc' }
@@ -12,7 +13,7 @@ export async function getCertificates() {
     console.error('Fetch certificates error:', error);
     return [];
   }
-}
+})
 
 export async function addCertificate(title: string, category: string, description: string, imageUrl: string, order: number = 0) {
   try {

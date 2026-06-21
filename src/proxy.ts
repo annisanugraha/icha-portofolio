@@ -11,7 +11,7 @@ export default function proxy(request: NextRequest) {
   }
 
   // 2. Jika mode ADMIN, proteksi dengan Authentication
-  if (appMode === 'ADMIN' && pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
+  if (appMode === 'ADMIN' && pathname.startsWith('/admin') && !pathname.startsWith('/admin/login') && !pathname.startsWith('/admin/setup')) {
     const session = request.cookies.get('admin_session');
     
     if (!session) {

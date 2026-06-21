@@ -124,7 +124,7 @@ export const CertificateGrid = ({ certificates }: CertificateGridProps) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-14">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-8 md:gap-y-14">
         {certificates.map((item, i) => (
           <SpotlightCard
             key={item.id}

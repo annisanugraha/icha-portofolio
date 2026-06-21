@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface ProjectGalleryProps {
   images: string[];
@@ -64,9 +65,12 @@ export const ProjectGallery = ({ images, title }: ProjectGalleryProps) => {
             className="break-inside-avoid mb-2 cursor-zoom-in"
             onClick={() => setSelectedIndex(i)}
           >
-            <img
+            <Image
               src={img}
               alt={`${title} gallery ${i + 1}`}
+              width={0}
+              height={0}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="w-full h-auto object-contain block"
             />
           </motion.div>
@@ -117,10 +121,12 @@ export const ProjectGallery = ({ images, title }: ProjectGalleryProps) => {
               className="relative max-w-6xl w-full h-full flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <img
+              <Image
                 src={images[selectedIndex]}
                 alt={`${title} view`}
-                className="max-w-full max-h-full object-contain"
+                fill
+                className="object-contain"
+                sizes="100vw"
               />
             </motion.div>
 

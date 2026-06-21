@@ -1,6 +1,7 @@
 // src/actions/projects.ts - New name to force Turbopack reload
 'use server'
 
+import { cache } from 'react'
 import prisma from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
@@ -144,7 +145,7 @@ export async function deleteProject(id: string) {
   }
 }
 
-export async function getProjects() {
+export const getProjects = cache(async () => {
   try {
     const allProjects = await prisma.project.findMany({
       orderBy: { order: 'asc' },
@@ -155,9 +156,9 @@ export async function getProjects() {
     console.error('Fetch projects error:', error);
     return [];
   }
-}
+})
 
-export async function getFeaturedProjects() {
+export const getFeaturedProjects = cache(async () => {
   try {
     const featured = await prisma.project.findMany({
       where: { featured: true },
@@ -169,44 +170,38 @@ export async function getFeaturedProjects() {
     console.error('Fetch featured error:', error);
     return [];
   }
-}
+})
 
-export async function getProjectBySlug(slug: string) {
+// Optimized: 2 parallel queries instead of 3-5 sequential ones.
+// Prev/next navigation is computed in JS from a lightweight slug list.
+export const getProjectBySlug = cache(async (slug: string) => {
   try {
-    const p = await prisma.project.findUnique({ 
-      where: { slug },
-      include: { links: true }
-    });
+    // Run both queries in parallel
+    const [project, allSlugs] = await Promise.all([
+      prisma.project.findUnique({ 
+        where: { slug },
+        include: { links: true }
+      }),
+      prisma.project.findMany({
+        orderBy: { order: 'asc' },
+        select: { title: true, slug: true, order: true }
+      })
+    ]);
     
-    if (!p) return null;
+    if (!project) return null;
 
-    // Get next project for navigation
-    const nextProject = await prisma.project.findFirst({
-      where: {
-        order: { gt: p.order }
-      },
-      orderBy: { order: 'asc' },
-      select: { title: true, slug: true }
-    }) || await prisma.project.findFirst({
-      orderBy: { order: 'asc' },
-      select: { title: true, slug: true }
-    });
+    // Compute prev/next from the sorted list
+    const currentIndex = allSlugs.findIndex(p => p.slug === slug);
+    const nextProject = allSlugs[currentIndex + 1] || allSlugs[0]; // wrap around
+    const prevProject = allSlugs[currentIndex - 1] || allSlugs[allSlugs.length - 1]; // wrap around
 
-    // Get previous project for navigation
-    const prevProject = await prisma.project.findFirst({
-      where: {
-        order: { lt: p.order }
-      },
-      orderBy: { order: 'desc' },
-      select: { title: true, slug: true }
-    }) || await prisma.project.findFirst({
-      orderBy: { order: 'desc' },
-      select: { title: true, slug: true }
-    });
-
-    return { ...p, nextProject, prevProject };
+    return { 
+      ...project, 
+      nextProject: nextProject ? { title: nextProject.title, slug: nextProject.slug } : null, 
+      prevProject: prevProject ? { title: prevProject.title, slug: prevProject.slug } : null 
+    };
   } catch (error: any) {
     console.error('Fetch slug error:', error);
     return null;
   }
-}
+})

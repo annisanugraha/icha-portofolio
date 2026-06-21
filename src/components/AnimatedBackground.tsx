@@ -30,10 +30,13 @@ export function AnimatedBackground() {
       color: string;
     }[] = [];
 
+    // Responsive particle count — fewer on mobile for better perf
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const particleCount = isMobile ? 20 : 60;
     const colors = ['#111', '#999', '#e8e8e8'];
 
     // Create particles
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -67,7 +70,8 @@ export function AnimatedBackground() {
       },
     });
 
-    // Mouse interaction - particles react to cursor
+    // Mouse interaction - only on non-touch devices
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
     const handleMouse = (e: MouseEvent) => {
       particles.forEach((p) => {
         const dx = e.clientX - p.x;
@@ -80,11 +84,15 @@ export function AnimatedBackground() {
       });
     };
 
-    window.addEventListener('mousemove', handleMouse);
+    if (!isTouch) {
+      window.addEventListener('mousemove', handleMouse);
+    }
 
     return () => {
       window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', handleMouse);
+      if (!isTouch) {
+        window.removeEventListener('mousemove', handleMouse);
+      }
     };
   }, []);
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 export default function AboutContentClient({ profile }: { profile: any }) {
   return (
@@ -25,11 +26,13 @@ export default function AboutContentClient({ profile }: { profile: any }) {
             transition={{ duration: 1.4, delay: 0.2 }}
             className="md:hidden flex justify-center w-full"
           >
-            <div className="img-container aspect-square w-full rounded-sm overflow-hidden">
-              <img
+            <div className="img-container aspect-square w-full rounded-sm overflow-hidden relative">
+              <Image
                 src={profile?.aboutImage || "https://placehold.co/600x600/f5f5f5/999999?text=—"}
                 alt="Portrait"
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 320px"
+                className="object-cover"
               />
             </div>
           </motion.div>
@@ -54,11 +57,13 @@ export default function AboutContentClient({ profile }: { profile: any }) {
           transition={{ duration: 1.4, delay: 0.3 }}
           className="hidden md:flex md:col-span-4 justify-center md:justify-start"
         >
-          <div className="img-container aspect-square w-full max-w-[380px] rounded-sm overflow-hidden">
-            <img
+          <div className="img-container aspect-square w-full max-w-[380px] rounded-sm overflow-hidden relative">
+            <Image
               src={profile?.aboutImage || "https://placehold.co/600x600/f5f5f5/999999?text=—"}
               alt="Portrait"
-              className="w-full h-full object-cover"
+              fill
+              sizes="(min-width: 768px) 380px, 100vw"
+              className="object-cover"
             />
           </div>
         </motion.div>
