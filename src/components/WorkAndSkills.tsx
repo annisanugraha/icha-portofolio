@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import type { Project } from '@/types';
 
 // ── Skill Cards for Background ──
 const skillCategories = [
@@ -104,7 +105,7 @@ function TechStackBackground() {
 }
 
 // ── Project Card — Reusable for both mobile and desktop ──
-function ProjectCard({ project, index }: { project: any; index: number }) {
+function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <Link
       href={`/work/${project.slug}`}
@@ -158,7 +159,7 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
 
 // ── Main Component ──
 interface WorkAndSkillsProps {
-  projects: any[];
+  projects: Project[];
 }
 
 export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
@@ -255,7 +256,7 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
 
           {/* Project Cards — vertical list */}
           <div className="space-y-6">
-            {projects.map((project: any, i: number) => (
+            {projects.map((project, i: number) => (
               <motion.div
                 key={project.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -325,7 +326,7 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
             style={{ y }}
             className="px-12 pt-[30vh] pb-[10vh] space-y-8"
           >
-            {projects.map((project: any, i: number) => (
+            {projects.map((project, i: number) => (
               <motion.div
                 key={project.id}
                 ref={i === projects.length - 1 ? lastCardRef : null}

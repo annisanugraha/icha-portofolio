@@ -8,9 +8,10 @@ import { IntroSequence } from "@/components/animations/IntroSequence";
 import { GrainOverlay } from "@/components/GrainOverlay";
 import { ScrollChapterIndicator } from "@/components/ScrollChapterIndicator";
 import { SmoothCursor } from "@/components/SmoothCursor";
+import type { Profile } from '@/types';
 
 interface PublicLayoutClientProps {
-  profile: any;
+  profile: Profile | null;
   children: React.ReactNode;
 }
 

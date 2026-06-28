@@ -1,47 +1,23 @@
 'use client';
 
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Bot, Sparkles, Send, User, Loader2, RotateCcw, ChevronDown } from 'lucide-react';
-import { askAI } from '@/actions/ai';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkBreaks from 'remark-breaks';
+import { ChevronDown } from 'lucide-react';
 import { PageSectionHeader } from './PageSectionHeader';
 import { CertificateGrid } from './CertificateGrid';
 import { WorkAndSkills } from './WorkAndSkills';
 import { PlaySection } from './PlaySection';
+import type { Profile, Project, Certificate, Experience } from '@/types';
 
 interface SinglePageProps {
-  profile: any;
-  projects: any[];
-  certificates: any[];
-  experiences: any[];
+  profile: Profile | null;
+  projects: Project[];
+  certificates: Certificate[];
+  experiences: Experience[];
 }
 
-// ── Reusable Section Transition Line ──
-function SectionTransition() {
-  return null;
-}
 
-// ── Chapter Label ──
-function ChapterLabel({ number, title }: { number: string; title: string }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: false, margin: '-10%' }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="flex items-center gap-3 mb-8"
-    >
-      <span className="chapter-label">CH.{number}</span>
-      <div className="w-8 h-px bg-[#ddd]" />
-      <span className="chapter-label">{title}</span>
-    </motion.div>
-  );
-}
 
 export function SinglePage({ profile, projects, certificates, experiences }: SinglePageProps) {
   const heroRef = useRef<HTMLElement>(null);
@@ -155,7 +131,6 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
               TRANSITION: Hero → About
               ══════════════════════════════════════════════════ */}
           <div id="about">
-            <SectionTransition />
 
             {/* ══════════════════════════════════════════════════
                 CHAPTER 2: ABOUT — Behind The Screen
@@ -272,7 +247,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   <div className="mt-16 space-y-0">
                     <PageSectionHeader title="Chronology" number="02" />
                     <div className="flex flex-col">
-                      {experiences.map((exp: any, i: number) => {
+                      {experiences.map((exp, i: number) => {
                         const isLast = i === experiences.length - 1;
                         return (
                           <motion.div
@@ -335,7 +310,6 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
               TRANSITION: About → Work
               ══════════════════════════════════════════════════ */}
           <div id="work">
-            <SectionTransition />
 
             {/* ══════════════════════════════════════════════════
                 CHAPTER 3: WORK — The Craft (light polish only)
@@ -347,7 +321,6 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
               TRANSITION: Work → Play
               ══════════════════════════════════════════════════ */}
           <div id="play">
-            <SectionTransition />
 
             {/* ══════════════════════════════════════════════════
                 CHAPTER 4: PLAY — Let's Have Fun
@@ -374,7 +347,6 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
               TRANSITION: Play → Archives
               ══════════════════════════════════════════════════ */}
           <div id="archives">
-            <SectionTransition />
 
             {/* ══════════════════════════════════════════════════
                 CHAPTER 5: ARCHIVES — The Evidence
@@ -395,7 +367,6 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
               TRANSITION: Play → Contact
               ══════════════════════════════════════════════════ */}
           <div id="contact">
-            <SectionTransition />
 
             {/* ══════════════════════════════════════════════════
                 CHAPTER 6: CONTACT — Let's Talk

@@ -3,9 +3,10 @@
 import React from 'react';
 import { motion, animate } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
+import type { Profile } from '@/types';
 
 interface FooterProps {
-  profile: any;
+  profile: Profile | null;
 }
 
 export const Footer = ({ profile }: FooterProps) => {

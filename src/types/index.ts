@@ -1,3 +1,5 @@
+// ── Types matching Prisma schema ──
+
 export interface ProjectLink {
   id: string;
   label: string;
@@ -12,36 +14,62 @@ export interface Project {
   category: string;
   shortDescription: string;
   fullDescription: string;
-  contextWhy?: string;
-  scopeWhat?: string;
-  outcomeHow?: string;
-  imageUrl?: string;
+  contextWhy?: string | null;
+  scopeWhat?: string | null;
+  outcomeHow?: string | null;
+  imageUrl?: string | null;
   galleryImages: string[];
+  techStack: string[];
+  githubUrl?: string | null;
+  demoUrl?: string | null;
+  links: ProjectLink[];
   year: string;
   featured: boolean;
   order: number;
-  links: ProjectLink[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface Achievement {
-// ... existing code
+export interface Profile {
   id: string;
-  title: string;
-  category: "HKI" | "Competition" | "Course" | "Seminar" | "Work";
-  issuedBy: string;
-  issueDate: string;
-  imageUrl: string; // Bisa pake link placeholder dulu
-  description: string;
-  credentialUrl?: string;
+  logoText: string;
+  logoImage?: string | null;
+  favicon?: string | null;
+  siteTitle: string;
+  siteDescription: string;
+  heroRole: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  aboutQuote: string;
+  aboutBio1: string;
+  aboutBio2: string;
+  aboutImage?: string | null;
+  linkedinUrl: string;
+  githubUrl: string;
+  emailAddress: string;
+  emailSubject: string;
+  resumeUrl?: string | null;
+  updatedAt: Date;
 }
 
-export interface Journey {
+export interface Experience {
   id: string;
   year: string;
   title: string;
   company: string;
   description: string;
-  type: "Education" | "Experience" | "Award";
+  imageUrl?: string | null;
+  order: number;
+  createdAt: Date;
+}
+
+export interface Certificate {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  imageUrl?: string | null;
+  order: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
