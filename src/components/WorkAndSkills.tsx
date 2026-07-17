@@ -109,6 +109,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <Link
       href={`/work/${project.slug}`}
+      data-cursor="View Details ⮞"
       className="block p-4 bg-white rounded-md border border-[#ebebeb] hover:border-[#111] hover:shadow-2xl transition-all duration-500 group"
     >
       <div className="img-container aspect-video rounded-sm overflow-hidden mb-2 relative">

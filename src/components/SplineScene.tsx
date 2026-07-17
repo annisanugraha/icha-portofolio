@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Application } from '@splinetool/runtime';
 
 // ── Load Spline with no SSR (avoids async Client Component error in Next.js 15)
@@ -42,15 +42,64 @@ function checkWebGLSupport(): boolean {
 interface SplineSceneProps {
   scene: string;
   className?: string;
+  defaultCursorText?: string;
+  clickedCursorText?: string;
 }
 
-export function SplineScene({ scene, className = '' }: SplineSceneProps) {
+export function SplineScene({
+  scene,
+  className = '',
+  defaultCursorText = 'Click me!',
+  clickedCursorText = 'You got it~♪',
+}: SplineSceneProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [webGLSupported, setWebGLSupported] = useState(true);
+  const [cursorLabel, setCursorLabel] = useState(defaultCursorText);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const isHoldingRef = useRef(false);
 
   useEffect(() => {
     setWebGLSupported(checkWebGLSupport());
   }, []);
+
+  const handlePointerUp = useCallback(() => {
+    if (!isHoldingRef.current) return;
+    isHoldingRef.current = false;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      setCursorLabel(defaultCursorText);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('mousemove'));
+      }
+    }, 1300);
+  }, [defaultCursorText]);
+
+  const handlePointerDown = useCallback(() => {
+    if (!clickedCursorText) return;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    isHoldingRef.current = true;
+    setCursorLabel(clickedCursorText);
+  }, [clickedCursorText]);
+
+  const handlePointerLeave = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    isHoldingRef.current = false;
+    setCursorLabel(defaultCursorText);
+  }, [defaultCursorText]);
+
+  useEffect(() => {
+    const onGlobalUp = () => {
+      if (isHoldingRef.current) {
+        handlePointerUp();
+      }
+    };
+    window.addEventListener('pointerup', onGlobalUp, { capture: true });
+    window.addEventListener('mouseup', onGlobalUp, { capture: true });
+    return () => {
+      window.removeEventListener('pointerup', onGlobalUp, { capture: true });
+      window.removeEventListener('mouseup', onGlobalUp, { capture: true });
+    };
+  }, [handlePointerUp]);
 
   const handleLoad = useCallback((splineApp: Application) => {
     setIsLoaded(true);
@@ -92,7 +141,15 @@ export function SplineScene({ scene, className = '' }: SplineSceneProps) {
   const isIframeUrl = scene.includes('my.spline.design') || !scene.includes('.splinecode');
 
   return (
-    <div className={`relative w-full h-full flex items-center justify-center overflow-hidden bg-white ${className}`}>
+    <div
+      data-cursor={cursorLabel}
+      onPointerDownCapture={handlePointerDown}
+      onMouseDownCapture={handlePointerDown}
+      onPointerUpCapture={handlePointerUp}
+      onMouseUpCapture={handlePointerUp}
+      onPointerLeave={handlePointerLeave}
+      className={`relative w-full h-full flex items-center justify-center overflow-hidden bg-white ${className}`}
+    >
       {!isLoaded && <SplineLoader />}
       <div className={`w-full h-full flex items-center justify-center transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
         {isIframeUrl ? (
@@ -108,7 +165,7 @@ export function SplineScene({ scene, className = '' }: SplineSceneProps) {
             allow="autoplay"
           />
         ) : (
-          <Spline scene={scene} onLoad={handleLoad} />
+          <Spline scene={scene} onLoad={handleLoad} onSplineMouseDown={handlePointerDown} onSplineMouseUp={handlePointerUp} />
         )}
       </div>
     </div>

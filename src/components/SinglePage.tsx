@@ -90,10 +90,11 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
 
                 {/* Headline */}
                 <motion.h1
+                  data-cursor="Hi there! Nice to meet you :]"
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="leading-[1.0] whitespace-pre-line"
+                  className="leading-[1.0] whitespace-pre-line cursor-default"
                 >
                   {profile?.heroTitle || 'Building things that matter.'}
                 </motion.h1>
