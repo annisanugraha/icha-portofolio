@@ -8,6 +8,7 @@ import { PageSectionHeader } from './PageSectionHeader';
 import { CertificateGrid } from './CertificateGrid';
 import { WorkAndSkills } from './WorkAndSkills';
 import { PlaySection } from './PlaySection';
+import { SplineScene } from './SplineScene';
 import type { Profile, Project, Certificate, Experience } from '@/types';
 
 interface SinglePageProps {
@@ -65,12 +66,18 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
           <section
             ref={heroRef}
             id="hero"
-            className="min-h-screen flex flex-col justify-center md:pt-0 pt-16 relative overflow-hidden"
+            className="min-h-screen flex items-center md:pt-0 pt-20 relative overflow-hidden"
+            style={{ minHeight: '100svh' }}
           >
-            <div className="px-6 md:px-12">
+            {/* 2-column grid: text left, Spline right */}
+            <div className="w-full px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-4 items-center">
 
-              <motion.div style={{ y: heroTitleY, opacity: heroOpacity }} className="space-y-8 max-w-2xl">
-                {/* Role label with line draw */}
+              {/* Left: Text */}
+              <motion.div
+                style={{ y: heroTitleY, opacity: heroOpacity }}
+                className="lg:col-span-7 space-y-8 max-w-2xl z-10"
+              >
+                {/* Role label */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -81,7 +88,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   </span>
                 </motion.div>
 
-                {/* Title with staggered word reveal */}
+                {/* Headline */}
                 <motion.h1
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -91,7 +98,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   {profile?.heroTitle || 'Building things that matter.'}
                 </motion.h1>
 
-                {/* Subtitle with delayed entrance */}
+                {/* Subtitle */}
                 <motion.div
                   style={{ y: heroSubtitleY }}
                   initial={{ opacity: 0, y: 20 }}
@@ -110,6 +117,20 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                   </p>
                 </motion.div>
               </motion.div>
+
+              {/* Right: Spline 3D white robot */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                style={{ opacity: heroOpacity, height: '100svh' }}
+                className="lg:col-span-5 w-full"
+              >
+                <SplineScene
+                  scene="https://prod.spline.design/bTBmc2h7TBzR3GJr/scene.splinecode"
+                  className="w-full h-full"
+                />
+              </motion.div>
             </div>
 
             {/* Scroll indicator */}
@@ -118,7 +139,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5, duration: 0.8 }}
               style={{ opacity: heroOpacity }}
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+              className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10 pointer-events-none"
             >
               <span className="text-[8px] font-mono tracking-[0.5em] text-[#bbb] uppercase">
                 Scroll to explore
@@ -407,8 +428,10 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                     {profile?.resumeUrl ? (
                       <button
                         onClick={async () => {
+                          const urlStr = profile?.resumeUrl;
+                          if (!urlStr) return;
                           try {
-                            const response = await fetch(profile.resumeUrl);
+                            const response = await fetch(urlStr);
                             const blob = await response.blob();
                             const url = window.URL.createObjectURL(blob);
                             const a = document.createElement('a');
@@ -419,7 +442,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                             document.body.removeChild(a);
                             window.URL.revokeObjectURL(url);
                           } catch (err) {
-                            window.open(profile.resumeUrl, '_blank');
+                            window.open(urlStr, '_blank');
                           }
                         }}
                         className="group inline-flex items-center gap-3 px-8 py-4 bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase font-mono hover:bg-[#333] transition-all duration-500 pulse-glow cursor-pointer"

@@ -44,6 +44,8 @@ next-env.d.ts
 
 # custom ignore
 /.context/
+/.agents/
+*.glb
 GEMINI.md
 CLAUDE.md
 .gitignore

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, animate } from 'framer-motion';
+import { motion, animate } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -15,12 +15,8 @@ const navItems = [
 
 export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logoImage?: string | null }) => {
   const [activeSection, setActiveSection] = useState('hero');
-  const { scrollYProgress } = useScroll();
   const pathname = usePathname();
   const router = useRouter();
-  
-  // Desktop sidebar border opacity based on scroll
-  const borderOpacity = useTransform(scrollYProgress, [0, 0.05], [0, 1]);
 
   // Scroll spy using IntersectionObserver
   useEffect(() => {
@@ -137,7 +133,6 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
       {/* ── Desktop Sidebar Nav ── */}
       <motion.nav 
         className="fixed left-0 top-0 bottom-0 w-16 hidden md:flex flex-col items-center justify-between py-10 bg-white/95 backdrop-blur-sm border-r border-[#ebebeb] z-50"
-        style={{ borderRightColor: useTransform(borderOpacity, v => `rgba(235,235,235,${v})`) }}
       >
 
         {/* Logo - scroll to top */}

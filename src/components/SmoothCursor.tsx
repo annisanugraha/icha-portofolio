@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 /**
@@ -13,9 +13,10 @@ export function SmoothCursor() {
   const [isVisible, setIsVisible] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [isTouch, setIsTouch] = useState(false);
+  const hasMovedRef = useRef(false);
 
-  const cursorX = useMotionValue(0);
-  const cursorY = useMotionValue(0);
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
 
   // Spring for smooth trailing
   const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
@@ -34,59 +35,82 @@ export function SmoothCursor() {
     document.documentElement.classList.add('smooth-cursor-active');
 
     const moveCursor = (e: MouseEvent) => {
-      cursorX.set(e.clientX);
-      cursorY.set(e.clientY);
-      if (!isVisible) setIsVisible(true);
-    };
+      if (!hasMovedRef.current) {
+        hasMovedRef.current = true;
+        cursorX.set(e.clientX);
+        cursorY.set(e.clientY);
+        dotX.set(e.clientX);
+        dotY.set(e.clientY);
+      } else {
+        cursorX.set(e.clientX);
+        cursorY.set(e.clientY);
+      }
 
-    const handleMouseEnter = (e: Event) => {
-      const target = e.target as HTMLElement;
-      if (
-        target.tagName === 'A' ||
-        target.tagName === 'BUTTON' ||
-        target.closest('a') ||
-        target.closest('button') ||
-        target.classList.contains('cursor-pointer') ||
-        target.closest('.cursor-pointer')
-      ) {
-        setIsHovering(true);
+      // If hovering over an iframe (like cross-origin Spline 3D scene),
+      // the native cursor inside the iframe takes over, so hide smooth cursor
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'IFRAME' || target.closest('iframe'))) {
+        setIsVisible(false);
+      } else if (!isVisible) {
+        setIsVisible(true);
       }
     };
 
-    const handleMouseLeave = () => {
+    const handlePointerOver = (e: PointerEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      if (target.tagName === 'IFRAME' || target.closest('iframe')) {
+        setIsVisible(false);
+        setIsHovering(false);
+        return;
+      }
+
+      // Check if target or any parent is interactive
+      const isInteractive =
+        target.tagName === 'A' ||
+        target.tagName === 'BUTTON' ||
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.closest('a') !== null ||
+        target.closest('button') !== null ||
+        target.closest('[role="button"]') !== null ||
+        target.classList.contains('cursor-pointer') ||
+        target.closest('.cursor-pointer') !== null;
+
+      if (isInteractive) {
+        setIsHovering(true);
+      } else {
+        setIsHovering(false);
+      }
+
+      if (hasMovedRef.current) {
+        setIsVisible(true);
+      }
+    };
+
+    const handlePointerLeave = () => {
+      setIsVisible(false);
       setIsHovering(false);
     };
 
-    const handleMouseOut = () => {
-      setIsVisible(false);
-    };
-
-    const handleMouseOver = () => {
-      setIsVisible(true);
-    };
-
-    window.addEventListener('mousemove', moveCursor);
-    document.addEventListener('mouseover', handleMouseEnter, true);
-    document.addEventListener('mouseout', handleMouseLeave, true);
-    document.documentElement.addEventListener('mouseleave', handleMouseOut);
-    document.documentElement.addEventListener('mouseenter', handleMouseOver);
+    window.addEventListener('mousemove', moveCursor, { passive: true });
+    document.addEventListener('pointerover', handlePointerOver, { passive: true });
+    document.documentElement.addEventListener('pointerleave', handlePointerLeave);
 
     return () => {
       document.documentElement.classList.remove('smooth-cursor-active');
       window.removeEventListener('mousemove', moveCursor);
-      document.removeEventListener('mouseover', handleMouseEnter, true);
-      document.removeEventListener('mouseout', handleMouseLeave, true);
-      document.documentElement.removeEventListener('mouseleave', handleMouseOut);
-      document.documentElement.removeEventListener('mouseenter', handleMouseOver);
+      document.removeEventListener('pointerover', handlePointerOver);
+      document.documentElement.removeEventListener('pointerleave', handlePointerLeave);
     };
-  }, [cursorX, cursorY, isVisible]);
+  }, [cursorX, cursorY, dotX, dotY, isVisible]);
 
   // Don't render on touch devices
   if (isTouch) return null;
 
   return (
     <>
-
       {/* Trailing dot */}
       <motion.div
         style={{
