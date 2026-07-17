@@ -8,6 +8,7 @@ import { IntroSequence } from "@/components/animations/IntroSequence";
 import { GrainOverlay } from "@/components/GrainOverlay";
 import { ScrollChapterIndicator } from "@/components/ScrollChapterIndicator";
 import { SmoothCursor } from "@/components/SmoothCursor";
+import { LenisProvider } from "@/components/LenisProvider";
 import type { Profile } from '@/types';
 
 interface PublicLayoutClientProps {
@@ -38,7 +39,7 @@ export function PublicLayoutClient({ profile, children }: PublicLayoutClientProp
       {showIntro ? (
         <IntroSequence onComplete={handleIntroComplete} />
       ) : (
-        <>
+        <LenisProvider>
           <AnimatedBackground />
           <GrainOverlay />
           <ScrollChapterIndicator />
@@ -51,7 +52,7 @@ export function PublicLayoutClient({ profile, children }: PublicLayoutClientProp
             </div>
             <Footer profile={profile} />
           </div>
-        </>
+        </LenisProvider>
       )}
     </>
   );

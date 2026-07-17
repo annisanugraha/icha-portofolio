@@ -36,6 +36,16 @@
 
   /* ── Grain Overlay ── */
   --grain-opacity: 0.035;
+
+  /* [NEW] Hero grid background */
+  --grid-color: rgba(0, 0, 0, 0.055);
+  --grid-size: 40px;
+
+  /* [NEW] Dark Contact Section */
+  --dark-bg: #0a0a0a;
+  --dark-text: #f0f0f0;
+  --dark-muted: #666666;
+  --dark-border: #222222;
 }
 
 * {
@@ -575,4 +585,66 @@ h4 {
   .chapter-indicator {
     display: none;
   }
+}
+
+/* ── Lenis Smooth Scroll ── */
+html.lenis, html.lenis-smooth {
+  height: auto;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* ── Hero Grid Background ── */
+.hero-grid-bg {
+  background-image: 
+    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* ── Dark Section (Contact) ── */
+.section-dark {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+.section-dark h1, .section-dark h2, .section-dark h3, .section-dark p {
+  color: var(--dark-text);
+}
+.section-dark .label {
+  color: var(--dark-muted);
+}
+
+/* ── Coverflow 3D Container ── */
+.coverflow-container {
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+}
+.coverflow-card {
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  transition: none; /* Animasi dikontrol penuh oleh Anime.js */
+}
+
+/* ── Activity Gallery Scrollable ── */
+.activity-gallery-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.activity-gallery-track::-webkit-scrollbar { display: none; }
+.activity-gallery-item {
+  scroll-snap-align: start;
+  flex-shrink: 0;
 }
