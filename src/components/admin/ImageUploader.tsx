@@ -9,9 +9,10 @@ interface Props {
   onDelete?: () => void;
   currentImage?: string | null; 
   label?: string; 
+  bucket?: string;
 }
 
-export const ImageUploader = ({ onUpload, onDelete, currentImage, label = 'Image' }: Props) => {
+export const ImageUploader = ({ onUpload, onDelete, currentImage, label = 'Image', bucket = 'portfolio' }: Props) => {
   const [uploading, setUploading] = useState(false);
   const [mode, setMode] = useState<'upload' | 'url'>('upload');
   const [urlInput, setUrlInput] = useState(currentImage || '');
@@ -32,10 +33,10 @@ export const ImageUploader = ({ onUpload, onDelete, currentImage, label = 'Image
       const fileName = `${Date.now()}.${fileExt}`;
       const filePath = `uploads/${fileName}`;
       
-      const { error } = await supabase.storage.from('portfolio').upload(filePath, file);
+      const { error } = await supabase.storage.from(bucket).upload(filePath, file);
       if (error) throw error;
       
-      const { data } = supabase.storage.from('portfolio').getPublicUrl(filePath);
+      const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
       if (data.publicUrl) { 
         setPreview(data.publicUrl); 
         onUpload(data.publicUrl); 

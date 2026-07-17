@@ -27,9 +27,12 @@ export async function addProject(data: any) {
         order: data.order || 0,
         links: {
           create: data.links || []
-        }
+        },
+        skills: data.skillIds ? {
+          connect: data.skillIds.map((id: string) => ({ id }))
+        } : undefined,
       },
-      include: { links: true }
+      include: { links: true, skills: true }
     })
     revalidatePath('/')
     revalidatePath('/admin', 'layout')
@@ -67,9 +70,12 @@ export async function updateProject(id: string, data: any) {
         links: {
           deleteMany: {},
           create: data.links || []
+        },
+        skills: {
+          set: data.skillIds?.map((id: string) => ({ id })) || []
         }
       },
-      include: { links: true }
+      include: { links: true, skills: true }
     })
     revalidatePath('/')
     revalidatePath(`/work/${data.slug}`)
@@ -148,7 +154,7 @@ export const getProjects = cache(async () => {
   try {
     const allProjects = await prisma.project.findMany({
       orderBy: { order: 'asc' },
-      include: { links: true }
+      include: { links: true, skills: true }
     });
     return allProjects;
   } catch (error: any) {
@@ -162,7 +168,7 @@ export const getFeaturedProjects = cache(async () => {
     const featured = await prisma.project.findMany({
       where: { featured: true },
       orderBy: { order: 'asc' },
-      include: { links: true }
+      include: { links: true, skills: true }
     });
     return featured;
   } catch (error: any) {
@@ -179,7 +185,7 @@ export const getProjectBySlug = cache(async (slug: string) => {
     const [project, allSlugs] = await Promise.all([
       prisma.project.findUnique({ 
         where: { slug },
-        include: { links: true }
+        include: { links: true, skills: true }
       }),
       prisma.project.findMany({
         orderBy: { order: 'asc' },

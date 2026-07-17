@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getProjects, addProject, updateProject, deleteProject, reorderProjects, toggleProjectFeatured } from '@/actions/projects';
+import { getAllSkills } from '@/actions/skill';
 import { ImageUploader } from '@/components/admin/ImageUploader';
 import { MultiImageUploader } from '@/components/admin/MultiImageUploader';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
@@ -22,10 +23,12 @@ const emptyForm = {
   techStack: [] as string[],
   links: [] as { label: string; url: string }[],
   featured: false,
+  skillIds: [] as string[],
 };
 
 export default function ProjectsContent() {
   const [projects, setProjects] = useState<any[]>([]);
+  const [allSkills, setAllSkills] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -40,8 +43,12 @@ export default function ProjectsContent() {
   useEffect(() => { load(); }, []);
   async function load() {
     try {
-      const data = await getProjects();
+      const [data, skillsData] = await Promise.all([
+        getProjects(),
+        getAllSkills()
+      ]);
       setProjects(data);
+      setAllSkills(skillsData);
     } catch (err) {
       console.error('Load projects error:', err);
     } finally {
@@ -73,7 +80,8 @@ export default function ProjectsContent() {
       galleryImages: p.galleryImages || [], 
       techStack: techStack,
       links: p.links?.map((l: any) => ({ label: l.label, url: l.url })) || [],
-      featured: p.featured || false 
+      featured: p.featured || false,
+      skillIds: p.skills?.map((s: any) => s.id) || []
     });
     setTechInput(techStack.join(', '));
     setShowForm(true);
@@ -279,6 +287,58 @@ export default function ProjectsContent() {
                 </span>
               ))}
             </div>
+          </Field>
+
+          <Field label="Connected Skills (Multi-select from Database)">
+            {allSkills.length === 0 ? (
+              <p className="text-xs text-[#999] italic">Belum ada skill terdaftar di database. Silakan tambah skill di menu Skills.</p>
+            ) : (
+              <div className="space-y-4 border border-[#ebebeb] p-4 bg-white">
+                {['Frontend', 'Backend', 'Design', 'Tools'].map(cat => {
+                  const catSkills = allSkills.filter(s => s.category === cat || (!['Frontend', 'Backend', 'Design', 'Tools'].includes(s.category) && cat === 'Tools'));
+                  if (catSkills.length === 0) return null;
+                  return (
+                    <div key={cat} className="space-y-2">
+                      <p className="text-[9px] tracking-[0.3em] font-bold uppercase text-[#999] border-b border-[#f0f0f0] pb-1">{cat}</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                        {catSkills.map(s => {
+                          const checked = form.skillIds.includes(s.id);
+                          return (
+                            <label
+                              key={s.id}
+                              className={`flex items-center gap-2 p-2 border cursor-pointer select-none transition-all text-xs ${
+                                checked ? 'border-[#111] bg-[#111] text-white' : 'border-[#ebebeb] bg-[#fafafa] hover:border-[#ccc] text-[#111]'
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => {
+                                  if (checked) {
+                                    set('skillIds', form.skillIds.filter(id => id !== s.id));
+                                  } else {
+                                    set('skillIds', [...form.skillIds, s.id]);
+                                  }
+                                }}
+                                className="sr-only"
+                              />
+                              <div className="w-5 h-5 flex items-center justify-center shrink-0 bg-white border border-[#eee] p-0.5">
+                                {s.logoUrl ? (
+                                  <img src={s.logoUrl} alt={s.name} className="w-full h-full object-contain" />
+                                ) : (
+                                  <span className="text-[8px] text-[#ccc]">✦</span>
+                                )}
+                              </div>
+                              <span className="truncate font-mono text-[11px]">{s.name}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </Field>
 
           <MultiImageUploader label="Gallery Photos" currentImages={form.galleryImages} onUpload={urls => set('galleryImages', urls)} />

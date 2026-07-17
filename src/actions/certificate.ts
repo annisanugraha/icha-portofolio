@@ -63,6 +63,22 @@ export async function updateCertificate(id: string, data: any) {
   }
 }
 
+export async function toggleCertificateHighlight(id: string, value: boolean) {
+  try {
+    const updated = await prisma.certificate.update({
+      where: { id },
+      data: { highlighted: value }
+    });
+    revalidatePath('/');
+    revalidatePath('/archives');
+    revalidatePath('/admin/certificates');
+    return { success: true, data: updated };
+  } catch (error: any) {
+    console.error('Toggle certificate highlight error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 export async function reorderCertificates(orders: { id: string, order: number }[]) {
   try {
     const transactions = orders.map(item => 

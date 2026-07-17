@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getCertificates, addCertificate, updateCertificate, deleteCertificate, reorderCertificates } from '@/actions/certificate';
+import { getCertificates, addCertificate, updateCertificate, deleteCertificate, reorderCertificates, toggleCertificateHighlight } from '@/actions/certificate';
 import { ImageUploader } from '@/components/admin/ImageUploader';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
@@ -12,7 +12,7 @@ export default function ArchivesContent() {
   const [editId, setEditId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    title: '', category: '', description: '', imageUrl: '', order: 0
+    title: '', category: '', description: '', imageUrl: '', order: 0, highlighted: false
   });
 
   useEffect(() => { loadCerts(); }, []);
@@ -26,7 +26,7 @@ export default function ArchivesContent() {
   const handleEdit = (c: any) => {
     setEditId(c.id);
     setFormData({
-      title: c.title, category: c.category, description: c.description, imageUrl: c.imageUrl || '', order: c.order || 0
+      title: c.title, category: c.category, description: c.description, imageUrl: c.imageUrl || '', order: c.order || 0, highlighted: c.highlighted || false
     });
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -37,12 +37,12 @@ export default function ArchivesContent() {
     try {
       const res = editId 
         ? await updateCertificate(editId, formData)
-        : await addCertificate(formData.title, formData.category, formData.description, formData.imageUrl || '', certs.length);
+        : await addCertificate(formData.title, formData.category, formData.description, formData.imageUrl || '', certs.length, formData.highlighted);
 
       if (res.success) {
         setShowForm(false);
         setEditId(null);
-        setFormData({ title: '', category: '', description: '', imageUrl: '', order: 0 });
+        setFormData({ title: '', category: '', description: '', imageUrl: '', order: 0, highlighted: false });
         loadCerts();
       } else {
         alert('Error: ' + res.error);
@@ -93,7 +93,7 @@ export default function ArchivesContent() {
               setEditId(null);
             } else {
               setEditId(null);
-              setFormData({ title: '', category: '', description: '', imageUrl: '', order: certs.length });
+              setFormData({ title: '', category: '', description: '', imageUrl: '', order: certs.length, highlighted: false });
               setShowForm(true);
             }
           }}
@@ -131,6 +131,16 @@ export default function ArchivesContent() {
               onDelete={() => setFormData({...formData, imageUrl: ''})}
             />
           </div>
+
+          <label className="flex items-center gap-2 text-[9px] tracking-widest text-[#999] uppercase cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={formData.highlighted}
+              onChange={e => setFormData({...formData, highlighted: e.target.checked})}
+              className="accent-[#111] cursor-pointer"
+            />
+            <span>Tampil di Homepage (Highlighted)</span>
+          </label>
 
           <button className="bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase px-10 py-3.5 hover:bg-black transition-colors cursor-pointer w-full sm:w-auto">
             {editId ? 'Save Changes' : 'Publish Entry'}
@@ -170,10 +180,24 @@ export default function ArchivesContent() {
                         </div>
                       </div>
 
-                      {/* Actions */}
-                      <div className="flex gap-4 shrink-0 justify-end ml-9 sm:ml-0">
-                        <button onClick={() => handleEdit(c)} className="text-[9px] tracking-widest text-[#999] hover:text-[#111] transition-colors uppercase cursor-pointer border-b border-transparent hover:border-[#111]">Edit</button>
-                        <button onClick={() => handleDelete(c.id)} className="text-[9px] tracking-widest text-[#ccc] hover:text-red-500 transition-colors uppercase cursor-pointer border-b border-transparent hover:border-red-500">Delete</button>
+                      {/* Highlight Toggle & Actions */}
+                      <div className="flex items-center gap-6 shrink-0 justify-end ml-9 sm:ml-0">
+                        <label className="flex items-center gap-2 text-[8px] tracking-widest text-[#999] uppercase cursor-pointer select-none border border-[#ebebeb] px-3 py-1.5 hover:border-[#ccc] bg-[#fafafa]">
+                          <input
+                            type="checkbox"
+                            checked={c.highlighted || false}
+                            onChange={async () => {
+                              await toggleCertificateHighlight(c.id, !c.highlighted);
+                              loadCerts();
+                            }}
+                            className="accent-[#111] cursor-pointer"
+                          />
+                          <span>Tampil di Homepage</span>
+                        </label>
+                        <div className="flex gap-4">
+                          <button onClick={() => handleEdit(c)} className="text-[9px] tracking-widest text-[#999] hover:text-[#111] transition-colors uppercase cursor-pointer border-b border-transparent hover:border-[#111]">Edit</button>
+                          <button onClick={() => handleDelete(c.id)} className="text-[9px] tracking-widest text-[#ccc] hover:text-red-500 transition-colors uppercase cursor-pointer border-b border-transparent hover:border-red-500">Delete</button>
+                        </div>
                       </div>
                     </div>
                   )}

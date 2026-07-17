@@ -14,6 +14,15 @@ export async function getAllSkills() {
   }
 }
 
+export async function getSkillsByCategory() {
+  const skills = await getAllSkills();
+  return skills.reduce((acc, skill) => {
+    if (!acc[skill.category]) acc[skill.category] = [];
+    acc[skill.category].push(skill);
+    return acc;
+  }, {} as Record<string, any[]>);
+}
+
 export async function createSkill(data: {
   name: string;
   category: string;
@@ -28,6 +37,7 @@ export async function createSkill(data: {
     return { success: true };
   } catch (error: any) {
     console.error('Create skill error:', error);
+    if (error.code === 'P2002') return { success: false, error: 'Nama skill sudah terdaftar / harus unik!' };
     return { success: false, error: error.message || 'Failed to create skill' };
   }
 }
@@ -41,6 +51,7 @@ export async function updateSkill(id: string, data: any) {
     return { success: true };
   } catch (error: any) {
     console.error('Update skill error:', error);
+    if (error.code === 'P2002') return { success: false, error: 'Nama skill sudah terdaftar / harus unik!' };
     return { success: false, error: error.message || 'Failed to update skill' };
   }
 }
