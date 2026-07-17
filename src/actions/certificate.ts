@@ -15,10 +15,22 @@ export const getCertificates = cache(async () => {
   }
 })
 
-export async function addCertificate(title: string, category: string, description: string, imageUrl: string, order: number = 0) {
+export async function getHighlightedCertificates() {
+  try {
+    return await prisma.certificate.findMany({
+      where: { highlighted: true },
+      orderBy: { order: 'asc' },
+    });
+  } catch (error) {
+    console.error('DB fetch failed (getHighlightedCertificates):', error);
+    return []; // fallback aman — section Recognition otomatis hilang, tidak crash
+  }
+}
+
+export async function addCertificate(title: string, category: string, description: string, imageUrl: string, order: number = 0, highlighted: boolean = false) {
   try {
     await prisma.certificate.create({
-      data: { title, category, description, imageUrl, order }
+      data: { title, category, description, imageUrl, order, highlighted }
     });
     revalidatePath('/');
     revalidatePath('/archives');
@@ -38,7 +50,8 @@ export async function updateCertificate(id: string, data: any) {
         category: data.category,
         description: data.description,
         imageUrl: data.imageUrl,
-        order: data.order
+        order: data.order,
+        ...(data.highlighted !== undefined && { highlighted: data.highlighted }),
       }
     });
     revalidatePath('/');

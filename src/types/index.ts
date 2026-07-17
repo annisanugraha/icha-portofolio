@@ -23,6 +23,7 @@ export interface Project {
   githubUrl?: string | null;
   demoUrl?: string | null;
   links: ProjectLink[];
+  skills?: Skill[];
   year: string;
   featured: boolean;
   order: number;
@@ -49,6 +50,10 @@ export interface Profile {
   emailAddress: string;
   emailSubject: string;
   resumeUrl?: string | null;
+  statsItem1?: string | null;
+  statsItem2?: string | null;
+  statsItem3?: string | null;
+  statsItem4?: string | null;
   updatedAt: Date;
 }
 
@@ -69,6 +74,29 @@ export interface Certificate {
   category: string;
   description: string;
   imageUrl?: string | null;
+  highlighted: boolean;
+  order: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Activity {
+  id: string;
+  title: string;
+  event: string;
+  year: string;
+  imageUrl?: string | null;
+  description?: string | null;
+  highlighted: boolean;
+  order: number;
+  createdAt: Date;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  category: string; // "Frontend" | "Backend" | "Design" | "Tools"
+  logoUrl?: string | null;
   order: number;
   createdAt: Date;
   updatedAt: Date;
