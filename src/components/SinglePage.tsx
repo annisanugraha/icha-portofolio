@@ -1,26 +1,34 @@
 'use client';
 
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { PageSectionHeader } from './PageSectionHeader';
-import { CertificateGrid } from './CertificateGrid';
 import { WorkAndSkills } from './WorkAndSkills';
 import { PlaySection } from './PlaySection';
-import { SplineScene } from './SplineScene';
-import type { Profile, Project, Certificate, Experience } from '@/types';
+import type { Profile, Project, Certificate, Experience, Activity } from '@/types';
+
+const SplineScene = dynamic(() => import('./SplineScene').then(mod => mod.SplineScene), {
+  ssr: false,
+  loading: () => <div className="w-full h-full flex items-center justify-center text-xs text-[#999] font-mono animate-pulse">Loading 3D Scene...</div>,
+});
+const CertificateSection = dynamic(() => import('./CertificateSection'), { ssr: false });
+const ActivityGallery = dynamic(() => import('./ActivityGallery'), { ssr: false });
 
 interface SinglePageProps {
   profile: Profile | null;
   projects: Project[];
   certificates: Certificate[];
+  activities: Activity[];
   experiences: Experience[];
 }
 
 
 
-export function SinglePage({ profile, projects, certificates, experiences }: SinglePageProps) {
+export function SinglePage({ profile, projects, certificates, activities, experiences }: SinglePageProps) {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress: heroScrollProgress } = useScroll({
     target: heroRef,
@@ -66,11 +74,11 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
           <section
             ref={heroRef}
             id="hero"
-            className="min-h-screen flex items-center md:pt-0 pt-20 relative overflow-hidden"
+            className="hero-grid-bg min-h-screen flex items-center md:pt-0 pt-20 relative overflow-hidden"
             style={{ minHeight: '100svh' }}
           >
             {/* 2-column grid: text left, Spline right */}
-            <div className="w-full px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-4 items-center">
+            <div className="w-full px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-4 items-center relative z-10">
 
               {/* Left: Text */}
               <motion.div
@@ -117,15 +125,36 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                     {profile?.heroSubtitle || 'Engineering & minimal design.'}
                   </p>
                 </motion.div>
+
+                {/* Stats Bar */}
+                {[profile?.statsItem1, profile?.statsItem2, profile?.statsItem3, profile?.statsItem4].filter(Boolean).length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-wrap items-center gap-3 pt-4"
+                  >
+                    {[profile?.statsItem1, profile?.statsItem2, profile?.statsItem3, profile?.statsItem4]
+                      .filter(Boolean)
+                      .map((item, i) => (
+                        <div
+                          key={i}
+                          className="px-4 py-1.5 rounded-full border border-[#ebebeb] bg-[#fafafa]/90 backdrop-blur-sm text-[11px] font-mono tracking-wider text-[#333] shadow-xs"
+                        >
+                          {item}
+                        </div>
+                      ))}
+                  </motion.div>
+                )}
               </motion.div>
 
-              {/* Right: Spline 3D white robot */}
+              {/* Right: Spline 3D white robot (Scale 130%, overflow visible, floating loop, radial glow) */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 style={{ opacity: heroOpacity, height: '100svh' }}
-                className="lg:col-span-5 w-full"
+                className="lg:col-span-5 w-full relative overflow-visible flex items-center justify-center"
               >
                 <SplineScene
                   scene="https://prod.spline.design/bTBmc2h7TBzR3GJr/scene.splinecode"
@@ -236,6 +265,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                       initial={{ opacity: 0 }}
                       animate={{ opacity: isPortraitInView ? 1 : 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
+                      data-cursor="It's me ♡"
                       className="relative aspect-square w-full max-w-[380px] rounded-sm overflow-hidden group"
                     >
                       {/* Curtain overlay */}
@@ -266,7 +296,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
 
                 {/* Timeline — Enhanced with staggered reveals and pulsing dots */}
                 {experiences && experiences.length > 0 && (
-                  <div className="mt-16 space-y-0">
+                  <div className="mt-16 space-y-0" data-cursor="What a journey... ✩">
                     <PageSectionHeader title="Chronology" number="02" />
                     <div className="flex flex-col">
                       {experiences.map((exp, i: number) => {
@@ -371,14 +401,41 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
           <div id="archives">
 
             {/* ══════════════════════════════════════════════════
-                CHAPTER 5: ARCHIVES — The Evidence
+                CHAPTER 5: ARCHIVES — Recognition & Beyond Code
                 ══════════════════════════════════════════════════ */}
             {certificates && certificates.length > 0 && (
-              <section className="py-24 md:pt-6">
+              <section className="md:pt-6">
                 <div className="px-6 md:px-12">
                   <PageSectionHeader title="Archives" number="05" />
-                  <div className="pt-6">
-                    <CertificateGrid certificates={certificates} />
+                  <h3 className="text-3xl md:text-4xl font-serif text-[#111] mb-2">
+                    Something meaningful.
+                  </h3>
+                  <p className="text-xs text-[#777] font-mono">
+                    I've always believed that recognition is a testament to our efforts.
+                  </p>
+                  <div className="py-4 ">
+                    <CertificateSection certificates={certificates} />
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {activities && activities.length > 0 && (
+              <section className="mb-24 mt-4">
+                <div className="px-6 md:px-12">
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      {/* <span className="label block mb-1">Beyond Code</span> */}
+                      <h3 className="text-3xl md:text-4xl font-serif text-[#111] mb-2">
+                        Life outside the editor.
+                      </h3>
+                      <p className="text-xs text-[#777] font-mono">
+                        Work, learn, repeat.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="pt-0">
+                    <ActivityGallery activities={activities} />
                   </div>
                 </div>
               </section>
@@ -393,8 +450,8 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
             {/* ══════════════════════════════════════════════════
                 CHAPTER 6: CONTACT — Let's Talk
                 ══════════════════════════════════════════════════ */}
-            <section className="py-24 min-h-[60vh] flex flex-col justify-center relative">
-              <div className="px-6 md:px-12">
+            <section className="section-dark py-24 min-h-[60vh] flex flex-col justify-center relative bg-[#0a0a0a] text-white overflow-hidden">
+              <div className="px-6 md:px-12 z-10">
 
                 <div className="space-y-6 max-w-lg">
                   {/* Scale-from-huge entrance */}
@@ -403,7 +460,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                     whileInView={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
                     viewport={{ once: false, margin: '-10%' }}
                     transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-5xl md:text-7xl font-serif text-black leading-none uppercase tracking-tight"
+                    className="text-5xl md:text-7xl font-serif text-white leading-none uppercase tracking-tight"
                   >
                     YOU MADE IT.
                   </motion.h2>
@@ -413,7 +470,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: false, margin: '-5%' }}
                     transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-base text-gray-500 font-light"
+                    className="text-base text-gray-400 font-light"
                   >
                     Thanks for scrolling all the way down! Since you&apos;re already here, we should definitely talk, right?
                   </motion.p>
@@ -446,7 +503,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                             window.open(urlStr, '_blank');
                           }
                         }}
-                        className="group inline-flex items-center gap-3 px-8 py-4 bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase font-mono hover:bg-[#333] transition-all duration-500 pulse-glow cursor-pointer"
+                        className="group inline-flex items-center gap-3 px-8 py-4 bg-white text-[#111] text-[10px] tracking-[0.4em] uppercase font-mono hover:bg-[#eee] transition-all duration-500 shadow-lg cursor-pointer font-bold"
                       >
                         <span>Save My Resume</span>
                         <motion.span
@@ -457,7 +514,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                         </motion.span>
                       </button>
                     ) : (
-                      <span className="text-[10px] text-[#999] tracking-[0.3em] uppercase italic">
+                      <span className="text-[10px] text-[#666] tracking-[0.3em] uppercase italic">
                         Resume not available yet
                       </span>
                     )}
@@ -473,7 +530,7 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
                     transition={{ duration: 2, delay: 0.5 }}
                     className="absolute -bottom-1/2 left-1/4 w-[600px] h-[600px] rounded-full"
                     style={{
-                      background: 'radial-gradient(circle, rgba(0,0,0,0.03) 0%, transparent 70%)',
+                      background: 'radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)',
                     }}
                   />
                 </div>
@@ -486,4 +543,64 @@ export function SinglePage({ profile, projects, certificates, experiences }: Sin
   );
 }
 
+function PortraitWithCursor({ src, isInView }: { src: string; isInView: boolean }) {
+  const [cursor, setCursor] = useState({ x: 0, y: 0, visible: false });
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setCursor({ x: e.clientX - rect.left, y: e.clientY - rect.top, visible: true });
+  };
+
+  return (
+    <motion.div
+      ref={containerRef}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: isInView ? 1 : 0 }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+      className="relative aspect-square w-full max-w-[380px] rounded-sm overflow-hidden group cursor-none"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setCursor(c => ({ ...c, visible: false }))}
+    >
+      {/* Custom cursor label */}
+      <motion.div
+        className="pointer-events-none absolute z-30 select-none"
+        animate={{
+          x: cursor.x - 40,
+          y: cursor.y - 18,
+          opacity: cursor.visible ? 1 : 0,
+          scale: cursor.visible ? 1 : 0.7,
+        }}
+        transition={{ type: 'spring', damping: 20, stiffness: 300, mass: 0.5 }}
+      >
+        <span className="bg-white text-[#111] text-[10px] font-mono tracking-tight px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap border border-[#ebebeb]">
+          it&apos;s me ˙ᵕ˙
+        </span>
+      </motion.div>
+
+      {/* Curtain overlay */}
+      <motion.div
+        initial={{ x: 0 }}
+        animate={{ x: isInView ? '101%' : 0 }}
+        transition={{ duration: 1.0, delay: 0.3, ease: [0.76, 0, 0.24, 1] }}
+        style={{ willChange: 'transform' }}
+        className="absolute inset-0 bg-[#111] z-10"
+      />
+      <motion.div
+        initial={{ scale: 1.15 }}
+        animate={{ scale: isInView ? 1 : 1.15 }}
+        transition={{ duration: 1.2, delay: 0.3, ease: [0.76, 0, 0.24, 1] }}
+        className="w-full h-full relative grayscale group-hover:grayscale-0 transition-all duration-1000"
+      >
+        <Image
+          src={src}
+          alt="Portrait"
+          fill
+          sizes="(min-width: 768px) 380px, 100vw"
+          className="object-cover"
+        />
+      </motion.div>
+    </motion.div>
+  );
+}

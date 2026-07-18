@@ -137,9 +137,9 @@ export default function SkillsContent() {
 
           <div className="pt-4 border-t border-[#ebebeb]">
             <ImageUploader
-              label="Skill Logo (SVG / PNG / WebP — bucket: skill-logos)"
+              label="Skill Logo (SVG / PNG / WebP — bucket: portfolio)"
               currentImage={formData.logoUrl}
-              bucket="skill-logos"
+              bucket="portfolio"
               onUpload={(url) => setFormData({ ...formData, logoUrl: url || '' })}
               onDelete={() => setFormData({ ...formData, logoUrl: '' })}
             />

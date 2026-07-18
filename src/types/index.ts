@@ -86,6 +86,7 @@ export interface Activity {
   event: string;
   year: string;
   imageUrl?: string | null;
+  galleryImages: string[];
   description?: string | null;
   highlighted: boolean;
   order: number;

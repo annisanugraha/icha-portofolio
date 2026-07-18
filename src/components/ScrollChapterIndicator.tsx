@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, animate } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -23,48 +23,58 @@ export function ScrollChapterIndicator() {
   const [activeChapter, setActiveChapter] = useState('hero');
   const [showLabel, setShowLabel] = useState(false);
   const [prevChapter, setPrevChapter] = useState('hero');
+  const activeChapterRef = useRef(activeChapter);
+  activeChapterRef.current = activeChapter;
+
   const pathname = usePathname();
   const router = useRouter();
   const { scrollYProgress } = useScroll();
   const progressHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
 
   useEffect(() => {
-    const sectionIds = CHAPTERS.map((c) => c.id);
+    const handleScroll = () => {
+      const viewportCenter = window.innerHeight * 0.45; // slightly above middle for responsive trigger
+      let closestId = activeChapterRef.current;
+      let minDistance = Infinity;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntries = entries.filter((e) => e.isIntersecting);
-        if (visibleEntries.length > 0) {
-          const sorted = visibleEntries.sort((a, b) => {
-            const viewportCenter = window.innerHeight / 2;
-            const aCenter = Math.abs(
-              a.boundingClientRect.top + a.boundingClientRect.height / 2 - viewportCenter
-            );
-            const bCenter = Math.abs(
-              b.boundingClientRect.top + b.boundingClientRect.height / 2 - viewportCenter
-            );
-            return aCenter - bCenter;
-          });
-          const newActive = sorted[0].target.id;
-          if (newActive !== activeChapter) {
-            setPrevChapter(activeChapter);
-            setActiveChapter(newActive);
+      CHAPTERS.forEach((c) => {
+        const el = document.getElementById(c.id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          // Check if section currently spans over the viewport center
+          if (rect.top <= viewportCenter && rect.bottom >= viewportCenter) {
+            closestId = c.id;
+            minDistance = 0;
+          } else {
+            const center = rect.top + rect.height / 2;
+            const dist = Math.abs(center - viewportCenter);
+            if (dist < minDistance && rect.top < window.innerHeight && rect.bottom > 0) {
+              minDistance = dist;
+              closestId = c.id;
+            }
           }
         }
-      },
-      {
-        rootMargin: '-35% 0px -35% 0px',
-        threshold: 0,
+      });
+
+      if (closestId && closestId !== activeChapterRef.current) {
+        setPrevChapter(activeChapterRef.current);
+        setActiveChapter(closestId);
       }
-    );
+    };
 
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    // Run check on scroll, resize, and periodically for dynamic layouts
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+    handleScroll();
 
-    return () => observer.disconnect();
-  }, [activeChapter]);
+    const interval = setInterval(handleScroll, 300);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+      clearInterval(interval);
+    };
+  }, []);
 
   // Flash chapter label on change
   useEffect(() => {

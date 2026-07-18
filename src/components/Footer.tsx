@@ -56,7 +56,7 @@ export const Footer = ({ profile }: FooterProps) => {
       whileInView={{ opacity: 1 }}
       viewport={{ once: false, margin: '-5%' }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="border-t border-[#ebebeb] py-8 mt-12"
+      className="border-t border-[#ebebeb] py-8"
     >
       <div className="px-6 md:px-12 w-full flex justify-between items-center gap-4">
 

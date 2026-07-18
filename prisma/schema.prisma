@@ -116,15 +116,16 @@ model Experience {
 }
 
 model Activity {
-  id          String   @id @default(cuid())
-  title       String
-  event       String
-  year        String
-  imageUrl    String?
-  description String?  @db.Text
-  highlighted Boolean  @default(false)
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
+  id            String   @id @default(cuid())
+  title         String
+  event         String
+  year          String
+  imageUrl      String?
+  galleryImages String[] @default([])
+  description   String?  @db.Text
+  highlighted   Boolean  @default(false)
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
 }
 
 model Skill {

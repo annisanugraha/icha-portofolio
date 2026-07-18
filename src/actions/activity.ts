@@ -32,6 +32,7 @@ export async function createActivity(data: {
   event: string;
   year: string;
   imageUrl?: string;
+  galleryImages?: string[];
   description?: string;
   highlighted?: boolean;
   order?: number;

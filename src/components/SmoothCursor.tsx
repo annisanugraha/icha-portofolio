@@ -178,18 +178,18 @@ export function SmoothCursor() {
         top: 0,
         left: 0,
         pointerEvents: 'none',
-        zIndex: 99999,
-        mixBlendMode: 'difference', // On outermost fixed container to blend directly with page background
+        zIndex: 9999999,
+        mixBlendMode: hasText ? 'normal' : 'difference', // Remove difference blending when bubble is active
         translateX: hasText ? 2 : -6,
         translateY: hasText ? -(32 + TAIL_HEIGHT) : -6,
       }}
       animate={{ opacity: isVisible ? 1 : 0 }}
       transition={{ opacity: { duration: 0.15 } }}
     >
-      {/* Single white element — inverts on any background via outer blend mode */}
+      {/* Bubble element */}
       <motion.div
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: hasText ? '#111' : '#fff', // Solid black when it has text
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -219,7 +219,7 @@ export function SmoothCursor() {
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: '#000',
+                color: '#fff',
                 letterSpacing: '0.03em',
                 lineHeight: 1,
                 userSelect: 'none',
@@ -249,7 +249,7 @@ export function SmoothCursor() {
                 position: 'absolute',
                 bottom: -7, // overlaps 1px with bottom of pill to eliminate any subpixel line
                 left: 0,
-                fill: '#fff',
+                fill: '#111', // Black tail
                 display: 'block',
               }}
             >

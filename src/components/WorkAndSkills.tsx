@@ -109,7 +109,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <Link
       href={`/work/${project.slug}`}
-      data-cursor="View Details ⮞"
+      data-cursor="Full Case Study ⮞"
       className="block p-4 bg-white rounded-md border border-[#ebebeb] hover:border-[#111] hover:shadow-2xl transition-all duration-500 group"
     >
       <div className="img-container aspect-video rounded-sm overflow-hidden mb-2 relative">
@@ -148,11 +148,6 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             ))}
           </div>
         )}
-        
-        <div className="pt-2 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-          <span className="text-[10px] font-mono font-medium uppercase tracking-[0.2em]">Full Case Study</span>
-          <div className="w-12 h-px bg-black origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 delay-100" />
-        </div>
       </div>
     </Link>
   );
@@ -232,11 +227,22 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
             <h2 className="text-4xl font-serif text-black leading-[0.9] tracking-tight">
               TAKE A LOOK
             </h2>
-            <div className="mt-4 flex items-center gap-4">
-              <div className="w-12 h-px bg-gradient-to-r from-black to-transparent" />
-              <span className="text-[10px] font-mono tracking-[0.3em] text-[#999] uppercase">
-                Selected Projects
-              </span>
+            <div className="mt-5 pointer-events-auto relative z-30 inline-block">
+              {/* Highlight mask identical to heading */}
+              <div 
+                className="absolute -inset-4 bg-white/90 backdrop-blur-sm pointer-events-none"
+                style={{
+                  maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
+                  WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)'
+                }}
+              />
+              <Link
+                href="/work"
+                className="group relative inline-flex items-center gap-3 px-8 py-3.5 bg-[#111] rounded-full text-xs font-mono tracking-[0.3em] uppercase text-white font-semibold hover:-translate-y-1 hover:shadow-xl hover:bg-black transition-all duration-300 ease-out z-10"
+              >
+                <span>CLICK HERE TO SEE ALL WORKS</span>
+                <span className="inline-block animate-arrow-bounce">→</span>
+              </Link>
             </div>
           </motion.div>
 
@@ -296,10 +302,10 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
           >
             <div className="relative inline-block">
               <div 
-                className="absolute -inset-6 bg-white/90 backdrop-blur-sm pointer-events-none"
+                className="absolute -inset-10 bg-white/95 backdrop-blur-md pointer-events-none"
                 style={{
-                  maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
-                  WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)'
+                  maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+                  WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)'
                 }}
               />
               <div className="relative z-10">
@@ -309,15 +315,26 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
                 <h2 className="text-7xl lg:text-8xl font-serif text-black leading-[0.9] tracking-tight">
                   TAKE A LOOK
                 </h2>
+                <div className="mt-8 pointer-events-auto relative inline-block">
+                  {/* Highlight mask identical to heading */}
+                  <div 
+                    className="absolute -inset-4 bg-white/90 backdrop-blur-sm pointer-events-none"
+                    style={{
+                      maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
+                      WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)'
+                    }}
+                  />
+                  <Link
+                    href="/work"
+                    className="group relative inline-flex items-center gap-3 px-8 py-3.5 bg-[#111] rounded-full text-xs font-mono tracking-[0.3em] uppercase text-white font-semibold hover:-translate-y-1 hover:shadow-xl hover:bg-black transition-all duration-300 ease-out z-10"
+                  >
+                    <span>CLICK HERE TO SEE ALL WORKS</span>
+                    <span className="inline-block animate-arrow-bounce">→</span>
+                  </Link>
+                </div>
               </div>
             </div>
           </motion.div>
-          <div className="mt-8 flex items-center gap-4 pointer-events-auto">
-            <div className="w-12 h-px bg-gradient-to-r from-black to-transparent" />
-            <span className="text-[10px] font-mono tracking-[0.3em] text-[#999] uppercase">
-              Selected Projects
-            </span>
-          </div>
         </div>
 
         {/* Layer 3: Right Side - Vertical Sliding List */}

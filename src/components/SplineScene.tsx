@@ -50,7 +50,7 @@ export function SplineScene({
   scene,
   className = '',
   defaultCursorText = 'Click me!',
-  clickedCursorText = 'You got it~♪',
+  clickedCursorText = 'That tickles~♪',
 }: SplineSceneProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [webGLSupported, setWebGLSupported] = useState(true);
@@ -148,7 +148,7 @@ export function SplineScene({
       onPointerUpCapture={handlePointerUp}
       onMouseUpCapture={handlePointerUp}
       onPointerLeave={handlePointerLeave}
-      className={`relative w-full h-full flex items-center justify-center overflow-hidden bg-white ${className}`}
+      className={`relative w-full h-full flex items-center justify-center overflow-hidden bg-transparent ${className}`}
     >
       {!isLoaded && <SplineLoader />}
       <div className={`w-full h-full flex items-center justify-center transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>

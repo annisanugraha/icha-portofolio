@@ -11,8 +11,10 @@ export default function ActivitiesContent() {
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
-    title: '', event: '', year: '', description: '', imageUrl: '', order: 0, highlighted: false
+  const [formData, setFormData] = useState<{
+    title: string; event: string; year: string; description: string; imageUrl: string; galleryImages: string[]; order: number; highlighted: boolean;
+  }>({
+    title: '', event: '', year: '', description: '', imageUrl: '', galleryImages: [], order: 0, highlighted: false
   });
 
   useEffect(() => { loadActivities(); }, []);
@@ -31,6 +33,7 @@ export default function ActivitiesContent() {
       year: a.year,
       description: a.description || '',
       imageUrl: a.imageUrl || '',
+      galleryImages: (a.galleryImages || []).filter((url: string) => url.trim() !== ''),
       order: a.order || 0,
       highlighted: a.highlighted || false
     });
@@ -49,6 +52,7 @@ export default function ActivitiesContent() {
             year: formData.year,
             description: formData.description || undefined,
             imageUrl: formData.imageUrl || undefined,
+            galleryImages: formData.galleryImages,
             order: activities.length,
             highlighted: formData.highlighted
           });
@@ -56,7 +60,7 @@ export default function ActivitiesContent() {
       if (res.success) {
         setShowForm(false);
         setEditId(null);
-        setFormData({ title: '', event: '', year: '', description: '', imageUrl: '', order: 0, highlighted: false });
+        setFormData({ title: '', event: '', year: '', description: '', imageUrl: '', galleryImages: [], order: 0, highlighted: false });
         loadActivities();
       } else {
         alert('Error: ' + res.error);
@@ -107,7 +111,7 @@ export default function ActivitiesContent() {
               setEditId(null);
             } else {
               setEditId(null);
-              setFormData({ title: '', event: '', year: '', description: '', imageUrl: '', order: activities.length, highlighted: false });
+              setFormData({ title: '', event: '', year: '', description: '', imageUrl: '', galleryImages: [], order: activities.length, highlighted: false });
               setShowForm(true);
             }
           }}
@@ -141,13 +145,73 @@ export default function ActivitiesContent() {
             <textarea rows={3} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full bg-white border border-[#ebebeb] text-[#111] text-xs px-4 py-3 focus:outline-none focus:border-[#ccc] transition-colors font-mono resize-none" placeholder="Brief context about your involvement..." />
           </div>
 
-          <div className="pt-4 border-t border-[#ebebeb]">
-            <ImageUploader
-              label="Activity Photo / Banner"
-              currentImage={formData.imageUrl}
-              onUpload={(url) => setFormData({ ...formData, imageUrl: url || '' })}
-              onDelete={() => setFormData({ ...formData, imageUrl: '' })}
-            />
+          {/* Unified Gallery Section */}
+          <div className="pt-4 border-t border-[#ebebeb] space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[9px] tracking-[0.4em] uppercase text-[#999]">Activity Photos</p>
+                <p className="text-[8px] text-[#ccc] mt-0.5">Foto pertama = cover utama. Tambah lebih banyak untuk galeri.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, galleryImages: [...formData.galleryImages, ''] });
+                }}
+                className="text-[8px] tracking-[0.3em] uppercase border border-[#ebebeb] px-3 py-1.5 hover:border-[#111] hover:text-[#111] text-[#999] transition-all cursor-pointer"
+              >
+                + Tambah Foto
+              </button>
+            </div>
+
+            {/* Cover Photo (imageUrl) */}
+            <div className="border border-[#ebebeb] p-4 space-y-2 bg-white">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[8px] bg-[#111] text-white px-2 py-0.5 tracking-widest">COVER</span>
+                <span className="text-[8px] text-[#999]">Foto utama — tampil paling depan</span>
+              </div>
+              <ImageUploader
+                label=""
+                currentImage={formData.imageUrl}
+                onUpload={(url) => setFormData({ ...formData, imageUrl: url || '' })}
+                onDelete={() => setFormData({ ...formData, imageUrl: '' })}
+              />
+            </div>
+
+            {/* Additional Gallery Photos */}
+            {formData.galleryImages.map((imgUrl, idx) => (
+              <div key={idx} className="border border-dashed border-[#ebebeb] p-4 space-y-2 bg-white relative">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[8px] border border-[#ebebeb] text-[#999] px-2 py-0.5 tracking-widest font-mono">#{idx + 2}</span>
+                    <span className="text-[8px] text-[#999]">Foto tambahan</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updated = formData.galleryImages.filter((_, i) => i !== idx);
+                      setFormData({ ...formData, galleryImages: updated });
+                    }}
+                    className="text-[8px] tracking-widest text-[#ccc] hover:text-red-500 transition-colors uppercase cursor-pointer"
+                  >
+                    Hapus
+                  </button>
+                </div>
+                <ImageUploader
+                  label=""
+                  currentImage={imgUrl || undefined}
+                  onUpload={(url) => {
+                    const updated = [...formData.galleryImages];
+                    updated[idx] = url || '';
+                    setFormData({ ...formData, galleryImages: updated });
+                  }}
+                  onDelete={() => {
+                    const updated = [...formData.galleryImages];
+                    updated[idx] = '';
+                    setFormData({ ...formData, galleryImages: updated });
+                  }}
+                />
+              </div>
+            ))}
           </div>
 
           <label className="flex items-center gap-2 text-[9px] tracking-widest text-[#999] uppercase cursor-pointer select-none">

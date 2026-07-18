@@ -8,15 +8,17 @@ import { animate } from 'animejs';
 
 interface Props {
   certificates: Certificate[];
+  onSelect?: (cert: Certificate) => void;
 }
 
-export default function CertificateCarousel({ certificates }: Props) {
+export default function CertificateCarousel({ certificates, onSelect }: Props) {
   // Guard wajib di baris pertama komponen (Keputusan 5)
   if (!certificates || certificates.length === 0) return null;
 
   const isStaticMode = certificates.length <= 2; // render sederhana tanpa 3D rotate & tanpa tombol nav
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   function positionCards(newActive: number, animated: boolean) {
@@ -97,13 +99,25 @@ export default function CertificateCarousel({ certificates }: Props) {
     }
   }, [certificates, isStaticMode]);
 
+  // Auto rotation
+  useEffect(() => {
+    if (isStaticMode || isHovered) return;
+    
+    const interval = setInterval(() => {
+      rotate('next');
+    }, 3000); // 3 seconds per slide
+
+    return () => clearInterval(interval);
+  }, [activeIndex, isHovered, isStaticMode, isAnimating]);
+
   if (isStaticMode) {
     return (
       <div className="flex flex-wrap justify-center items-center gap-6 py-8">
         {certificates.map((cert) => (
           <div
             key={cert.id}
-            className="w-[300px] md:w-[360px] aspect-[3/4] rounded-md overflow-hidden border border-[#ebebeb] bg-white shadow-lg relative flex flex-col justify-end"
+            onClick={() => onSelect && onSelect(cert)}
+            className="w-[280px] md:w-[340px] aspect-[4/3] rounded-md overflow-hidden border border-[#ebebeb] bg-white shadow-lg relative flex flex-col justify-end cursor-pointer hover:border-[#111] transition-colors"
           >
             <Image
               src={cert.imageUrl || '/placeholder.png'}
@@ -112,12 +126,6 @@ export default function CertificateCarousel({ certificates }: Props) {
               className="object-cover"
               sizes="(max-width: 768px) 300px, 360px"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 text-white z-10">
-              <span className="text-[10px] tracking-[0.3em] uppercase opacity-75 mb-1 block">
-                {cert.category || 'Recognition'}
-              </span>
-              <h4 className="font-serif text-lg leading-tight">{cert.title}</h4>
-            </div>
           </div>
         ))}
       </div>
@@ -125,18 +133,24 @@ export default function CertificateCarousel({ certificates }: Props) {
   }
 
   return (
-    <div className="relative h-[480px] md:h-[540px] w-full flex items-center justify-center overflow-visible [perspective:1000px]">
+    <div 
+      className="relative h-[300px] md:h-[340px] w-full flex items-center justify-center overflow-visible [perspective:1000px]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {certificates.map((cert, i) => (
         <div
           key={cert.id}
           ref={(el) => {
             cardRefs.current[i] = el;
           }}
-          className="coverflow-card absolute w-[300px] md:w-[360px] aspect-[3/4] rounded-md overflow-hidden border border-[#ebebeb] bg-white shadow-xl cursor-pointer will-change-transform"
+          className="coverflow-card absolute w-[260px] md:w-[320px] aspect-[4/3] rounded-md overflow-hidden border border-[#ebebeb] bg-white shadow-xl cursor-pointer will-change-transform"
           onClick={() => {
             if (i !== activeIndex && !isAnimating) {
               setActiveIndex(i);
               positionCards(i, true);
+            } else if (i === activeIndex && onSelect) {
+              onSelect(cert);
             }
           }}
         >
@@ -147,29 +161,9 @@ export default function CertificateCarousel({ certificates }: Props) {
             className="object-cover"
             sizes="(max-width: 768px) 300px, 360px"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 text-white z-10">
-            <span className="text-[10px] tracking-[0.3em] uppercase opacity-75 mb-1 block">
-              {cert.category || 'Recognition'}
-            </span>
-            <h4 className="font-serif text-lg leading-tight">{cert.title}</h4>
-          </div>
         </div>
       ))}
 
-      <button
-        aria-label="Sertifikat sebelumnya"
-        onClick={() => rotate('prev')}
-        className="absolute left-2 sm:left-4 z-20 w-10 h-10 rounded-full border border-[#ebebeb] bg-white/80 backdrop-blur-sm flex items-center justify-center text-[#111] hover:bg-[#111] hover:text-white transition-all shadow-md cursor-pointer"
-      >
-        ←
-      </button>
-      <button
-        aria-label="Sertifikat berikutnya"
-        onClick={() => rotate('next')}
-        className="absolute right-2 sm:right-4 z-20 w-10 h-10 rounded-full border border-[#ebebeb] bg-white/80 backdrop-blur-sm flex items-center justify-center text-[#111] hover:bg-[#111] hover:text-white transition-all shadow-md cursor-pointer"
-      >
-        →
-      </button>
     </div>
   );
 }

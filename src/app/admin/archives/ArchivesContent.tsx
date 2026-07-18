@@ -139,7 +139,7 @@ export default function ArchivesContent() {
               onChange={e => setFormData({...formData, highlighted: e.target.checked})}
               className="accent-[#111] cursor-pointer"
             />
-            <span>Tampil di Homepage (Highlighted)</span>
+            <span>Tampil di Slide Deck Kiri</span>
           </label>
 
           <button className="bg-[#111] text-white text-[10px] tracking-[0.4em] uppercase px-10 py-3.5 hover:bg-black transition-colors cursor-pointer w-full sm:w-auto">
@@ -192,7 +192,7 @@ export default function ArchivesContent() {
                             }}
                             className="accent-[#111] cursor-pointer"
                           />
-                          <span>Tampil di Homepage</span>
+                          <span>Tampil di Slide Deck Kiri</span>
                         </label>
                         <div className="flex gap-4">
                           <button onClick={() => handleEdit(c)} className="text-[9px] tracking-widest text-[#999] hover:text-[#111] transition-colors uppercase cursor-pointer border-b border-transparent hover:border-[#111]">Edit</button>
