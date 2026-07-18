@@ -90,7 +90,14 @@ export function PlaySection() {
           )}
         </div>
 
-        <div ref={chatRef} className="flex-1 overflow-y-auto px-6 py-6 space-y-5 bg-[#0d0d0d] scrollbar-thin scrollbar-thumb-gray-700">
+        <div
+          ref={chatRef}
+          data-lenis-prevent="true"
+          data-lenis-prevent-wheel="true"
+          onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+          className="flex-1 overflow-y-auto px-6 py-6 space-y-5 bg-[#0d0d0d] scrollbar-thin scrollbar-thumb-gray-700"
+        >
           {messages.length === 0 && (
             <div className="h-full flex flex-col items-center justify-center text-center max-w-xs mx-auto space-y-4">
               <p className="text-xs text-gray-500 leading-relaxed font-light italic">

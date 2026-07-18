@@ -63,7 +63,13 @@ export default function CertificateModal({ certificate, onClose }: Props) {
           </div>
 
           {/* Right: Details */}
-          <div className="flex-1 p-8 md:p-10 lg:p-12 flex flex-col overflow-y-auto">
+          <div
+            data-lenis-prevent="true"
+            data-lenis-prevent-wheel="true"
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            className="flex-1 p-8 md:p-10 lg:p-12 flex flex-col overflow-y-auto"
+          >
             <div className="flex-1">
               <span className="text-[9px] tracking-[0.35em] uppercase text-[#aaa] font-mono block mb-4">
                 {certificate.category || 'Recognition'}

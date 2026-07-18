@@ -106,6 +106,8 @@ export function ScrollChapterIndicator() {
 
   const currentChapter = CHAPTERS.find((c) => c.id === activeChapter);
 
+  if (pathname !== '/') return null;
+
   return (
     <div className="chapter-indicator">
       {/* Progress line */}

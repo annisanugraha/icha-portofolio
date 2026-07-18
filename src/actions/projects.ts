@@ -150,6 +150,18 @@ export async function deleteProject(id: string) {
   }
 }
 
+export async function getAllProjects() {
+  try {
+    return await prisma.project.findMany({
+      include: { links: true, skills: true },
+      orderBy: { order: 'asc' },
+    });
+  } catch (error) {
+    console.error('DB fetch failed (getAllProjects):', error);
+    return [];
+  }
+}
+
 export const getProjects = cache(async () => {
   try {
     const allProjects = await prisma.project.findMany({
