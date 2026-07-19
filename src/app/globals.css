@@ -657,3 +657,81 @@ html.lenis, html.lenis-smooth {
   scroll-snap-align: start;
   flex-shrink: 0;
 }
+
+/* ── Narrative Storytelling (.prose-icha) ── */
+.prose-icha {
+  max-width: 720px;
+  line-height: 1.8;
+  color: #333333;
+  font-size: 1rem;
+}
+
+.prose-icha p {
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+.prose-icha strong {
+  font-weight: 700;
+  color: #111111;
+}
+
+.prose-icha em {
+  font-style: italic;
+}
+
+.prose-icha a {
+  color: #111111;
+  text-decoration: underline;
+  text-decoration-color: #aaaaaa;
+  text-underline-offset: 3px;
+  font-weight: 500;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.prose-icha a:hover {
+  text-decoration-color: #111111;
+}
+
+.prose-icha h2 {
+  font-family: var(--font-serif), serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: #111111;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.prose-icha h3 {
+  font-family: var(--font-serif), serif;
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: #111111;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.prose-icha blockquote {
+  border-left: 2px solid #111111;
+  padding-left: 1.25rem;
+  margin: 1.75rem 0;
+  font-style: italic;
+  color: #555555;
+}
+
+.prose-icha img {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ebebeb;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin: 2rem 0;
+  object-fit: cover;
+}
+
+.prose-icha hr {
+  border: 0;
+  border-top: 1px solid #ebebeb;
+  margin: 2.5rem 0;
+}

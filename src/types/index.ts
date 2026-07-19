@@ -17,6 +17,7 @@ export interface Project {
   contextWhy?: string | null;
   scopeWhat?: string | null;
   outcomeHow?: string | null;
+  content?: string | null;
   imageUrl?: string | null;
   galleryImages: string[];
   techStack: string[];

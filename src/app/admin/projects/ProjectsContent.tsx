@@ -5,6 +5,7 @@ import { getProjects, addProject, updateProject, deleteProject, reorderProjects,
 import { getAllSkills } from '@/actions/skill';
 import { ImageUploader } from '@/components/admin/ImageUploader';
 import { MultiImageUploader } from '@/components/admin/MultiImageUploader';
+import { RichTextEditor } from '@/components/admin/RichTextEditor';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const inputCls = "w-full bg-[#fafafa] border border-[#ebebeb] text-[#111] text-xs px-4 py-3 focus:outline-none focus:border-[#ccc] transition-colors font-mono placeholder-[#bbb]";
@@ -18,7 +19,7 @@ const Field = ({ label, children }: { label: string; children: React.ReactNode }
 const emptyForm = {
   title: '', slug: '', category: '', year: '',
   shortDescription: '', fullDescription: '',
-  contextWhy: '', scopeWhat: '', outcomeHow: '',
+  contextWhy: '', scopeWhat: '', outcomeHow: '', content: '',
   imageUrl: '', galleryImages: [] as string[],
   techStack: [] as string[],
   links: [] as { label: string; url: string }[],
@@ -76,6 +77,7 @@ export default function ProjectsContent() {
       contextWhy: p.contextWhy || '',
       scopeWhat: p.scopeWhat || '',
       outcomeHow: p.outcomeHow || '',
+      content: p.content || '',
       imageUrl: p.imageUrl || '', 
       galleryImages: p.galleryImages || [], 
       techStack: techStack,
@@ -194,6 +196,14 @@ export default function ProjectsContent() {
             </Field>
             <Field label="The How (Outcome)">
               <textarea rows={3} value={form.outcomeHow} onChange={e => set('outcomeHow', e.target.value)} className={`${inputCls} resize-none`} placeholder="How did it end up?" />
+            </Field>
+          </div>
+          <div className='border-t border-[#ebebeb] pt-8'>
+            <Field label="The Story (Rich Narrative Storytelling)">
+              <RichTextEditor
+                content={form.content}
+                onChange={html => set('content', html)}
+              />
             </Field>
           </div>
           <div className='border-t border-[#ebebeb] pt-8'>

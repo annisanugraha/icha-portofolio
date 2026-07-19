@@ -24,6 +24,7 @@ model Project {
   contextWhy       String?  @db.Text
   scopeWhat        String?  @db.Text
   outcomeHow       String?  @db.Text
+  content          String?  @db.Text
 
   imageUrl         String?
   galleryImages    String[] @default([]) // Array of image URLs for gallery

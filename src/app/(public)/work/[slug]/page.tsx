@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { ProjectGallery } from '@/components/ProjectGallery';
 import { PageSectionHeader } from '@/components/PageSectionHeader';
 import { FadeIn } from '@/components/animations/FadeIn';
-
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -47,17 +46,18 @@ export default async function ProjectDetailPage({
   const { slug } = await params;
   const project = (await getProjectBySlug(slug)) as any;
 
-
   if (!project) notFound();
 
   const galleryImages = project.galleryImages && project.galleryImages.length > 0
     ? project.galleryImages
     : [];
 
+  let currentSectionNum = 2;
+  const getSectionNum = () => String(currentSectionNum++).padStart(2, '0');
+
   return (
     <main className="min-h-screen bg-white pt-16 md:pt-0">
-
-      {/* ── SECTION 1: HERO SPLIT ── */}
+      {/* ── SECTION 1: HERO SPLIT (vh100 Split Screen) ── */}
       <section className="flex flex-col md:flex-row items-center min-h-screen">
         {/* Left Column: Info */}
         <div className="w-full md:w-1/2 flex flex-col justify-center px-6 py-8 md:py-16 md:pl-12 md:pr-6 lg:py-20 lg:pl-12 bg-white">
@@ -65,26 +65,44 @@ export default async function ProjectDetailPage({
             <span className="text-[10px] tracking-[0.4em] uppercase text-[#bbb] block">
               {project.category} · {project.year}
             </span>
+
             <p className="font-serif text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight text-[#111] leading-[1.1] pb-4">
               {project.title}
             </p>
             <p className="text-xs text-[#888] leading-relaxed">
               {project.shortDescription}
             </p>
+            
             {/* Tech Stack Badges */}
-            {project.techStack && project.techStack.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-3">
-                {project.techStack.map((tech: string, i: number) => (
-                  <span key={i} className="text-[9px] tracking-[0.2em] uppercase px-3 py-1.5 bg-[#fafafa] border border-[#ebebeb] text-[#777] rounded-sm">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            )}
+            {(() => {
+              const displaySkills = project.skills && project.skills.length > 0
+                ? project.skills
+                : (project.techStack || []).map((name: string) => ({ name, logoUrl: null }));
+
+              if (displaySkills.length === 0) return null;
+
+              return (
+                <div className="flex flex-wrap gap-2 pt-3">
+                  {displaySkills.map((skill: any, i: number) => (
+                    <span
+                      key={i}
+                      className="text-[9px] tracking-[0.2em] uppercase px-3 py-1.5 bg-[#fafafa] border border-[#ebebeb] text-[#777] rounded-sm flex items-center gap-2 font-mono"
+                    >
+                      {skill.logoUrl ? (
+                        <div className="w-3.5 h-3.5 relative flex-shrink-0">
+                          <Image src={skill.logoUrl} alt={skill.name} fill className="object-contain" />
+                        </div>
+                      ) : null}
+                      <span>{skill.name}</span>
+                    </span>
+                  ))}
+                </div>
+              );
+            })()}
           </FadeIn>
         </div>
 
-        {/* Right Column: Hero Image (4:3 Aspect) */}
+        {/* Right Column: Hero Image (4:3 Aspect inside vh100) */}
         <div className="w-full md:w-1/2 px-6 py-8 md:py-16 md:pr-12 md:pl-6 lg:py-20 flex items-center justify-center">
           <FadeIn delay={0.3} once={true} className="w-full aspect-[4/3] overflow-hidden border border-[#f5f5f5] shadow-sm md:shadow-none relative">
             <Image
@@ -99,10 +117,10 @@ export default async function ProjectDetailPage({
         </div>
       </section>
 
-      {/* ── SECTION 2: PROCESS GRID ── */}
+      {/* ── SECTION 2: CASE STUDY (WHY / WHAT / HOW) ── */}
       <section className="px-6 md:px-12 w-full py-6 pb-8">
         <FadeIn>
-          <PageSectionHeader title="Case Study" number="02" />
+          <PageSectionHeader title="Case Study" number={getSectionNum()} />
         </FadeIn>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 lg:gap-20 mt-6">
           {[
@@ -122,16 +140,23 @@ export default async function ProjectDetailPage({
         </div>
       </section>
 
-      {/* ── SECTION 3: DESCRIPTION ── */}
-      {project.fullDescription && (
+      {/* ── SECTION 3: THE STORY (Rich Narrative Storytelling / Full Description) ── */}
+      {(project.content || project.fullDescription) && (
         <section className="px-6 md:px-12 w-full py-6 pb-8">
           <FadeIn>
-            <PageSectionHeader title="The Deep Dive" number="03" />
+            <PageSectionHeader title="The Story" number={getSectionNum()} />
           </FadeIn>
           <FadeIn delay={0.2} className="w-full mt-6">
-            <div className="text-xs text-[#555] leading-[1.8] font-light whitespace-pre-wrap max-w-none">
-              {project.fullDescription}
-            </div>
+            {project.content ? (
+              <div 
+                className="prose-icha"
+                dangerouslySetInnerHTML={{ __html: project.content }}
+              />
+            ) : (
+              <div className="text-xs text-[#555] leading-[1.8] font-light whitespace-pre-wrap max-w-none">
+                {project.fullDescription}
+              </div>
+            )}
           </FadeIn>
         </section>
       )}
@@ -140,7 +165,7 @@ export default async function ProjectDetailPage({
       {galleryImages.length > 0 && (
         <section className="px-6 md:px-12 w-full py-6 pb-8">
           <FadeIn>
-            <PageSectionHeader title="Gallery" number="04" />
+            <PageSectionHeader title="Gallery" number={getSectionNum()} />
           </FadeIn>
           <FadeIn delay={0.2} className="mt-6">
             <ProjectGallery images={galleryImages} title={project.title} />
@@ -151,7 +176,7 @@ export default async function ProjectDetailPage({
       {/* ── SECTION 5: RESOURCES ── */}
       <section className="px-6 md:px-12 w-full py-6 pb-12">
         <FadeIn>
-          <PageSectionHeader title="Resources" number={galleryImages.length > 0 ? "05" : "04"} />
+          <PageSectionHeader title="Resources" number={getSectionNum()} />
         </FadeIn>
         <FadeIn delay={0.2} className="flex flex-wrap items-center gap-x-6 gap-y-4 mt-6">
           {project.links && project.links.length > 0 ? (
@@ -177,9 +202,8 @@ export default async function ProjectDetailPage({
       </section>
 
       {/* ── SECTION 6: NAVIGATION ── */}
-      <section className="px-6 md:px-12 w-full pt-6">
+      <section className="px-6 md:px-12 w-full pt-6 pb-16">
         <div className="flex justify-between items-center">
-          {/* Tombol Prev */}
           {project.prevProject ? (
             <Link
               href={`/work/${project.prevProject.slug}`}
@@ -190,7 +214,6 @@ export default async function ProjectDetailPage({
             </Link>
           ) : <div />}
 
-          {/* Tombol Next */}
           {project.nextProject ? (
             <Link
               href={`/work/${project.nextProject.slug}`}
@@ -202,7 +225,6 @@ export default async function ProjectDetailPage({
           ) : <div />}
         </div>
       </section>
-
     </main>
   );
 }
