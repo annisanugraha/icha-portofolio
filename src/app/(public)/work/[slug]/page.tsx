@@ -86,7 +86,7 @@ export default async function ProjectDetailPage({
                   {displaySkills.map((skill: any, i: number) => (
                     <span
                       key={i}
-                      className="text-[9px] tracking-[0.2em] uppercase px-3 py-1.5 bg-[#fafafa] border border-[#ebebeb] text-[#777] rounded-sm flex items-center gap-2 font-mono"
+                      className="text-[11px] font-sans font-medium tracking-wide px-3 py-1.5 bg-[#fafafa] border border-[#ebebeb] text-[#555] rounded-md flex items-center gap-2"
                     >
                       {skill.logoUrl ? (
                         <div className="w-3.5 h-3.5 relative flex-shrink-0">

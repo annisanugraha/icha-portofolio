@@ -27,6 +27,19 @@ export default function SkillsContent() {
     setLoading(false);
   }
 
+  const handleMove = async (categoryItems: any[], currentIndex: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= categoryItems.length) return;
+
+    const newItems = [...categoryItems];
+    const [movedItem] = newItems.splice(currentIndex, 1);
+    newItems.splice(targetIndex, 0, movedItem);
+
+    const orders = newItems.map((item, idx) => ({ id: item.id, order: idx }));
+    await reorderSkills(orders);
+    loadSkills();
+  };
+
   const handleEdit = (s: any) => {
     setEditId(s.id);
     setFormData({
@@ -164,7 +177,7 @@ export default function SkillsContent() {
               <p className="text-xs text-[#bbb] italic py-2">No skills registered under {category}.</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {items.map((s) => (
+                {items.map((s, idx) => (
                   <div key={s.id} className="border border-[#ebebeb] p-4 bg-white flex items-center justify-between group hover:border-[#111] transition-all">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div className="w-8 h-8 bg-[#fafafa] border border-[#eee] flex items-center justify-center shrink-0 p-1">
@@ -177,7 +190,27 @@ export default function SkillsContent() {
                       <span className="text-xs font-medium text-[#111] truncate">{s.name}</span>
                     </div>
 
-                    <div className="flex gap-3 shrink-0 ml-2">
+                    <div className="flex gap-2 shrink-0 ml-2 items-center">
+                      <div className="flex items-center gap-1 border-r border-[#ebebeb] pr-2">
+                        <button
+                          type="button"
+                          disabled={idx === 0}
+                          onClick={() => handleMove(items, idx, 'up')}
+                          className="text-[10px] text-[#999] hover:text-[#111] disabled:opacity-20 transition-colors px-1 cursor-pointer"
+                          title="Move Up"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          disabled={idx === items.length - 1}
+                          onClick={() => handleMove(items, idx, 'down')}
+                          className="text-[10px] text-[#999] hover:text-[#111] disabled:opacity-20 transition-colors px-1 cursor-pointer"
+                          title="Move Down"
+                        >
+                          ↓
+                        </button>
+                      </div>
                       <button onClick={() => handleEdit(s)} className="text-[8px] tracking-widest uppercase text-[#999] hover:text-[#111]">Edit</button>
                       <button onClick={() => handleDelete(s.id)} className="text-[8px] tracking-widest uppercase text-[#ccc] hover:text-red-500">Del</button>
                     </div>

@@ -300,6 +300,11 @@ export default function ProjectsContent() {
           </Field>
 
           <Field label="Connected Skills (Multi-select from Database)">
+            {form.skillIds.length === 0 && (form.techStack.length > 0 || editId) && (
+              <div className="bg-[#fffbe6] border border-[#ffe58f] text-[#d48806] p-3 text-xs flex items-center gap-2 mb-3">
+                <span>⚠️ Project ini masih pakai tech stack lama (teks). Pilih Skill di bawah untuk menampilkan logo.</span>
+              </div>
+            )}
             {allSkills.length === 0 ? (
               <p className="text-xs text-[#999] italic">Belum ada skill terdaftar di database. Silakan tambah skill di menu Skills.</p>
             ) : (
