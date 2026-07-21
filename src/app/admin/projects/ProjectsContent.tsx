@@ -443,8 +443,9 @@ export default function ProjectsContent() {
               ))}
               {provided.placeholder}
             </div>
-          )}
         </Droppable>
+      </DragDropContext>
+
       {toast && (
         <Toast
           message={toast.message}
@@ -455,4 +456,5 @@ export default function ProjectsContent() {
     </div>
   );
 }
+
 
