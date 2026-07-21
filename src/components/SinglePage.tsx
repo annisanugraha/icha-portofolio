@@ -8,15 +8,15 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { PageSectionHeader } from './PageSectionHeader';
 import { WorkAndSkills } from './WorkAndSkills';
-import { PlaySection } from './PlaySection';
 import type { Profile, Project, Certificate, Experience, Activity } from '@/types';
 
 const SplineScene = dynamic(() => import('./SplineScene').then(mod => mod.SplineScene), {
   ssr: false,
-  loading: () => <div className="w-full h-full flex items-center justify-center text-xs text-[#999] font-mono animate-pulse">Loading 3D Scene...</div>,
+  loading: () => null, // Silent — no spinner in hero area
 });
 const CertificateSection = dynamic(() => import('./CertificateSection'), { ssr: false });
 const ActivityGallery = dynamic(() => import('./ActivityGallery'), { ssr: false });
+const PlaySection = dynamic(() => import('./PlaySection').then(mod => mod.PlaySection), { ssr: false });
 
 interface SinglePageProps {
   profile: Profile | null;
@@ -60,6 +60,12 @@ export function SinglePage({ profile, projects, certificates, activities, experi
       setTimeout(scrollToHash, 100);
       setTimeout(scrollToHash, 500);
       setTimeout(scrollToHash, 1500);
+
+      // Phase D fix: Remove hash from URL after scroll completes.
+      // Prevents force-scroll back to section on page refresh.
+      setTimeout(() => {
+        history.replaceState(null, '', window.location.pathname);
+      }, 1700);
     }
   }, []);
 
@@ -148,13 +154,13 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                 )}
               </motion.div>
 
-              {/* Right: Spline 3D white robot (Scale 130%, overflow visible, floating loop, radial glow) */}
+              {/* Right: Spline 3D white robot — desktop only (hidden on mobile) */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 style={{ opacity: heroOpacity, height: '100svh' }}
-                className="lg:col-span-5 w-full relative overflow-visible flex items-center justify-center"
+                className="hidden md:flex lg:col-span-5 w-full relative overflow-visible items-center justify-center"
               >
                 <SplineScene
                   scene="https://prod.spline.design/bTBmc2h7TBzR3GJr/scene.splinecode"
@@ -385,7 +391,7 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, margin: '-5%' }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                   className="flex-1 flex flex-col md:min-h-0 mt-4"
                 >

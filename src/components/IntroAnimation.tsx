@@ -77,12 +77,18 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
       });
     }
 
-    // Auto dismiss after 3 seconds
+    // Prefetch /work in the background while intro is playing
+    const prefetchWork = document.createElement('link');
+    prefetchWork.rel = 'prefetch';
+    prefetchWork.href = '/work';
+    document.head.appendChild(prefetchWork);
+
+    // Auto dismiss after 2.5 seconds
     const timer = setTimeout(() => {
       sessionStorage.setItem('icha-intro-seen', 'true');
       setIsVisible(false);
       setTimeout(onComplete, 500);
-    }, 3000);
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, [onComplete]);

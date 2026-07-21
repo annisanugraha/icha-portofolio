@@ -7,23 +7,12 @@ import type { Application } from '@splinetool/runtime';
 // ── Load Spline with no SSR (avoids async Client Component error in Next.js 15)
 const Spline = dynamic(() => import('@splinetool/react-spline'), {
   ssr: false,
-  loading: () => <SplineLoader />,
+  loading: () => null, // Silent — no UI spinner while loading
 });
 
 // ── Loading Indicator ────────────────────────────────────────────────────────
-function SplineLoader() {
-  return (
-    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none">
-      <div className="relative w-12 h-12 flex items-center justify-center mb-3">
-        <div className="absolute inset-0 border border-black/15 rounded-full animate-ping opacity-40" />
-        <div className="absolute inset-0 border-2 border-t-black border-r-black/30 border-b-black/10 border-l-transparent rounded-full animate-spin" />
-      </div>
-      <p className="text-[10px] font-mono tracking-[0.25em] uppercase text-neutral-500 font-semibold">
-        Loading 3D Asset...
-      </p>
-    </div>
-  );
-}
+// (intentionally removed from UI — Spline loads silently in the background)
+// If Spline fails, it simply doesn't appear. Error is logged to console only.
 
 // ── WebGL Support Check ──────────────────────────────────────────────────────
 function checkWebGLSupport(): boolean {
@@ -176,8 +165,8 @@ export function SplineScene({
       onPointerLeave={handlePointerLeave}
       className={`relative w-full h-full flex items-center justify-center overflow-hidden bg-transparent ${className}`}
     >
-      {!isLoaded && <SplineLoader />}
-      <div className={`w-full h-full flex items-center justify-center transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      {/* No loading UI — Spline fades in silently when ready */}
+      <div className={`w-full h-full flex items-center justify-center transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
         {isIframeUrl ? (
           <iframe
             src={scene}

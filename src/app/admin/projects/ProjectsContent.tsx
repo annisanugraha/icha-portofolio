@@ -6,6 +6,7 @@ import { getAllSkills } from '@/actions/skill';
 import { ImageUploader } from '@/components/admin/ImageUploader';
 import { MultiImageUploader } from '@/components/admin/MultiImageUploader';
 import { RichTextEditor } from '@/components/admin/RichTextEditor';
+import { Toast } from '@/components/admin/Toast';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const inputCls = "w-full bg-[#fafafa] border border-[#ebebeb] text-[#111] text-xs px-4 py-3 focus:outline-none focus:border-[#ccc] transition-colors font-mono placeholder-[#bbb]";
@@ -17,7 +18,7 @@ const Field = ({ label, children }: { label: string; children: React.ReactNode }
 );
 
 const emptyForm = {
-  title: '', slug: '', category: '', year: '',
+  title: '', slug: '', category: '', role: '', year: '',
   shortDescription: '', fullDescription: '',
   contextWhy: '', scopeWhat: '', outcomeHow: '', content: '',
   imageUrl: '', galleryImages: [] as string[],
@@ -36,6 +37,7 @@ export default function ProjectsContent() {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [techInput, setTechInput] = useState('');
+  const [toast, setToast] = useState<{ message: string; type?: 'success' | 'error' } | null>(null);
 
   const set = (k: string, v: any) => {
     setForm(f => ({ ...f, [k]: v }));
@@ -71,6 +73,7 @@ export default function ProjectsContent() {
       title: p.title,
       slug: p.slug,
       category: p.category,
+      role: p.role || '',
       year: p.year,
       shortDescription: p.shortDescription,
       fullDescription: p.fullDescription,
@@ -98,12 +101,13 @@ export default function ProjectsContent() {
       if (res.success) {
         setShowForm(false);
         setEditId(null);
+        setToast({ message: editId ? 'Project updated successfully ✓' : 'Project added successfully ✓' });
         load();
       } else {
-        alert('Error: ' + res.error);
+        setToast({ message: 'Error: ' + res.error, type: 'error' });
       }
     } catch (err: any) {
-      alert('An unexpected error occurred: ' + err.message);
+      setToast({ message: 'Error: ' + err.message, type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -180,6 +184,14 @@ export default function ProjectsContent() {
             <Field label="Title"><input required type="text" value={form.title} onChange={e => set('title', e.target.value)} className={inputCls} /></Field>
             <Field label="Slug"><input required type="text" value={form.slug} onChange={e => set('slug', e.target.value)} className={inputCls} /></Field>
             <Field label="Category"><input required type="text" value={form.category} onChange={e => set('category', e.target.value)} className={inputCls} /></Field>
+            <Field label="My Role (Contribution)">
+              <select value={form.role} onChange={e => set('role', e.target.value)} className={inputCls}>
+                <option value="">— Unspecified —</option>
+                <option value="Frontend">Frontend</option>
+                <option value="UI/UX">UI/UX</option>
+                <option value="Full Stack">Full Stack</option>
+              </select>
+            </Field>
             <Field label="Year"><input required type="text" value={form.year} onChange={e => set('year', e.target.value)} className={inputCls} /></Field>
           </div>
 
@@ -433,8 +445,14 @@ export default function ProjectsContent() {
             </div>
           )}
         </Droppable>
-      </DragDropContext>
-
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }
+

@@ -12,6 +12,7 @@ export interface Project {
   title: string;
   slug: string;
   category: string;
+  role?: string | null; // Contribution type: "Frontend" | "UI/UX" | "Full Stack" | ""
   shortDescription: string;
   fullDescription: string;
   contextWhy?: string | null;

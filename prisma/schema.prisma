@@ -17,6 +17,7 @@ model Project {
   title            String
   slug             String   @unique
   category         String   
+  role             String?  @default("")  // Contribution type: "Frontend" | "UI/UX" | "Full Stack" | ""
   shortDescription String   @db.Text
   fullDescription  String   @db.Text
   

@@ -52,179 +52,212 @@ export default async function ProjectDetailPage({
     ? project.galleryImages
     : [];
 
+  const displaySkills = project.skills && project.skills.length > 0
+    ? project.skills
+    : (project.techStack || []).map((name: string) => ({ id: name, name, logoUrl: null }));
+
   let currentSectionNum = 2;
   const getSectionNum = () => String(currentSectionNum++).padStart(2, '0');
 
   return (
-    <main className="min-h-screen bg-white pt-16 md:pt-0">
-      {/* ── SECTION 1: HERO SPLIT (vh100 Split Screen) ── */}
-      <section className="flex flex-col md:flex-row items-center min-h-screen">
-        {/* Left Column: Info */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center px-6 py-8 md:py-16 md:pl-12 md:pr-6 lg:py-20 lg:pl-12 bg-white">
-          <FadeIn delay={0.1} once={true} className="space-y-3 md:space-y-4">
-            <span className="text-[10px] tracking-[0.4em] uppercase text-[#bbb] block">
-              {project.category} · {project.year}
-            </span>
+    <main className="min-h-screen bg-white">
+      {/* ── Sticky breadcrumb bar ── */}
+      <div className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-[#f0f0f0] h-14 flex items-center">
+        <div className="flex items-center justify-between w-full px-6 md:px-0 md:pl-8">
+          <Link
+            href="/work"
+            className="text-[10px] font-mono tracking-[0.3em] uppercase text-[#aaa] hover:text-[#111] transition-colors flex items-center gap-2 group"
+          >
+            <span className="group-hover:-translate-x-0.5 transition-transform inline-block">←</span>
+            Works
+          </Link>
+          <span className="text-[10px] font-mono text-[#ccc] tracking-widest uppercase pr-6 md:pr-10">
+            {project.category} · {project.year}
+          </span>
+        </div>
+      </div>
 
-            <p className="font-serif text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight text-[#111] leading-[1.1] pb-4">
-              {project.title}
-            </p>
-            <p className="text-xs text-[#888] leading-relaxed">
-              {project.shortDescription}
-            </p>
-            
-            {/* Tech Stack Badges */}
-            {(() => {
-              const displaySkills = project.skills && project.skills.length > 0
-                ? project.skills
-                : (project.techStack || []).map((name: string) => ({ name, logoUrl: null }));
+      {/* ── 2-col layout ── */}
+      <div className="flex flex-col md:flex-row min-h-screen">
 
-              if (displaySkills.length === 0) return null;
+        {/* LEFT: Sticky Sidebar */}
+        <aside className="w-full md:w-60 lg:w-72 shrink-0
+                          px-6 md:px-8 pt-8 pb-6 md:py-12
+                          border-b md:border-b-0 md:border-r border-[#f5f5f5]
+                          bg-[#fafafa]
+                          md:sticky md:top-14 md:max-h-[calc(100vh-56px)] md:overflow-y-auto">
+          <div className="space-y-8">
+            {/* Title & short desc */}
+            <div className="space-y-3">
+              <h1 className="font-serif text-xl md:text-2xl text-[#111] leading-tight">
+                {project.title}
+              </h1>
+              <p className="text-[11px] text-[#888] leading-relaxed">
+                {project.shortDescription}
+              </p>
+              {project.role && (
+                <span className="text-[9px] font-mono tracking-[0.2em] uppercase px-2.5 py-0.5 bg-white border border-[#e5e5e5] text-[#aaa] rounded-full inline-block">
+                  {project.role}
+                </span>
+              )}
+            </div>
 
-              return (
-                <div className="flex flex-wrap gap-2 pt-3">
+            {/* Links — always visible */}
+            {project.links && project.links.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-[9px] font-mono text-[#ccc] tracking-[0.35em] uppercase">Links</span>
+                <div className="flex flex-col gap-2 mt-1">
+                  {project.links.map((link: any) => (
+                    <a
+                      key={link.id}
+                      href={link.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[11px] font-mono text-[#555] hover:text-[#111] transition-colors flex items-center gap-2 group/link"
+                    >
+                      <span className="text-[#ddd] group-hover/link:text-[#111] transition-colors">↗</span>
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Tech Stack */}
+            {displaySkills.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-[9px] font-mono text-[#ccc] tracking-[0.35em] uppercase">Stack</span>
+                <div className="flex flex-wrap gap-1.5 mt-1">
                   {displaySkills.map((skill: any, i: number) => (
                     <span
                       key={i}
-                      className="text-[11px] font-sans font-medium tracking-wide px-3 py-1.5 bg-[#fafafa] border border-[#ebebeb] text-[#555] rounded-md flex items-center gap-2"
+                      className="text-[9px] font-mono px-2 py-0.5 bg-white border border-[#ebebeb] text-[#888] rounded-sm flex items-center gap-1.5"
                     >
-                      {skill.logoUrl ? (
-                        <div className="w-3.5 h-3.5 relative flex-shrink-0">
-                          <Image src={skill.logoUrl} alt={skill.name} fill className="object-contain" />
-                        </div>
-                      ) : null}
-                      <span>{skill.name}</span>
+                      {skill.logoUrl && (
+                        <img src={skill.logoUrl} alt={skill.name} className="w-3 h-3 object-contain flex-shrink-0" />
+                      )}
+                      {skill.name}
                     </span>
                   ))}
                 </div>
-              );
-            })()}
-          </FadeIn>
-        </div>
+              </div>
+            )}
 
-        {/* Right Column: Hero Image (4:3 Aspect inside vh100) */}
-        <div className="w-full md:w-1/2 px-6 py-8 md:py-16 md:pr-12 md:pl-6 lg:py-20 flex items-center justify-center">
-          <FadeIn delay={0.3} once={true} className="w-full aspect-[4/3] overflow-hidden border border-[#f5f5f5] shadow-sm md:shadow-none relative">
+            {/* Prev/Next — sidebar bottom on desktop */}
+            <div className="hidden md:flex flex-col gap-2 pt-4 border-t border-[#ebebeb]">
+              {project.prevProject && (
+                <Link
+                  href={`/work/${project.prevProject.slug}`}
+                  className="text-[9px] font-mono text-[#aaa] hover:text-[#111] transition-colors flex items-center gap-1.5 group/nav"
+                >
+                  <span className="group-hover/nav:-translate-x-0.5 transition-transform inline-block">←</span>
+                  <span className="truncate">{project.prevProject.title}</span>
+                </Link>
+              )}
+              {project.nextProject && (
+                <Link
+                  href={`/work/${project.nextProject.slug}`}
+                  className="text-[9px] font-mono text-[#aaa] hover:text-[#111] transition-colors flex items-center justify-between gap-1.5 group/nav"
+                >
+                  <span className="truncate">{project.nextProject.title}</span>
+                  <span className="group-hover/nav:translate-x-0.5 transition-transform inline-block shrink-0">→</span>
+                </Link>
+              )}
+            </div>
+          </div>
+        </aside>
+
+        {/* RIGHT: Scrollable content */}
+        <div className="flex-1 px-6 md:px-10 lg:px-14 py-8 md:py-12 space-y-14 min-w-0">
+
+          {/* Hero Image */}
+          <FadeIn once={true} className="w-full aspect-[16/10] overflow-hidden border border-[#f5f5f5] relative">
             <Image
-              src={project.imageUrl || 'https://placehold.co/800x600/fcfcfc/eee?text=—'}
+              src={project.imageUrl || 'https://placehold.co/800x500/fcfcfc/eee?text=—'}
               alt={project.title}
               fill
-              sizes="(max-width: 768px) 100vw, 50vw"
+              sizes="(max-width: 768px) 100vw, calc(100vw - 288px)"
               className="object-cover"
               priority
             />
           </FadeIn>
-        </div>
-      </section>
 
-      {/* ── SECTION 2: CASE STUDY (WHY / WHAT / HOW) ── */}
-      <section className="px-6 md:px-12 w-full py-6 pb-8">
-        <FadeIn>
-          <PageSectionHeader title="Case Study" number={getSectionNum()} />
-        </FadeIn>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 lg:gap-20 mt-6">
-          {[
-            { label: 'WHY', text: project.contextWhy },
-            { label: 'WHAT', text: project.scopeWhat },
-            { label: 'HOW', text: project.outcomeHow },
-          ].map(({ label, text }, index) => (
-            <FadeIn key={label} delay={0.1 * (index + 1)} className="space-y-2">
-              <p className="text-sm tracking-[0.2em] uppercase text-[#777]">
-                {label}
-              </p>
-              <p className="text-xs text-[#777] leading-relaxed whitespace-pre-wrap">
-                {text || '—'}
-              </p>
+          {/* WHY / WHAT / HOW */}
+          <section>
+            <FadeIn once={true}>
+              <PageSectionHeader title="Case Study" number={getSectionNum()} />
             </FadeIn>
-          ))}
-        </div>
-      </section>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mt-6">
+              {[
+                { label: 'WHY', text: project.contextWhy },
+                { label: 'WHAT', text: project.scopeWhat },
+                { label: 'HOW', text: project.outcomeHow },
+              ].map(({ label, text }, index) => (
+                <FadeIn key={label} delay={0.1 * (index + 1)} once={true} className="space-y-2">
+                  <p className="text-sm tracking-[0.2em] uppercase text-[#777]">{label}</p>
+                  <p className="text-xs text-[#777] leading-relaxed whitespace-pre-wrap">{text || '—'}</p>
+                </FadeIn>
+              ))}
+            </div>
+          </section>
 
-      {/* ── SECTION 3: THE STORY (Rich Narrative Storytelling / Full Description) ── */}
-      {(project.content || project.fullDescription) && (
-        <section className="px-6 md:px-12 w-full py-6 pb-8">
-          <FadeIn>
-            <PageSectionHeader title="The Story" number={getSectionNum()} />
-          </FadeIn>
-          <FadeIn delay={0.2} className="w-full mt-6">
-            {project.content ? (
-              <div 
-                className="prose-icha"
-                dangerouslySetInnerHTML={{ __html: project.content }}
-              />
-            ) : (
-              <div className="text-xs text-[#555] leading-[1.8] font-light whitespace-pre-wrap max-w-none">
-                {project.fullDescription}
-              </div>
-            )}
-          </FadeIn>
-        </section>
-      )}
-
-      {/* ── SECTION 4: GALLERY ── */}
-      {galleryImages.length > 0 && (
-        <section className="px-6 md:px-12 w-full py-6 pb-8">
-          <FadeIn>
-            <PageSectionHeader title="Gallery" number={getSectionNum()} />
-          </FadeIn>
-          <FadeIn delay={0.2} className="mt-6">
-            <ProjectGallery images={galleryImages} title={project.title} />
-          </FadeIn>
-        </section>
-      )}
-
-      {/* ── SECTION 5: RESOURCES ── */}
-      <section className="px-6 md:px-12 w-full py-6 pb-12">
-        <FadeIn>
-          <PageSectionHeader title="Resources" number={getSectionNum()} />
-        </FadeIn>
-        <FadeIn delay={0.2} className="flex flex-wrap items-center gap-x-6 gap-y-4 mt-6">
-          {project.links && project.links.length > 0 ? (
-            project.links.map((link: any, i: number) => (
-              <React.Fragment key={link.id}>
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-[#555] hover:text-[#999] transition-colors"
-                >
-                  {link.label} <span className="text-[#bbb]">↗</span>
-                </a>
-                {i !== project.links.length - 1 && (
-                  <span className="text-[#eee] font-light">|</span>
+          {/* The Story */}
+          {(project.content || project.fullDescription) && (
+            <section>
+              <FadeIn once={true}>
+                <PageSectionHeader title="The Story" number={getSectionNum()} />
+              </FadeIn>
+              <FadeIn delay={0.2} once={true} className="w-full mt-6">
+                {project.content ? (
+                  <div className="prose-icha" dangerouslySetInnerHTML={{ __html: project.content }} />
+                ) : (
+                  <div className="text-xs text-[#555] leading-[1.8] font-light whitespace-pre-wrap max-w-none">
+                    {project.fullDescription}
+                  </div>
                 )}
-              </React.Fragment>
-            ))
-          ) : (
-            <span className="text-[10px] text-[#ddd] italic font-mono uppercase tracking-widest">No resources available.</span>
+              </FadeIn>
+            </section>
           )}
-        </FadeIn>
-      </section>
 
-      {/* ── SECTION 6: NAVIGATION ── */}
-      <section className="px-6 md:px-12 w-full pt-6 pb-16">
-        <div className="flex justify-between items-center">
-          {project.prevProject ? (
-            <Link
-              href={`/work/${project.prevProject.slug}`}
-              className="bg-white text-[#555] border border-[#888] text-[9px] tracking-[0.4em] uppercase px-8 py-3 hover:bg-[#111] hover:text-white transition-all cursor-pointer inline-flex items-center gap-2 group"
-            >
-              <span className="group-hover:-translate-x-1 transition-transform">←</span>
-              <span>PREV PROJECT</span>
-            </Link>
-          ) : <div />}
+          {/* Gallery */}
+          {galleryImages.length > 0 && (
+            <section>
+              <FadeIn once={true}>
+                <PageSectionHeader title="Gallery" number={getSectionNum()} />
+              </FadeIn>
+              <FadeIn delay={0.2} once={true} className="mt-6">
+                <ProjectGallery images={galleryImages} title={project.title} />
+              </FadeIn>
+            </section>
+          )}
 
-          {project.nextProject ? (
-            <Link
-              href={`/work/${project.nextProject.slug}`}
-              className="bg-white text-[#555] border border-[#888] text-[9px] tracking-[0.4em] uppercase px-8 py-3 hover:bg-[#111] hover:text-white transition-all cursor-pointer inline-flex items-center gap-2 group"
-            >
-              <span>NEXT PROJECT</span>
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </Link>
-          ) : <div />}
+          {/* Prev/Next — mobile only */}
+          <section className="md:hidden pt-6 border-t border-[#ebebeb]">
+            <div className="flex justify-between items-center">
+              {project.prevProject ? (
+                <Link
+                  href={`/work/${project.prevProject.slug}`}
+                  className="text-[9px] font-mono tracking-[0.3em] uppercase text-[#555] border border-[#ddd] px-5 py-2.5 hover:bg-[#111] hover:text-white hover:border-[#111] transition-all flex items-center gap-2 group"
+                >
+                  <span className="group-hover:-translate-x-0.5 transition-transform">←</span>
+                  Prev
+                </Link>
+              ) : <div />}
+              {project.nextProject ? (
+                <Link
+                  href={`/work/${project.nextProject.slug}`}
+                  className="text-[9px] font-mono tracking-[0.3em] uppercase text-[#555] border border-[#ddd] px-5 py-2.5 hover:bg-[#111] hover:text-white hover:border-[#111] transition-all flex items-center gap-2 group"
+                >
+                  Next
+                  <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+                </Link>
+              ) : <div />}
+            </div>
+          </section>
+
         </div>
-      </section>
+      </div>
     </main>
   );
 }
+
