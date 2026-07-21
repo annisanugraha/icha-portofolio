@@ -443,6 +443,7 @@ export default function ProjectsContent() {
               ))}
               {provided.placeholder}
             </div>
+          )}
         </Droppable>
       </DragDropContext>
 
@@ -456,5 +457,6 @@ export default function ProjectsContent() {
     </div>
   );
 }
+
 
 
