@@ -57,29 +57,29 @@ export default function ProjectsContent() {
     }
   }
 
-  const openAdd = () => { 
-    setEditId(null); 
-    setForm(emptyForm); 
+  const openAdd = () => {
+    setEditId(null);
+    setForm(emptyForm);
     setTechInput('');
-    setShowForm(true); 
+    setShowForm(true);
   };
-  
+
   const openEdit = (p: any) => {
     setEditId(p.id);
     const techStack = p.techStack || [];
-    setForm({ 
-      title: p.title, 
-      slug: p.slug, 
-      category: p.category, 
-      year: p.year, 
-      shortDescription: p.shortDescription, 
-      fullDescription: p.fullDescription, 
+    setForm({
+      title: p.title,
+      slug: p.slug,
+      category: p.category,
+      year: p.year,
+      shortDescription: p.shortDescription,
+      fullDescription: p.fullDescription,
       contextWhy: p.contextWhy || '',
       scopeWhat: p.scopeWhat || '',
       outcomeHow: p.outcomeHow || '',
       content: p.content || '',
-      imageUrl: p.imageUrl || '', 
-      galleryImages: p.galleryImages || [], 
+      imageUrl: p.imageUrl || '',
+      galleryImages: p.galleryImages || [],
       techStack: techStack,
       links: p.links?.map((l: any) => ({ label: l.label, url: l.url })) || [],
       featured: p.featured || false,
@@ -95,10 +95,10 @@ export default function ProjectsContent() {
     setSaving(true);
     try {
       const res = editId ? await updateProject(editId, form) : await addProject(form);
-      if (res.success) { 
-        setShowForm(false); 
-        setEditId(null); 
-        load(); 
+      if (res.success) {
+        setShowForm(false);
+        setEditId(null);
+        load();
       } else {
         alert('Error: ' + res.error);
       }
@@ -123,7 +123,7 @@ export default function ProjectsContent() {
     try {
       // Optimistic update
       setProjects(prev => prev.map(p => p.id === id ? { ...p, featured: !p.featured } : p));
-      
+
       const res = await toggleProjectFeatured(id);
       if (!res.success) {
         // Rollback if failed
@@ -214,16 +214,16 @@ export default function ProjectsContent() {
 
           <div className="grid grid-cols-1 gap-10 border-t border-[#ebebeb] pt-8">
             <ImageUploader label="Thumbnail" currentImage={form.imageUrl} onUpload={url => set('imageUrl', url)} />
-            
+
             <div className="space-y-8">
               <Field label="Project Links (Resources)">
                 <div className="space-y-3">
                   {form.links.map((link, idx) => (
                     <div key={idx} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center animate-in fade-in slide-in-from-left-2 duration-300">
                       <div className="grid grid-cols-[1fr_1fr_auto] gap-2 w-full items-center">
-                        <input 
-                          placeholder="Label" 
-                          value={link.label} 
+                        <input
+                          placeholder="Label"
+                          value={link.label}
                           onChange={e => {
                             const newLinks = [...form.links];
                             newLinks[idx].label = e.target.value;
@@ -231,9 +231,9 @@ export default function ProjectsContent() {
                           }}
                           className={`${inputCls} uppercase`}
                         />
-                        <input 
-                          placeholder="URL" 
-                          value={link.url} 
+                        <input
+                          placeholder="URL"
+                          value={link.url}
                           onChange={e => {
                             const newLinks = [...form.links];
                             newLinks[idx].url = e.target.value;
@@ -241,8 +241,8 @@ export default function ProjectsContent() {
                           }}
                           className={`${inputCls}`}
                         />
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           onClick={() => {
                             set('links', form.links.filter((_, i) => i !== idx));
                           }}
@@ -253,8 +253,8 @@ export default function ProjectsContent() {
                       </div>
                     </div>
                   ))}
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => set('links', [...form.links, { label: '', url: '' }])}
                     className="text-[9px] tracking-widest uppercase border border-dashed border-[#ccc] px-4 py-2 hover:border-[#111] text-[#999] hover:text-[#111] transition-all w-full"
                   >
@@ -274,16 +274,16 @@ export default function ProjectsContent() {
           </div>
 
           <Field label="Tech Stack (Comma Separated)">
-            <input 
-              type="text" 
-              placeholder="React, Next.js, Tailwind CSS..." 
-              value={techInput} 
+            <input
+              type="text"
+              placeholder="React, Next.js, Tailwind CSS..."
+              value={techInput}
               onChange={e => {
                 setTechInput(e.target.value);
                 const tags = e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
                 setForm(f => ({ ...f, techStack: tags }));
-              }} 
-              className={inputCls} 
+              }}
+              className={inputCls}
             />
             <div className="flex flex-wrap gap-2 mt-2">
               {form.techStack.map((tag, i) => (
@@ -309,21 +309,26 @@ export default function ProjectsContent() {
               <p className="text-xs text-[#999] italic">Belum ada skill terdaftar di database. Silakan tambah skill di menu Skills.</p>
             ) : (
               <div className="space-y-4 border border-[#ebebeb] p-4 bg-white">
-                {['Frontend', 'Backend', 'Design', 'Tools'].map(cat => {
+                {['Frontend', 'Design', 'Tools', 'Backend'].map(cat => {
                   const catSkills = allSkills.filter(s => s.category === cat || (!['Frontend', 'Backend', 'Design', 'Tools'].includes(s.category) && cat === 'Tools'));
                   if (catSkills.length === 0) return null;
+                  const catLabels: Record<string, string> = {
+                    Frontend: 'FRONTEND ENGINEERING',
+                    Design: 'UI/UX & CREATIVE SUITE',
+                    Tools: 'DEV TOOLS & WORKFLOW',
+                    Backend: 'BACKEND / BaaS (Khusus Tech Pills Project)'
+                  };
                   return (
                     <div key={cat} className="space-y-2">
-                      <p className="text-[9px] tracking-[0.3em] font-bold uppercase text-[#999] border-b border-[#f0f0f0] pb-1">{cat}</p>
+                      <p className="text-[9px] tracking-[0.3em] font-bold uppercase text-[#999] border-b border-[#f0f0f0] pb-1">{catLabels[cat] || cat}</p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                         {catSkills.map(s => {
                           const checked = form.skillIds.includes(s.id);
                           return (
                             <label
                               key={s.id}
-                              className={`flex items-center gap-2 p-2 border cursor-pointer select-none transition-all text-xs ${
-                                checked ? 'border-[#111] bg-[#111] text-white' : 'border-[#ebebeb] bg-[#fafafa] hover:border-[#ccc] text-[#111]'
-                              }`}
+                              className={`flex items-center gap-2 p-2 border cursor-pointer select-none transition-all text-xs ${checked ? 'border-[#111] bg-[#111] text-white' : 'border-[#ebebeb] bg-[#fafafa] hover:border-[#ccc] text-[#111]'
+                                }`}
                             >
                               <input
                                 type="checkbox"
@@ -372,7 +377,7 @@ export default function ProjectsContent() {
               {projects.map((p, index) => (
                 <Draggable key={p.id} draggableId={p.id} index={index}>
                   {(provided, snapshot) => (
-                    <div 
+                    <div
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       className={`flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 p-4 border bg-white group select-none transition-all duration-300 ${snapshot.isDragging ? 'border-[#111] shadow-xl z-50' : 'border-[#ebebeb] hover:border-[#111]'}`}
@@ -399,18 +404,17 @@ export default function ProjectsContent() {
 
                       <div className="flex items-center justify-between sm:justify-end gap-4 ml-9 sm:ml-0">
                         {/* Featured Toggle */}
-                        <button 
+                        <button
                           type="button"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             handleToggleFeatured(p.id);
                           }}
-                          className={`px-2 py-1 border transition-all cursor-pointer flex items-center gap-1.5 ${
-                            p.featured 
-                              ? 'bg-black border-black text-white' 
+                          className={`px-2 py-1 border transition-all cursor-pointer flex items-center gap-1.5 ${p.featured
+                              ? 'bg-black border-black text-white'
                               : 'bg-white border-[#ebebeb] text-[#ccc] hover:border-[#111] hover:text-[#111]'
-                          }`}
+                            }`}
                         >
                           <span className="text-[9px] font-bold tracking-tighter uppercase">{p.featured ? '★ ON' : '☆ OFF'}</span>
                         </button>

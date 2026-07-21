@@ -105,14 +105,40 @@ export function SplineScene({
     setIsLoaded(true);
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const renderer = (splineApp as any)._renderer;
-      if (renderer?.setClearColor) {
-        renderer.setClearColor(0xffffff, 0);
-        renderer.setClearAlpha(0);
+      const app = splineApp as any;
+      if (app._scene) {
+        app._scene.background = null;
+        if (app._scene.traverse) {
+          app._scene.traverse((obj: any) => {
+            const name = (obj.name || '').toLowerCase();
+            if (name.includes('background') || name.includes('rectangle') || name.includes('plane') || name.includes('backdrop') || name === 'bg') {
+              obj.visible = false;
+            }
+          });
+        }
+      }
+      if (app.setBackgroundColor) {
+        try {
+          app.setBackgroundColor('transparent');
+        } catch {}
+      }
+      if (app.canvas) {
+        app.canvas.style.backgroundColor = 'transparent';
+        app.canvas.style.background = 'transparent';
+      }
+      const renderer = app._renderer;
+      if (renderer) {
+        if (renderer.domElement) {
+          renderer.domElement.style.backgroundColor = 'transparent';
+          renderer.domElement.style.background = 'transparent';
+        }
+        if (renderer.setClearColor) {
+          renderer.setClearColor(0x000000, 0);
+          renderer.setClearAlpha(0);
+        }
       }
       // Scale camera zoom balanced (1.16x) so it fits perfectly without clipping
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const camera = (splineApp as any)._camera;
+      const camera = app._camera;
       if (camera) {
         camera.zoom = 1.16;
         if (camera.updateProjectionMatrix) camera.updateProjectionMatrix();

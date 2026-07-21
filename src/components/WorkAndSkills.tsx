@@ -52,8 +52,13 @@ function MarqueeRow({ skills, reverse = false }: { skills: any[]; reverse?: bool
 }
 
 function TechStackBackground({ categories }: { categories: Record<string, any[]> }) {
-  const entries = Object.entries(categories);
-  if (entries.length === 0) {
+  const sections = [
+    { dbKey: 'Frontend', displayTitle: 'FRONTEND ENGINEERING' },
+    { dbKey: 'Design',   displayTitle: 'UI/UX & CREATIVE SUITE' },
+    { dbKey: 'Tools',    displayTitle: 'DEV TOOLS & WORKFLOW' },
+  ].filter(section => (categories[section.dbKey]?.length || 0) > 0);
+
+  if (sections.length === 0) {
     return (
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="w-full space-y-6 md:space-y-8 py-16 md:py-12 opacity-20">
@@ -71,13 +76,13 @@ function TechStackBackground({ categories }: { categories: Record<string, any[]>
 
       {/* Animated Marquee Rows */}
       <div className="w-full space-y-6 md:space-y-8 py-16 md:py-12">
-        {entries.map(([categoryTitle, skills], catIndex) => (
-          <div key={categoryTitle}>
+        {sections.map((section, catIndex) => (
+          <div key={section.dbKey}>
             <span className="label text-[9px] tracking-[0.4em] text-[#bbb] block mb-3 px-8 md:px-12 opacity-60">
-              {categoryTitle}
+              {section.displayTitle}
             </span>
             <MarqueeRow
-              skills={skills}
+              skills={categories[section.dbKey] || []}
               reverse={catIndex % 2 === 1}
             />
           </div>
@@ -249,17 +254,25 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
 
           {/* Skills marquee — compact for mobile */}
           <div className="mb-8 overflow-hidden -mx-6">
-            {Object.entries(skillCategories).map(([categoryTitle, skills], catIndex) => (
-              <div key={categoryTitle} className="mb-3">
-                <span className="label text-[9px] tracking-[0.4em] text-[#bbb] block mb-2 px-6 opacity-60">
-                  {categoryTitle}
-                </span>
-                <MarqueeRow
-                  skills={skills}
-                  reverse={catIndex % 2 === 1}
-                />
-              </div>
-            ))}
+            {[
+              { dbKey: 'Frontend', displayTitle: 'FRONTEND ENGINEERING' },
+              { dbKey: 'Design',   displayTitle: 'UI/UX & CREATIVE SUITE' },
+              { dbKey: 'Tools',    displayTitle: 'DEV TOOLS & WORKFLOW' },
+            ].map((section, catIndex) => {
+              const skills = skillCategories[section.dbKey] || [];
+              if (skills.length === 0) return null;
+              return (
+                <div key={section.dbKey} className="mb-3">
+                  <span className="label text-[9px] tracking-[0.4em] text-[#bbb] block mb-2 px-6 opacity-60">
+                    {section.displayTitle}
+                  </span>
+                  <MarqueeRow
+                    skills={skills}
+                    reverse={catIndex % 2 === 1}
+                  />
+                </div>
+              );
+            })}
           </div>
 
           {/* Project Cards — vertical list */}

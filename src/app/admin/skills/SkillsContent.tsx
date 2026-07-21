@@ -4,7 +4,15 @@ import React, { useState, useEffect } from 'react';
 import { getAllSkills, createSkill, updateSkill, deleteSkill, reorderSkills } from '@/actions/skill';
 import { ImageUploader } from '@/components/admin/ImageUploader';
 
-const FIXED_CATEGORIES = ['Frontend', 'Backend', 'Design', 'Tools'];
+const FIXED_CATEGORIES = ['Frontend', 'Design', 'Tools', 'Backend'];
+
+const CATEGORY_INFO: Record<string, { label: string; desc: string }> = {
+  Frontend: { label: 'FRONTEND ENGINEERING', desc: 'React, Next.js, Tailwind CSS, Framer Motion, etc. (Marquee Row 1)' },
+  Design:   { label: 'UI/UX & CREATIVE SUITE', desc: 'Figma, CorelDraw, Canva, Krita, Wireframing, etc. (Marquee Row 2)' },
+  Tools:    { label: 'DEV TOOLS & WORKFLOW', desc: 'VS Code, Git, GitHub, Postman, draw.io, Vercel, etc. (Marquee Row 3)' },
+  Backend:  { label: 'BACKEND / BaaS (Hidden from Homepage)', desc: 'Prisma, Supabase, Node.js — Khusus untuk Tech Pills di dalam detail project' },
+  Other:    { label: 'OTHER / UNCATEGORIZED', desc: 'Skills with custom category' }
+};
 
 export default function SkillsContent() {
   const [skills, setSkills] = useState<any[]>([]);
@@ -142,7 +150,7 @@ export default function SkillsContent() {
                 className="w-full bg-white border border-[#ebebeb] text-[#111] text-xs px-4 py-3 focus:outline-none focus:border-[#ccc] transition-colors font-mono"
               >
                 {FIXED_CATEGORIES.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat} value={cat}>{CATEGORY_INFO[cat]?.label || cat}</option>
                 ))}
               </select>
             </div>
@@ -168,9 +176,12 @@ export default function SkillsContent() {
       <div className="space-y-12">
         {Object.entries(grouped).map(([category, items]) => (
           <div key={category} className="space-y-4">
-            <div className="flex items-center gap-3 border-b border-[#ebebeb] pb-3">
-              <span className="text-[10px] tracking-[0.3em] font-bold uppercase text-[#111]">{category}</span>
-              <span className="text-[9px] text-[#ccc] font-mono">({items.length})</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#ebebeb] pb-3 gap-1">
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] tracking-[0.3em] font-bold uppercase text-[#111]">{CATEGORY_INFO[category]?.label || category}</span>
+                <span className="text-[9px] text-[#ccc] font-mono">({items.length})</span>
+              </div>
+              <span className="text-[9px] text-[#888] font-mono">{CATEGORY_INFO[category]?.desc}</span>
             </div>
 
             {items.length === 0 ? (

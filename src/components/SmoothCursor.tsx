@@ -32,9 +32,16 @@ export function SmoothCursor() {
     document.documentElement.classList.add('smooth-cursor-active');
 
     const moveCursor = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
+      const target = e.target;
+      if (!(target instanceof Element)) {
+        if (typeof e.clientX === 'number' && typeof e.clientY === 'number') {
+          cursorX.set(e.clientX);
+          cursorY.set(e.clientY);
+        }
+        return;
+      }
 
-      if (target && (target.tagName === 'IFRAME' || target.closest('iframe'))) {
+      if (target.tagName === 'IFRAME' || target.closest('iframe')) {
         setIsVisible(false);
         return;
       }
@@ -75,8 +82,8 @@ export function SmoothCursor() {
     };
 
     const handlePointerOver = (e: PointerEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (!target) return;
+      const target = e.target;
+      if (!(target instanceof Element)) return;
 
       if (target.tagName === 'IFRAME' || target.closest('iframe')) {
         setIsVisible(false);
