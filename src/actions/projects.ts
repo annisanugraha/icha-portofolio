@@ -12,11 +12,13 @@ export async function addProject(data: any) {
         title: data.title,
         slug: data.slug,
         category: data.category,
+        role: data.role || null,
         shortDescription: data.shortDescription,
         fullDescription: data.fullDescription,
         contextWhy: data.contextWhy || null,
         scopeWhat: data.scopeWhat || null,
         outcomeHow: data.outcomeHow || null,
+        content: data.content || null,
         imageUrl: data.imageUrl || null,
         galleryImages: data.galleryImages || [],
         techStack: data.techStack || [],
@@ -27,9 +29,12 @@ export async function addProject(data: any) {
         order: data.order || 0,
         links: {
           create: data.links || []
-        }
+        },
+        skills: data.skillIds ? {
+          connect: data.skillIds.map((id: string) => ({ id }))
+        } : undefined,
       },
-      include: { links: true }
+      include: { links: true, skills: true }
     })
     revalidatePath('/')
     revalidatePath('/admin', 'layout')
@@ -51,11 +56,13 @@ export async function updateProject(id: string, data: any) {
         title: data.title,
         slug: data.slug,
         category: data.category,
+        role: data.role || null,
         shortDescription: data.shortDescription,
         fullDescription: data.fullDescription,
         contextWhy: data.contextWhy || null,
         scopeWhat: data.scopeWhat || null,
         outcomeHow: data.outcomeHow || null,
+        content: data.content || null,
         imageUrl: data.imageUrl || null,
         galleryImages: data.galleryImages || [],
         techStack: data.techStack || [],
@@ -67,9 +74,12 @@ export async function updateProject(id: string, data: any) {
         links: {
           deleteMany: {},
           create: data.links || []
+        },
+        skills: {
+          set: data.skillIds?.map((id: string) => ({ id })) || []
         }
       },
-      include: { links: true }
+      include: { links: true, skills: true }
     })
     revalidatePath('/')
     revalidatePath(`/work/${data.slug}`)
@@ -144,11 +154,23 @@ export async function deleteProject(id: string) {
   }
 }
 
+export async function getAllProjects() {
+  try {
+    return await prisma.project.findMany({
+      include: { links: true, skills: true },
+      orderBy: { order: 'asc' },
+    });
+  } catch (error) {
+    console.error('DB fetch failed (getAllProjects):', error);
+    return [];
+  }
+}
+
 export const getProjects = cache(async () => {
   try {
     const allProjects = await prisma.project.findMany({
       orderBy: { order: 'asc' },
-      include: { links: true }
+      include: { links: true, skills: true }
     });
     return allProjects;
   } catch (error: any) {
@@ -162,7 +184,7 @@ export const getFeaturedProjects = cache(async () => {
     const featured = await prisma.project.findMany({
       where: { featured: true },
       orderBy: { order: 'asc' },
-      include: { links: true }
+      include: { links: true, skills: true }
     });
     return featured;
   } catch (error: any) {
@@ -179,7 +201,7 @@ export const getProjectBySlug = cache(async (slug: string) => {
     const [project, allSlugs] = await Promise.all([
       prisma.project.findUnique({ 
         where: { slug },
-        include: { links: true }
+        include: { links: true, skills: true }
       }),
       prisma.project.findMany({
         orderBy: { order: 'asc' },

@@ -4,6 +4,17 @@
 @theme {
   --font-serif: "DM Serif Display", serif;
   --font-mono: "DM Mono", monospace;
+  
+  --animate-arrow-bounce: arrow-bounce 1.4s ease-in-out infinite;
+
+  @keyframes arrow-bounce {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(6px);
+    }
+  }
 }
 
 :root {
@@ -36,6 +47,16 @@
 
   /* ── Grain Overlay ── */
   --grain-opacity: 0.035;
+
+  /* [NEW] Hero grid background */
+  --grid-color: rgba(0, 0, 0, 0.055);
+  --grid-size: 40px;
+
+  /* [NEW] Dark Contact Section */
+  --dark-bg: #0a0a0a;
+  --dark-text: #f0f0f0;
+  --dark-muted: #666666;
+  --dark-border: #222222;
 }
 
 * {
@@ -43,10 +64,13 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth intentionally removed — Lenis handles smooth scroll */
+  overflow-x: clip; /* Prevent horizontal scroll without breaking position: sticky */
 }
 
 /* Activated by SmoothCursor component on non-touch devices */
+html.smooth-cursor-active,
+html.smooth-cursor-active body,
 html.smooth-cursor-active *,
 html.smooth-cursor-active *::before,
 html.smooth-cursor-active *::after {
@@ -62,6 +86,8 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   cursor: default;
+  overflow-x: clip; /* Prevent horizontal scroll without breaking position: sticky */
+  max-width: 100%;
 }
 
 /* ── Text Selection ── */
@@ -173,7 +199,22 @@ h4 {
   border-top: 1px solid var(--ghost);
 }
 
-/* ── Cinematic Section Transitions ── */
+/* ── Performance Hints ── */
+
+/* Promote animated elements to their own GPU layer */
+[data-animate], .motion-safe\:animate-in {
+  will-change: transform;
+}
+
+/* Skip rendering off-screen sections until they're near the viewport.
+   Saves significant layout/paint work on long pages. */
+#about, #work, #play, #archives, #contact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100vh; /* estimate height to avoid layout shift */
+}
+
+/* Cinematic Section Transitions */
+
 
 /* Horizontal line wipe — used between chapters */
 .section-wipe {
@@ -328,7 +369,7 @@ h4 {
   -webkit-text-stroke: 2px var(--ink);
   color: transparent;
   transition: color var(--duration-chapter) var(--ease-dramatic),
-              -webkit-text-stroke var(--duration-chapter) var(--ease-dramatic);
+    -webkit-text-stroke var(--duration-chapter) var(--ease-dramatic);
 }
 
 .stroke-text.filled {
@@ -338,9 +379,12 @@ h4 {
 
 /* ── Pulse Glow (CTA buttons) ── */
 @keyframes pulseGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
   }
+
   50% {
     box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
   }
@@ -369,9 +413,12 @@ h4 {
 
 /* ── Scroll Indicator Bounce ── */
 @keyframes scrollBounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(8px);
   }
@@ -567,4 +614,145 @@ h4 {
   .chapter-indicator {
     display: none;
   }
+}
+
+/* ── Lenis Smooth Scroll ── */
+html.lenis, html.lenis-smooth {
+  height: auto;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* ── Hero Grid Background ── */
+.hero-grid-bg {
+  background-image: 
+    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+}
+
+/* ── Dark Section (Contact) ── */
+.section-dark {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+.section-dark h1, .section-dark h2, .section-dark h3, .section-dark p {
+  color: var(--dark-text);
+}
+.section-dark .label {
+  color: var(--dark-muted);
+}
+
+/* ── Coverflow 3D Container ── */
+.coverflow-container {
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+}
+.coverflow-card {
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  transition: none; /* Animasi dikontrol penuh oleh Anime.js */
+}
+
+/* ── Activity Gallery Scrollable ── */
+.activity-gallery-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.activity-gallery-track::-webkit-scrollbar { display: none; }
+.activity-gallery-item {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* ── Narrative Storytelling (.prose-icha) ── */
+.prose-icha {
+  max-width: 100%;
+  line-height: 1.8;
+  color: #333333;
+  font-size: 1rem;
+}
+
+.prose-icha p {
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+.prose-icha strong {
+  font-weight: 700;
+  color: #111111;
+}
+
+.prose-icha em {
+  font-style: italic;
+}
+
+.prose-icha a {
+  color: #111111;
+  text-decoration: underline;
+  text-decoration-color: #aaaaaa;
+  text-underline-offset: 3px;
+  font-weight: 500;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.prose-icha a:hover {
+  text-decoration-color: #111111;
+}
+
+.prose-icha h2 {
+  font-family: var(--font-serif), serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: #111111;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.prose-icha h3 {
+  font-family: var(--font-serif), serif;
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: #111111;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.prose-icha blockquote {
+  border-left: 2px solid #111111;
+  padding-left: 1.25rem;
+  margin: 1.75rem 0;
+  font-style: italic;
+  color: #555555;
+}
+
+.prose-icha img {
+  width: 100%;
+  max-width: 640px;
+  max-height: 380px;
+  margin: 2rem auto;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid #ebebeb;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+  object-fit: cover;
+}
+
+.prose-icha hr {
+  border: 0;
+  border-top: 1px solid #ebebeb;
+  margin: 2.5rem 0;
 }

@@ -140,6 +140,15 @@ export default function ProfileContent() {
                 <textarea rows={3} value={profile.heroTitle} onChange={e => set('heroTitle', e.target.value)} className={`${inputCls} resize-none`} />
               </Field>
             </div>
+            <div className="sm:col-span-2 pt-4 space-y-4">
+              <p className="text-[9px] tracking-[0.4em] uppercase text-[#999]">Hero Stats Bar (maks 4 item)</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="text" value={profile.statsItem1 || ''} onChange={e => set('statsItem1', e.target.value)} className={inputCls} placeholder="e.g. 3+ Years Experience" />
+                <input type="text" value={profile.statsItem2 || ''} onChange={e => set('statsItem2', e.target.value)} className={inputCls} placeholder="e.g. 15+ Projects Completed" />
+                <input type="text" value={profile.statsItem3 || ''} onChange={e => set('statsItem3', e.target.value)} className={inputCls} placeholder="e.g. 100% Client Satisfaction" />
+                <input type="text" value={profile.statsItem4 || ''} onChange={e => set('statsItem4', e.target.value)} className={inputCls} placeholder="e.g. Based in Jakarta, ID" />
+              </div>
+            </div>
           </div>
         </section>
 

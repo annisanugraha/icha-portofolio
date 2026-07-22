@@ -1,47 +1,15 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Project } from '@/types';
+import { getSkillsByCategory } from '@/actions/skill';
 
-// ── Skill Cards for Background ──
-const skillCategories = [
-  {
-    title: 'Frontend',
-    skills: [
-      { name: 'Next.js', icon: '▲' },
-      { name: 'React', icon: '⚛' },
-      { name: 'TypeScript', icon: 'TS' },
-      { name: 'Tailwind CSS', icon: '◈' },
-      { name: 'Framer Motion', icon: '◉' },
-    ],
-  },
-  {
-    title: 'Backend',
-    skills: [
-      { name: 'Node.js', icon: '◆' },
-      { name: 'Prisma', icon: '◇' },
-      { name: 'PostgreSQL', icon: '▣' },
-      { name: 'Supabase', icon: '◐' },
-      { name: 'REST API', icon: '⬡' },
-    ],
-  },
-  {
-    title: 'Design',
-    skills: [
-      { name: 'Figma', icon: '✦' },
-      { name: 'Blender', icon: '◆' },
-      { name: 'UI/UX', icon: '◈' },
-      { name: 'Git', icon: '⬡' },
-      { name: 'Vercel', icon: '▲' },
-    ],
-  },
-];
-
-function MarqueeRow({ skills, reverse = false }: { skills: typeof skillCategories[0]['skills']; reverse?: boolean }) {
-  const duplicatedSkills = [...skills, ...skills, ...skills, ...skills];
+function MarqueeRow({ skills, reverse = false }: { skills: any[]; reverse?: boolean }) {
+  if (!skills || skills.length === 0) return null;
+  const duplicatedSkills = [...skills, ...skills, ...skills, ...skills, ...skills, ...skills].slice(0, 24);
 
   return (
     <div className="relative overflow-hidden py-2">
@@ -51,8 +19,8 @@ function MarqueeRow({ skills, reverse = false }: { skills: typeof skillCategorie
       >
         {duplicatedSkills.map((skill, i) => (
           <div
-            key={`${skill.name}-${i}`}
-            className="skill-card w-36 h-28 bg-gradient-to-br from-[#fafafa] to-white border border-[#e8e8e8] flex flex-col items-center justify-center gap-3 relative overflow-hidden group shrink-0 hover:border-[#111] transition-all duration-300"
+            key={`${skill.id || skill.name}-${i}`}
+            className="skill-card w-36 h-28 bg-gradient-to-br from-[#fafafa] to-white border border-[#e8e8e8] flex flex-col items-center justify-center gap-3 relative overflow-hidden group shrink-0 hover:border-[#111] transition-all duration-300 p-3"
           >
             {/* Floating dots */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -60,13 +28,17 @@ function MarqueeRow({ skills, reverse = false }: { skills: typeof skillCategorie
               <div className="absolute bottom-2 right-2 w-1 h-1 bg-black opacity-20 rounded-full animate-float-delayed" />
             </div>
 
-            {/* Icon */}
-            <span className="text-2xl text-[#111] opacity-50 group-hover:opacity-100 transition-opacity duration-300">
-              {skill.icon}
-            </span>
+            {/* Logo or Icon */}
+            <div className="w-10 h-10 flex items-center justify-center shrink-0 opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
+              {skill.logoUrl ? (
+                <Image src={skill.logoUrl} width={32} height={32} alt={skill.name} className="max-w-full max-h-full object-contain" />
+              ) : (
+                <span className="text-2xl text-[#111] font-mono">✦</span>
+              )}
+            </div>
 
             {/* Skill name */}
-            <span className="text-[10px] font-mono tracking-wider text-[#111] group-hover:font-medium transition-all">
+            <span className="text-[10px] font-mono tracking-wider text-[#111] group-hover:font-medium transition-all text-center truncate w-full px-1">
               {skill.name}
             </span>
 
@@ -79,7 +51,23 @@ function MarqueeRow({ skills, reverse = false }: { skills: typeof skillCategorie
   );
 }
 
-function TechStackBackground() {
+function TechStackBackground({ categories }: { categories: Record<string, any[]> }) {
+  const sections = [
+    { dbKey: 'Frontend', displayTitle: 'FRONTEND ENGINEERING' },
+    { dbKey: 'Design',   displayTitle: 'UI/UX & CREATIVE SUITE' },
+    { dbKey: 'Tools',    displayTitle: 'DEV TOOLS & WORKFLOW' },
+  ].filter(section => (categories[section.dbKey]?.length || 0) > 0);
+
+  if (sections.length === 0) {
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="w-full space-y-6 md:space-y-8 py-16 md:py-12 opacity-20">
+          <div className="h-28 bg-[#fafafa]/50 w-full animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 overflow-hidden">
       {/* Gradient overlay to fade edges */}
@@ -88,13 +76,13 @@ function TechStackBackground() {
 
       {/* Animated Marquee Rows */}
       <div className="w-full space-y-6 md:space-y-8 py-16 md:py-12">
-        {skillCategories.map((category, catIndex) => (
-          <div key={category.title}>
+        {sections.map((section, catIndex) => (
+          <div key={section.dbKey}>
             <span className="label text-[9px] tracking-[0.4em] text-[#bbb] block mb-3 px-8 md:px-12 opacity-60">
-              {category.title}
+              {section.displayTitle}
             </span>
             <MarqueeRow
-              skills={category.skills}
+              skills={categories[section.dbKey] || []}
               reverse={catIndex % 2 === 1}
             />
           </div>
@@ -109,6 +97,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <Link
       href={`/work/${project.slug}`}
+      data-cursor="Full Case Study ⮞"
       className="block p-4 bg-white rounded-md border border-[#ebebeb] hover:border-[#111] hover:shadow-2xl transition-all duration-500 group"
     >
       <div className="img-container aspect-video rounded-sm overflow-hidden mb-2 relative">
@@ -138,20 +127,26 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         </p>
 
         {/* Tech Stack Badges */}
-        {project.techStack && project.techStack.length > 0 && (
-          <div className="flex flex-wrap gap-2 pt-2">
-            {project.techStack.map((tech: string, i: number) => (
-              <span key={i} className="text-[8px] tracking-[0.2em] uppercase px-2 py-1 bg-[#fafafa] border border-[#ebebeb] text-[#999] rounded-sm">
-                {tech}
-              </span>
-            ))}
-          </div>
-        )}
-        
-        <div className="pt-2 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-          <span className="text-[10px] font-mono font-medium uppercase tracking-[0.2em]">Full Case Study</span>
-          <div className="w-12 h-px bg-black origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 delay-100" />
-        </div>
+        {(() => {
+          const displaySkills = project.skills && project.skills.length > 0
+            ? project.skills
+            : (project.techStack || []).map((name: string) => ({ name, logoUrl: null }));
+
+          if (displaySkills.length === 0) return null;
+
+          return (
+            <div className="flex flex-wrap gap-2 pt-2">
+              {displaySkills.map((skill: any, i: number) => (
+                <span key={i} className="text-[10px] font-sans font-medium tracking-wide px-2 py-1 bg-[#fafafa] border border-[#ebebeb] text-[#666] rounded flex items-center gap-1.5">
+                  {skill.logoUrl && (
+                    <Image src={skill.logoUrl} width={12} height={12} alt={skill.name} className="w-3 h-3 object-contain" />
+                  )}
+                  <span>{skill.name}</span>
+                </span>
+              ))}
+            </div>
+          );
+        })()}
       </div>
     </Link>
   );
@@ -169,6 +164,7 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
   const [scrollDistance, setScrollDistance] = useState(0);
   const [sectionHeight, setSectionHeight] = useState('200vh');
   const [isMobile, setIsMobile] = useState(false);
+  const [skillCategories, setSkillCategories] = useState<Record<string, any[]>>({});
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -180,6 +176,12 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    getSkillsByCategory().then(data => {
+      setSkillCategories(data);
+    }).catch(err => console.error('Fetch skills error:', err));
   }, []);
 
   const updateMeasurements = () => {
@@ -231,27 +233,46 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
             <h2 className="text-4xl font-serif text-black leading-[0.9] tracking-tight">
               TAKE A LOOK
             </h2>
-            <div className="mt-4 flex items-center gap-4">
-              <div className="w-12 h-px bg-gradient-to-r from-black to-transparent" />
-              <span className="text-[10px] font-mono tracking-[0.3em] text-[#999] uppercase">
-                Selected Projects
-              </span>
+            <div className="mt-5 pointer-events-auto relative z-30 inline-block">
+              {/* Highlight mask identical to heading */}
+              <div 
+                className="absolute -inset-4 bg-white/90 backdrop-blur-sm pointer-events-none"
+                style={{
+                  maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
+                  WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)'
+                }}
+              />
+              <Link
+                href="/work"
+                className="group relative inline-flex items-center gap-3 px-8 py-3.5 bg-[#111] rounded-full text-xs font-mono tracking-[0.3em] uppercase text-white font-semibold hover:-translate-y-1 hover:shadow-xl hover:bg-black transition-all duration-300 ease-out z-10"
+              >
+                <span>CLICK HERE TO SEE ALL WORKS</span>
+                <span className="inline-block animate-arrow-bounce">→</span>
+              </Link>
             </div>
           </motion.div>
 
           {/* Skills marquee — compact for mobile */}
           <div className="mb-8 overflow-hidden -mx-6">
-            {skillCategories.slice(0, 2).map((category, catIndex) => (
-              <div key={category.title} className="mb-3">
-                <span className="label text-[9px] tracking-[0.4em] text-[#bbb] block mb-2 px-6 opacity-60">
-                  {category.title}
-                </span>
-                <MarqueeRow
-                  skills={category.skills}
-                  reverse={catIndex % 2 === 1}
-                />
-              </div>
-            ))}
+            {[
+              { dbKey: 'Frontend', displayTitle: 'FRONTEND ENGINEERING' },
+              { dbKey: 'Design',   displayTitle: 'UI/UX & CREATIVE SUITE' },
+              { dbKey: 'Tools',    displayTitle: 'DEV TOOLS & WORKFLOW' },
+            ].map((section, catIndex) => {
+              const skills = skillCategories[section.dbKey] || [];
+              if (skills.length === 0) return null;
+              return (
+                <div key={section.dbKey} className="mb-3">
+                  <span className="label text-[9px] tracking-[0.4em] text-[#bbb] block mb-2 px-6 opacity-60">
+                    {section.displayTitle}
+                  </span>
+                  <MarqueeRow
+                    skills={skills}
+                    reverse={catIndex % 2 === 1}
+                  />
+                </div>
+              );
+            })}
           </div>
 
           {/* Project Cards — vertical list */}
@@ -282,7 +303,7 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
     >
       <div className="sticky top-0 w-full h-screen overflow-hidden bg-white">
         {/* Layer 1: Background Tech Stack Cards */}
-        <TechStackBackground />
+        <TechStackBackground categories={skillCategories} />
 
         {/* Layer 2: Left Text */}
         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1/2 px-12 z-10 pointer-events-none">
@@ -295,10 +316,10 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
           >
             <div className="relative inline-block">
               <div 
-                className="absolute -inset-6 bg-white/90 backdrop-blur-sm pointer-events-none"
+                className="absolute -inset-10 bg-white/95 backdrop-blur-md pointer-events-none"
                 style={{
-                  maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
-                  WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)'
+                  maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+                  WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)'
                 }}
               />
               <div className="relative z-10">
@@ -308,15 +329,26 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
                 <h2 className="text-7xl lg:text-8xl font-serif text-black leading-[0.9] tracking-tight">
                   TAKE A LOOK
                 </h2>
+                <div className="mt-8 pointer-events-auto relative inline-block">
+                  {/* Highlight mask identical to heading */}
+                  <div 
+                    className="absolute -inset-4 bg-white/90 backdrop-blur-sm pointer-events-none"
+                    style={{
+                      maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
+                      WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)'
+                    }}
+                  />
+                  <Link
+                    href="/work"
+                    className="group relative inline-flex items-center gap-3 px-8 py-3.5 bg-[#111] rounded-full text-xs font-mono tracking-[0.3em] uppercase text-white font-semibold hover:-translate-y-1 hover:shadow-xl hover:bg-black transition-all duration-300 ease-out z-10"
+                  >
+                    <span>CLICK HERE TO SEE ALL WORKS</span>
+                    <span className="inline-block animate-arrow-bounce">→</span>
+                  </Link>
+                </div>
               </div>
             </div>
           </motion.div>
-          <div className="mt-8 flex items-center gap-4 pointer-events-auto">
-            <div className="w-12 h-px bg-gradient-to-r from-black to-transparent" />
-            <span className="text-[10px] font-mono tracking-[0.3em] text-[#999] uppercase">
-              Selected Projects
-            </span>
-          </div>
         </div>
 
         {/* Layer 3: Right Side - Vertical Sliding List */}

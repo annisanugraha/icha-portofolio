@@ -41,6 +41,10 @@ export async function updateProfile(data: any) {
         emailAddress: data.emailAddress,
         emailSubject: data.emailSubject,
         resumeUrl: data.resumeUrl,
+        statsItem1: data.statsItem1,
+        statsItem2: data.statsItem2,
+        statsItem3: data.statsItem3,
+        statsItem4: data.statsItem4,
       }
     });
     revalidatePath('/');

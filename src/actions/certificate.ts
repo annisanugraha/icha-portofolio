@@ -15,10 +15,22 @@ export const getCertificates = cache(async () => {
   }
 })
 
-export async function addCertificate(title: string, category: string, description: string, imageUrl: string, order: number = 0) {
+export async function getHighlightedCertificates() {
+  try {
+    return await prisma.certificate.findMany({
+      where: { highlighted: true },
+      orderBy: { order: 'asc' },
+    });
+  } catch (error) {
+    console.error('DB fetch failed (getHighlightedCertificates):', error);
+    return []; // fallback aman — section Recognition otomatis hilang, tidak crash
+  }
+}
+
+export async function addCertificate(title: string, category: string, description: string, imageUrl: string, order: number = 0, highlighted: boolean = false) {
   try {
     await prisma.certificate.create({
-      data: { title, category, description, imageUrl, order }
+      data: { title, category, description, imageUrl, order, highlighted }
     });
     revalidatePath('/');
     revalidatePath('/archives');
@@ -38,7 +50,8 @@ export async function updateCertificate(id: string, data: any) {
         category: data.category,
         description: data.description,
         imageUrl: data.imageUrl,
-        order: data.order
+        order: data.order,
+        ...(data.highlighted !== undefined && { highlighted: data.highlighted }),
       }
     });
     revalidatePath('/');
@@ -46,6 +59,22 @@ export async function updateCertificate(id: string, data: any) {
     return { success: true };
   } catch (error: any) {
     console.error('Update certificate error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function toggleCertificateHighlight(id: string, value: boolean) {
+  try {
+    const updated = await prisma.certificate.update({
+      where: { id },
+      data: { highlighted: value }
+    });
+    revalidatePath('/');
+    revalidatePath('/archives');
+    revalidatePath('/admin/certificates');
+    return { success: true, data: updated };
+  } catch (error: any) {
+    console.error('Toggle certificate highlight error:', error);
     return { success: false, error: error.message };
   }
 }

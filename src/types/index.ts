@@ -12,17 +12,20 @@ export interface Project {
   title: string;
   slug: string;
   category: string;
+  role?: string | null; // Contribution type: "Frontend" | "UI/UX" | "Full Stack" | ""
   shortDescription: string;
   fullDescription: string;
   contextWhy?: string | null;
   scopeWhat?: string | null;
   outcomeHow?: string | null;
+  content?: string | null;
   imageUrl?: string | null;
   galleryImages: string[];
   techStack: string[];
   githubUrl?: string | null;
   demoUrl?: string | null;
   links: ProjectLink[];
+  skills?: Skill[];
   year: string;
   featured: boolean;
   order: number;
@@ -49,6 +52,10 @@ export interface Profile {
   emailAddress: string;
   emailSubject: string;
   resumeUrl?: string | null;
+  statsItem1?: string | null;
+  statsItem2?: string | null;
+  statsItem3?: string | null;
+  statsItem4?: string | null;
   updatedAt: Date;
 }
 
@@ -69,6 +76,30 @@ export interface Certificate {
   category: string;
   description: string;
   imageUrl?: string | null;
+  highlighted: boolean;
+  order: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Activity {
+  id: string;
+  title: string;
+  event: string;
+  year: string;
+  imageUrl?: string | null;
+  galleryImages: string[];
+  description?: string | null;
+  highlighted: boolean;
+  order: number;
+  createdAt: Date;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  category: string; // "Frontend" | "Backend" | "Design" | "Tools"
+  logoUrl?: string | null;
   order: number;
   createdAt: Date;
   updatedAt: Date;

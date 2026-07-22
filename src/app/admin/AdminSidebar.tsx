@@ -10,6 +10,8 @@ const menu = [
   { group: 'CONTENT', items: [
     { name: 'Identity', path: '/admin/profile', icon: '◉' },
     { name: 'Portfolio', path: '/admin/projects', icon: '◧' },
+    { name: 'Skills', path: '/admin/skills', icon: '✦' },
+    { name: 'Activities', path: '/admin/activities', icon: '◪' },
     { name: 'Archives', path: '/admin/archives', icon: '◫' },
     { name: 'Timeline', path: '/admin/timeline', icon: '◎' },
   ]},

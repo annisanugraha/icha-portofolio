@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, animate } from 'framer-motion';
+import { motion, animate } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -15,48 +15,39 @@ const navItems = [
 
 export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logoImage?: string | null }) => {
   const [activeSection, setActiveSection] = useState('hero');
-  const { scrollYProgress } = useScroll();
   const pathname = usePathname();
   const router = useRouter();
-  
-  // Desktop sidebar border opacity based on scroll
-  const borderOpacity = useTransform(scrollYProgress, [0, 0.05], [0, 1]);
 
-  // Scroll spy using IntersectionObserver
+  // Scroll spy using scroll & resize listener for exact bounding box accuracy
   useEffect(() => {
     const sections = ['hero', 'about', 'work', 'play', 'archives'];
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
+    const updateActiveSection = () => {
+      const triggerY = window.innerHeight * 0.35; // Upper-middle portion of screen triggers section
+      for (const id of sections) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= triggerY && rect.bottom > triggerY) {
+            setActiveSection(id);
+            break;
           }
-        });
-      },
-      {
-        rootMargin: '-40% 0px -40% 0px', // Middle 20% of screen is the trigger zone
-        threshold: 0,
+        }
       }
-    );
+    };
 
-    sections.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', updateActiveSection, { passive: true });
+    updateActiveSection();
 
-    // Initial active section
-    const initialSection = sections.find(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        return rect.top <= window.innerHeight * 0.4 && rect.bottom >= window.innerHeight * 0.4;
-      }
-      return false;
-    });
-    if (initialSection) setActiveSection(initialSection);
+    // Re-check after layout updates / image loading
+    const timers = [100, 500, 1000, 2000].map(t => setTimeout(updateActiveSection, t));
 
-    return () => observer.disconnect();
+    return () => {
+      window.removeEventListener('scroll', updateActiveSection);
+      window.removeEventListener('resize', updateActiveSection);
+      timers.forEach(clearTimeout);
+    };
   }, []);
 
   const scrollTo = (id: string) => {
@@ -137,7 +128,6 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
       {/* ── Desktop Sidebar Nav ── */}
       <motion.nav 
         className="fixed left-0 top-0 bottom-0 w-16 hidden md:flex flex-col items-center justify-between py-10 bg-white/95 backdrop-blur-sm border-r border-[#ebebeb] z-50"
-        style={{ borderRightColor: useTransform(borderOpacity, v => `rgba(235,235,235,${v})`) }}
       >
 
         {/* Logo - scroll to top */}

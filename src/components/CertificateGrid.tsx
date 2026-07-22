@@ -123,6 +123,21 @@ export const CertificateGrid = ({ certificates }: CertificateGridProps) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedIndex, handleNext, handlePrev]);
 
+  // Lock scroll when modal is open
+  useEffect(() => {
+    if (selected) {
+      document.body.style.overflow = 'hidden';
+      if ((window as any).__lenis) (window as any).__lenis.stop();
+    } else {
+      document.body.style.overflow = 'unset';
+      if ((window as any).__lenis) (window as any).__lenis.start();
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+      if ((window as any).__lenis) (window as any).__lenis.start();
+    };
+  }, [selected]);
+
   if (certificates.length === 0) return null;
 
   return (
@@ -224,13 +239,13 @@ export const CertificateGrid = ({ certificates }: CertificateGridProps) => {
                 </div>
 
                 {/* Fixed Footer */}
-                <div className="pt-10 flex items-center justify-between bg-white shrink-0">
-                  <span className="text-[9px] tracking-widest text-[#ccc] uppercase font-mono">
+                <div className="pt-10 flex items-center justify-between gap-4 bg-white shrink-0 min-w-0">
+                  <span className="text-[9px] tracking-widest text-[#ccc] uppercase font-mono truncate min-w-0 flex-1">
                     Archives · Recognition
                   </span>
                   <button 
                     onClick={() => setSelectedIndex(null)}
-                    className="text-[10px] tracking-[0.4em] text-[#111] uppercase hover:opacity-50 transition-opacity font-mono cursor-pointer"
+                    className="text-[10px] tracking-[0.4em] text-[#111] uppercase hover:opacity-50 transition-opacity font-mono cursor-pointer shrink-0 whitespace-nowrap"
                   >
                     [ Close ]
                   </button>

@@ -17,6 +17,7 @@ model Project {
   title            String
   slug             String   @unique
   category         String   
+  role             String?  @default("")  // Contribution type: "Frontend" | "UI/UX" | "Full Stack" | ""
   shortDescription String   @db.Text
   fullDescription  String   @db.Text
   
@@ -24,6 +25,7 @@ model Project {
   contextWhy       String?  @db.Text
   scopeWhat        String?  @db.Text
   outcomeHow       String?  @db.Text
+  content          String?  @db.Text
 
   imageUrl         String?
   galleryImages    String[] @default([]) // Array of image URLs for gallery
@@ -35,6 +37,9 @@ model Project {
   
   // New flexible links
   links            ProjectLink[]
+
+  // [NEW] Relation to Skill model
+  skills           Skill[]
 
   year             String
   featured         Boolean  @default(false) // For "Selected Work" section
@@ -57,6 +62,7 @@ model Certificate {
   category    String   
   description String   @db.Text
   imageUrl    String?
+  highlighted Boolean  @default(false)
   order       Int      @default(0)     // For custom sorting
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -91,6 +97,12 @@ model Profile {
   
   resumeUrl       String?  @default("")
   
+  // [NEW] Hero Stats Bar — 4 item yang bisa dikustomisasi via CMS
+  statsItem1      String?  @default("3+ Projects Built")
+  statsItem2      String?  @default("UI/UX & Frontend Dev")
+  statsItem3      String?  @default("Based in Surakarta, ID")
+  statsItem4      String?  @default("5 Cats 🐱")
+  
   updatedAt       DateTime @updatedAt
 }
 
@@ -103,4 +115,28 @@ model Experience {
   imageUrl    String?  // Foto kenangan (Optional)
   order       Int      @default(0)
   createdAt   DateTime @default(now())
+}
+
+model Activity {
+  id            String   @id @default(cuid())
+  title         String
+  event         String
+  year          String
+  imageUrl      String?
+  galleryImages String[] @default([])
+  description   String?  @db.Text
+  highlighted   Boolean  @default(false)
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+}
+
+model Skill {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  category  String    @default("Frontend")   // Frontend | Backend | Design | Tools
+  logoUrl   String?
+  order     Int       @default(0)
+  projects  Project[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
