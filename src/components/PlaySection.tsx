@@ -61,7 +61,7 @@ export function PlaySection() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0 border border-[#222] rounded-xl md:rounded-sm overflow-hidden bg-[#0d0d0d] text-white shadow-2xl md:h-full md:min-h-0">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0 border border-[#222] rounded-xl md:rounded-sm overflow-hidden bg-[#0d0d0d] text-white shadow-none md:h-full md:min-h-0">
       {/* ── Left: Game ── */}
       <div className="bg-[#121212] flex flex-col items-center justify-center p-4 md:p-8 min-h-[400px] md:min-h-0 md:h-full md:border-r border-[#222]">
         <div className="w-full h-full flex items-center justify-center overflow-hidden">
@@ -92,10 +92,18 @@ export function PlaySection() {
 
         <div
           ref={chatRef}
-          data-lenis-prevent="true"
-          data-lenis-prevent-wheel="true"
-          onWheel={(e) => e.stopPropagation()}
-          onTouchMove={(e) => e.stopPropagation()}
+          onWheel={(e) => {
+            const el = chatRef.current;
+            if (!el) return;
+            const { scrollTop, scrollHeight, clientHeight } = el;
+            if (scrollHeight <= clientHeight) return; // Tidak bisa scroll, biarkan Lenis scroll halaman
+            const atTop = scrollTop <= 1;
+            const atBottom = Math.ceil(scrollTop + clientHeight) >= scrollHeight - 1;
+            // Hanya blokir scroll halaman jika chat bisa di-scroll ke arah itu
+            if ((e.deltaY < 0 && !atTop) || (e.deltaY > 0 && !atBottom)) {
+              e.stopPropagation();
+            }
+          }}
           className="flex-1 overflow-y-auto px-6 py-6 space-y-5 bg-[#0d0d0d] scrollbar-thin scrollbar-thumb-gray-700"
         >
           {messages.length === 0 && (

@@ -226,8 +226,8 @@ export function SinglePage({ profile, projects, certificates, activities, experi
 
                       {/* Bio paragraphs — staggered */}
                       <motion.p
-                        initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
-                        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: false, margin: '-5%' }}
                         transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         className="text-xs text-[#777] leading-relaxed whitespace-pre-line"
@@ -235,8 +235,8 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                         {profile?.aboutBio1}
                       </motion.p>
                       <motion.p
-                        initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
-                        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: false, margin: '-5%' }}
                         transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
                         className="text-xs text-[#777] leading-relaxed whitespace-pre-line"
@@ -310,10 +310,10 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                         return (
                           <motion.div
                             key={exp.id}
-                            initial={{ opacity: 0, y: 25, filter: 'blur(4px)' }}
-                            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                            initial={{ opacity: 0, y: 25 }}
+                            whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: false, margin: '-5%' }}
-                            transition={{ duration: 0.8, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
+                            transition={{ duration: 0.7, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
                             className="flex items-start group"
                           >
                             <div className="hidden md:block w-48 shrink-0 pt-1">
@@ -332,7 +332,7 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                               <motion.div
                                 whileInView={{ scale: [0, 1.3, 1] }}
                                 viewport={{ once: false }}
-                                transition={{ duration: 0.5, delay: i * 0.12 + 0.2 }}
+                                transition={{ duration: 0.5, delay: i * 0.1 + 0.2 }}
                                 className="w-2 h-2 rounded-full bg-[#111] group-hover:bg-[#ddd] transition-colors duration-500 mt-[5px]"
                               />
                               <div className={`w-[0.5px] bg-[#ebebeb] flex-1 ${isLast ? 'opacity-0' : 'opacity-100'}`} />
@@ -391,7 +391,7 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: false }}
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                   className="flex-1 flex flex-col md:min-h-0 mt-4"
                 >
@@ -462,10 +462,10 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                 <div className="space-y-6 max-w-lg">
                   {/* Scale-from-huge entrance */}
                   <motion.h2
-                    initial={{ opacity: 0, scale: 1.5, y: 30, filter: 'blur(8px)' }}
-                    whileInView={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
+                    initial={{ opacity: 0, scale: 1.1, y: 30 }}
+                    whileInView={{ opacity: 1, scale: 1, y: 0 }}
                     viewport={{ once: false, margin: '-10%' }}
-                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
                     className="text-5xl md:text-7xl font-serif text-white leading-none uppercase tracking-tight"
                   >
                     YOU MADE IT.

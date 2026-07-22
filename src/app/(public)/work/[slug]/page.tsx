@@ -52,6 +52,10 @@ export default async function ProjectDetailPage({
     ? project.galleryImages
     : [];
 
+  const displaySkills = project.skills && project.skills.length > 0
+    ? project.skills
+    : (project.techStack || []).map((name: string) => ({ id: name, name, logoUrl: null }));
+
   let currentSectionNum = 2;
   const getSectionNum = () => String(currentSectionNum++).padStart(2, '0');
 
@@ -72,13 +76,9 @@ export default async function ProjectDetailPage({
             <p className="text-xs text-[#888] leading-relaxed">
               {project.shortDescription}
             </p>
-            
+
             {/* Tech Stack Badges */}
             {(() => {
-              const displaySkills = project.skills && project.skills.length > 0
-                ? project.skills
-                : (project.techStack || []).map((name: string) => ({ name, logoUrl: null }));
-
               if (displaySkills.length === 0) return null;
 
               return (
@@ -86,7 +86,7 @@ export default async function ProjectDetailPage({
                   {displaySkills.map((skill: any, i: number) => (
                     <span
                       key={i}
-                      className="text-[11px] font-sans font-medium tracking-wide px-3 py-1.5 bg-[#fafafa] border border-[#ebebeb] text-[#555] rounded-md flex items-center gap-2"
+                      className="text-[11px] font-sans font-medium tracking-wide px-3 py-1.5 bg-[#fafafa] text-[#555] rounded-md flex items-center gap-2"
                     >
                       {skill.logoUrl ? (
                         <div className="w-3.5 h-3.5 relative flex-shrink-0">
@@ -117,26 +117,74 @@ export default async function ProjectDetailPage({
         </div>
       </section>
 
-      {/* ── SECTION 2: CASE STUDY (WHY / WHAT / HOW) ── */}
-      <section className="px-6 md:px-12 w-full py-6 pb-8">
-        <FadeIn>
-          <PageSectionHeader title="Case Study" number={getSectionNum()} />
-        </FadeIn>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 lg:gap-20 mt-6">
-          {[
-            { label: 'WHY', text: project.contextWhy },
-            { label: 'WHAT', text: project.scopeWhat },
-            { label: 'HOW', text: project.outcomeHow },
-          ].map(({ label, text }, index) => (
-            <FadeIn key={label} delay={0.1 * (index + 1)} className="space-y-2">
-              <p className="text-sm tracking-[0.2em] uppercase text-[#777]">
-                {label}
-              </p>
-              <p className="text-xs text-[#777] leading-relaxed whitespace-pre-wrap">
-                {text || '—'}
-              </p>
+      {/* ── SECTION 2: CASE STUDY (WHY / WHAT / HOW + SPECIFICATIONS BOX) ── */}
+      <section className="px-6 md:px-12 w-full py-6 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-12 md:gap-16 mt-12">
+          {/* Left Column: WHY / WHAT / HOW */}
+          <div className="space-y-8">
+            <FadeIn>
+              <PageSectionHeader title="Case Study" number={getSectionNum()} />
             </FadeIn>
-          ))}
+            {[
+              { label: 'WHY', text: project.contextWhy },
+              { label: 'WHAT', text: project.scopeWhat },
+              { label: 'HOW', text: project.outcomeHow },
+            ].map(({ label, text }, index) => (
+              <FadeIn key={label} delay={0.1 * (index + 1)} className="flex gap-6 border-t border-[#ebebeb] pt-6 first:border-t-0 first:pt-0">
+                <span className="font-mono text-xs tracking-[0.25em] uppercase text-[#111] font-bold w-16 shrink-0 pt-0.5">
+                  {label}
+                </span>
+                <p className="text-xs text-[#777] leading-relaxed whitespace-pre-wrap flex-1">
+                  {text || '—'}
+                </p>
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Right Column: SPECIFICATIONS Box */}
+          <FadeIn delay={0.3} once={true}>
+            <div className="border border-[#111] bg-[#fafafa] p-6 md:sticky md:top-20">
+              <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#111] font-bold mb-4 pb-3 border-b border-[#ebebeb]">
+                Specifications
+              </p>
+              <dl className="space-y-3 text-xs font-mono">
+                <div className="flex justify-between gap-4">
+                  <dt className="uppercase tracking-wide text-[#999]">Year</dt>
+                  <dd className="text-[#111] font-semibold text-right">{project.year || '—'}</dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="uppercase tracking-wide text-[#999]">Role</dt>
+                  <dd className="text-[#111] font-semibold text-right">{project.role || '—'}</dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="uppercase tracking-wide text-[#999]">Category</dt>
+                  <dd className="text-[#111] font-semibold text-right">{project.category || '—'}</dd>
+                </div>
+              </dl>
+
+              {project.links && project.links.length > 0 && (
+                <>
+                  <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#111] font-bold mt-5 mb-3 pt-4 border-t border-[#ebebeb]">
+                    Links
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {project.links.map((link: any) => (
+                      <a
+                        key={link.id}
+                        href={link.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11px] font-mono uppercase tracking-wide text-[#111] hover:opacity-50 transition-opacity flex items-center justify-between border-b border-transparent hover:border-[#111] pb-0.5"
+                      >
+                        <span>{link.label}</span>
+                        <span>↗</span>
+                      </a>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </FadeIn>
         </div>
       </section>
 
@@ -148,8 +196,8 @@ export default async function ProjectDetailPage({
           </FadeIn>
           <FadeIn delay={0.2} className="w-full mt-6">
             {project.content ? (
-              <div 
-                className="prose-icha"
+              <div
+                className="prose-icha max-w-none w-full"
                 dangerouslySetInnerHTML={{ __html: project.content }}
               />
             ) : (
@@ -172,34 +220,6 @@ export default async function ProjectDetailPage({
           </FadeIn>
         </section>
       )}
-
-      {/* ── SECTION 5: RESOURCES ── */}
-      <section className="px-6 md:px-12 w-full py-6 pb-12">
-        <FadeIn>
-          <PageSectionHeader title="Resources" number={getSectionNum()} />
-        </FadeIn>
-        <FadeIn delay={0.2} className="flex flex-wrap items-center gap-x-6 gap-y-4 mt-6">
-          {project.links && project.links.length > 0 ? (
-            project.links.map((link: any, i: number) => (
-              <React.Fragment key={link.id}>
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-[#555] hover:text-[#999] transition-colors"
-                >
-                  {link.label} <span className="text-[#bbb]">↗</span>
-                </a>
-                {i !== project.links.length - 1 && (
-                  <span className="text-[#eee] font-light">|</span>
-                )}
-              </React.Fragment>
-            ))
-          ) : (
-            <span className="text-[10px] text-[#ddd] italic font-mono uppercase tracking-widest">No resources available.</span>
-          )}
-        </FadeIn>
-      </section>
 
       {/* ── SECTION 6: NAVIGATION ── */}
       <section className="px-6 md:px-12 w-full pt-6 pb-16">

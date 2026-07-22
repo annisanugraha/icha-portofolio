@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence, animate } from 'framer-motion';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence, animate } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 
 /**
@@ -23,56 +23,64 @@ export function ScrollChapterIndicator() {
   const [activeChapter, setActiveChapter] = useState('hero');
   const [showLabel, setShowLabel] = useState(false);
   const [prevChapter, setPrevChapter] = useState('hero');
+  const [scrollProgress, setScrollProgress] = useState(0);
   const activeChapterRef = useRef(activeChapter);
   activeChapterRef.current = activeChapter;
+  const ticking = useRef(false);
 
   const pathname = usePathname();
   const router = useRouter();
-  const { scrollYProgress } = useScroll();
-  const progressHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
 
   useEffect(() => {
     const handleScroll = () => {
-      const viewportCenter = window.innerHeight * 0.45; // slightly above middle for responsive trigger
-      let closestId = activeChapterRef.current;
-      let minDistance = Infinity;
+      if (!ticking.current) {
+        ticking.current = true;
+        requestAnimationFrame(() => {
+          // Update scroll progress
+          const scrolled = window.scrollY;
+          const total = document.documentElement.scrollHeight - window.innerHeight;
+          setScrollProgress(total > 0 ? scrolled / total : 0);
 
-      CHAPTERS.forEach((c) => {
-        const el = document.getElementById(c.id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          // Check if section currently spans over the viewport center
-          if (rect.top <= viewportCenter && rect.bottom >= viewportCenter) {
-            closestId = c.id;
-            minDistance = 0;
-          } else {
-            const center = rect.top + rect.height / 2;
-            const dist = Math.abs(center - viewportCenter);
-            if (dist < minDistance && rect.top < window.innerHeight && rect.bottom > 0) {
-              minDistance = dist;
-              closestId = c.id;
+          // Detect active chapter
+          const viewportCenter = window.innerHeight * 0.45;
+          let closestId = activeChapterRef.current;
+          let minDistance = Infinity;
+
+          CHAPTERS.forEach((c) => {
+            const el = document.getElementById(c.id);
+            if (el) {
+              const rect = el.getBoundingClientRect();
+              if (rect.top <= viewportCenter && rect.bottom >= viewportCenter) {
+                closestId = c.id;
+                minDistance = 0;
+              } else {
+                const center = rect.top + rect.height / 2;
+                const dist = Math.abs(center - viewportCenter);
+                if (dist < minDistance && rect.top < window.innerHeight && rect.bottom > 0) {
+                  minDistance = dist;
+                  closestId = c.id;
+                }
+              }
             }
-          }
-        }
-      });
+          });
 
-      if (closestId && closestId !== activeChapterRef.current) {
-        setPrevChapter(activeChapterRef.current);
-        setActiveChapter(closestId);
+          if (closestId && closestId !== activeChapterRef.current) {
+            setPrevChapter(activeChapterRef.current);
+            setActiveChapter(closestId);
+          }
+
+          ticking.current = false;
+        });
       }
     };
 
-    // Run check on scroll, resize, and periodically for dynamic layouts
     window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
+    window.addEventListener('resize', handleScroll, { passive: true });
     handleScroll();
-
-    const interval = setInterval(handleScroll, 300);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
-      clearInterval(interval);
     };
   }, []);
 
@@ -112,9 +120,9 @@ export function ScrollChapterIndicator() {
     <div className="chapter-indicator">
       {/* Progress line */}
       <div className="chapter-progress-line">
-        <motion.div
-          style={{ height: progressHeight }}
-          className="absolute top-0 left-0 w-full bg-[#111]"
+        <div
+          className="absolute top-0 left-0 w-full bg-[#111] transition-none"
+          style={{ height: `${scrollProgress * 100}%` }}
         />
       </div>
 

@@ -64,8 +64,8 @@
 }
 
 html {
-  scroll-behavior: smooth;
-  overflow-x: hidden; /* Prevent horizontal scroll from scaled/overflowing elements */
+  /* scroll-behavior: smooth intentionally removed — Lenis handles smooth scroll */
+  overflow-x: clip; /* Prevent horizontal scroll without breaking position: sticky */
 }
 
 /* Activated by SmoothCursor component on non-touch devices */
@@ -86,7 +86,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   cursor: default;
-  overflow-x: hidden; /* Belt-and-suspenders with html rule */
+  overflow-x: clip; /* Prevent horizontal scroll without breaking position: sticky */
   max-width: 100%;
 }
 
@@ -199,7 +199,22 @@ h4 {
   border-top: 1px solid var(--ghost);
 }
 
-/* ── Cinematic Section Transitions ── */
+/* ── Performance Hints ── */
+
+/* Promote animated elements to their own GPU layer */
+[data-animate], .motion-safe\:animate-in {
+  will-change: transform;
+}
+
+/* Skip rendering off-screen sections until they're near the viewport.
+   Saves significant layout/paint work on long pages. */
+#about, #work, #play, #archives, #contact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100vh; /* estimate height to avoid layout shift */
+}
+
+/* Cinematic Section Transitions */
+
 
 /* Horizontal line wipe — used between chapters */
 .section-wipe {
@@ -663,7 +678,7 @@ html.lenis, html.lenis-smooth {
 
 /* ── Narrative Storytelling (.prose-icha) ── */
 .prose-icha {
-  max-width: 720px;
+  max-width: 100%;
   line-height: 1.8;
   color: #333333;
   font-size: 1rem;
@@ -726,10 +741,13 @@ html.lenis, html.lenis-smooth {
 
 .prose-icha img {
   width: 100%;
-  border-radius: 6px;
+  max-width: 640px;
+  max-height: 380px;
+  margin: 2rem auto;
+  display: block;
+  border-radius: 8px;
   border: 1px solid #ebebeb;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  margin: 2rem 0;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
   object-fit: cover;
 }
 

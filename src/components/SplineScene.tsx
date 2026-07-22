@@ -43,12 +43,26 @@ export function SplineScene({
 }: SplineSceneProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [webGLSupported, setWebGLSupported] = useState(true);
+  const [isVisible, setIsVisible] = useState(false); // only mount when in view
   const [cursorLabel, setCursorLabel] = useState(defaultCursorText);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const isHoldingRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setWebGLSupported(checkWebGLSupport());
+  }, []);
+
+  // Only mount Spline when the container is visible in the viewport
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => setIsVisible(entries[0].isIntersecting),
+      { threshold: 0.05 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
 
   const handlePointerUp = useCallback(() => {
@@ -157,6 +171,7 @@ export function SplineScene({
 
   return (
     <div
+      ref={containerRef}
       data-cursor={cursorLabel}
       onPointerDownCapture={handlePointerDown}
       onMouseDownCapture={handlePointerDown}
@@ -167,7 +182,7 @@ export function SplineScene({
     >
       {/* No loading UI — Spline fades in silently when ready */}
       <div className={`w-full h-full flex items-center justify-center transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
-        {isIframeUrl ? (
+        {isVisible && (isIframeUrl ? (
           <iframe
             src={scene}
             frameBorder="0"
@@ -181,7 +196,7 @@ export function SplineScene({
           />
         ) : (
           <Spline scene={scene} onLoad={handleLoad} onSplineMouseDown={handlePointerDown} onSplineMouseUp={handlePointerUp} />
-        )}
+        ))}
       </div>
     </div>
   );

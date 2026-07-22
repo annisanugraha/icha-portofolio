@@ -1,10 +1,29 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Project } from '@/types';
+
+function TechBadge({ name, logoUrl }: { name: string; logoUrl?: string | null }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[8px] font-mono tracking-[0.2em] uppercase px-2 py-0.5 bg-[#fafafa] border border-[#ebebeb] text-[#999] rounded-sm">
+      {logoUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={logoUrl}
+          alt={name}
+          width={10}
+          height={10}
+          className="shrink-0 opacity-80"
+          style={{ width: 10, height: 10, objectFit: 'contain' }}
+        />
+      )}
+      {name}
+    </span>
+  );
+}
 
 interface ProjectsPageProps {
   projects: Project[];
@@ -42,9 +61,9 @@ function ProjectSpotlightCard({ project, index }: { project: Project; index: num
     <motion.div
       ref={cardRef}
       layout
-      initial={{ opacity: 0, y: 30, scale: 0.95, filter: 'blur(8px)' }}
-      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-      exit={{ opacity: 0, scale: 0.95, filter: 'blur(4px)' }}
+      initial={{ opacity: 0, y: 30, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.97, y: -10 }}
       transition={{ duration: 0.8, delay: (index % 3) * 0.12, ease: [0.16, 1, 0.3, 1] }}
       className="group space-y-4 cursor-pointer relative"
       onMouseMove={handleMouseMove}
@@ -90,15 +109,11 @@ function ProjectSpotlightCard({ project, index }: { project: Project; index: num
         <div className="pt-2 flex flex-wrap gap-1.5">
           {project.skills && project.skills.length > 0 ? (
             project.skills.map((skill) => (
-              <span key={skill.id} className="text-[8px] font-mono tracking-[0.2em] uppercase px-2 py-0.5 bg-[#fafafa] border border-[#ebebeb] text-[#999] rounded-sm">
-                {skill.name}
-              </span>
+              <TechBadge key={skill.id} name={skill.name} logoUrl={skill.logoUrl} />
             ))
           ) : project.techStack && project.techStack.length > 0 ? (
             project.techStack.map((tech: string, i: number) => (
-              <span key={i} className="text-[8px] font-mono tracking-[0.2em] uppercase px-2 py-0.5 bg-[#fafafa] border border-[#ebebeb] text-[#999] rounded-sm">
-                {tech}
-              </span>
+              <TechBadge key={i} name={tech} />
             ))
           ) : null}
         </div>

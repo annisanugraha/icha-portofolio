@@ -373,3 +373,4 @@ export function WorkAndSkills({ projects }: WorkAndSkillsProps) {
     </section>
   );
 }
+

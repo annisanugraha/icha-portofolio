@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motio
 
 /**
  * SmoothCursor — White dot with mix-blend-mode: difference.
- * Morphs into a WhatsApp-style chat bubble when hovering [data-cursor] elements.
+ * Morphs into a clean chat bubble when hovering [data-cursor] elements.
  */
 export function SmoothCursor() {
   const [isVisible, setIsVisible] = useState(false);
@@ -14,11 +14,14 @@ export function SmoothCursor() {
   const [isTouch, setIsTouch] = useState(false);
   const hasMovedRef = useRef(false);
   const cursorTextRef = useRef('');
+  const mouseXRef = useRef(-100);
+  const mouseYRef = useRef(-100);
 
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
-  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
+  // Snappy, crisp springs that follow instantly without long oscillation locks
+  const springConfig = { damping: 35, stiffness: 500, mass: 0.3 };
   const dotX = useSpring(cursorX, springConfig);
   const dotY = useSpring(cursorY, springConfig);
 
@@ -31,23 +34,58 @@ export function SmoothCursor() {
 
     document.documentElement.classList.add('smooth-cursor-active');
 
-    const moveCursor = (e: MouseEvent) => {
-      const target = e.target;
-      if (!(target instanceof Element)) {
-        if (typeof e.clientX === 'number' && typeof e.clientY === 'number') {
-          cursorX.set(e.clientX);
-          cursorY.set(e.clientY);
+    const updateCursorState = (x: number, y: number, targetEl?: Element | null) => {
+      if (x < 0 || y < 0) return;
+      let el = targetEl !== undefined ? targetEl : document.elementFromPoint(x, y);
+
+      // If the mouse hit our own custom cursor (self-collision), check element underneath or ignore
+      if (el?.closest('.smooth-cursor-root')) {
+        return;
+      }
+
+      if (!el || !(el instanceof Element) || el.tagName === 'IFRAME' || el.closest('iframe')) {
+        setIsVisible(false);
+        setIsHovering(false);
+        if (cursorTextRef.current !== '') {
+          cursorTextRef.current = '';
+          setCursorText('');
         }
         return;
       }
 
-      if (target.tagName === 'IFRAME' || target.closest('iframe')) {
-        setIsVisible(false);
-        return;
+      setIsVisible(true);
+
+      // Check data-cursor
+      const cursorEl = el.closest('[data-cursor]');
+      const label = cursorEl?.getAttribute('data-cursor') || '';
+      if (label !== cursorTextRef.current) {
+        cursorTextRef.current = label;
+        setCursorText(label);
       }
 
+      // Check interactive (only when not showing text bubble)
+      if (label) {
+        setIsHovering(false);
+      } else {
+        const isInteractive =
+          el.tagName === 'A' ||
+          el.tagName === 'BUTTON' ||
+          el.tagName === 'INPUT' ||
+          el.tagName === 'TEXTAREA' ||
+          el.closest('a') !== null ||
+          el.closest('button') !== null ||
+          el.closest('[role="button"]') !== null ||
+          el.classList.contains('cursor-pointer') ||
+          el.closest('.cursor-pointer') !== null;
+        setIsHovering(isInteractive);
+      }
+    };
+
+    const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
+      mouseXRef.current = e.clientX;
+      mouseYRef.current = e.clientY;
 
       if (!hasMovedRef.current) {
         hasMovedRef.current = true;
@@ -55,116 +93,39 @@ export function SmoothCursor() {
         dotY.set(e.clientY);
       }
 
-      const cursorEl = target?.closest('[data-cursor]');
-      if (cursorEl) {
-        const label = cursorEl.getAttribute('data-cursor') || '';
-        if (label !== cursorTextRef.current) {
-          cursorTextRef.current = label;
-          setCursorText(label);
-        }
-      }
-
-      setIsVisible(true);
+      updateCursorState(e.clientX, e.clientY, e.target instanceof Element ? e.target : null);
     };
 
-    const handleGlobalClick = () => {
-      setTimeout(() => {
-        const elUnderMouse = document.elementFromPoint(cursorX.get(), cursorY.get());
-        const cursorEl = elUnderMouse?.closest('[data-cursor]');
-        if (cursorEl) {
-          const label = cursorEl.getAttribute('data-cursor') || '';
-          if (label !== cursorTextRef.current) {
-            cursorTextRef.current = label;
-            setCursorText(label);
-          }
-        }
-      }, 30);
+    let scrollRafId: number | null = null;
+    const handleScroll = () => {
+      if (scrollRafId !== null) return;
+      scrollRafId = requestAnimationFrame(() => {
+        scrollRafId = null;
+        updateCursorState(mouseXRef.current, mouseYRef.current);
+      });
     };
 
-    const handlePointerOver = (e: PointerEvent) => {
-      const target = e.target;
-      if (!(target instanceof Element)) return;
-
-      if (target.tagName === 'IFRAME' || target.closest('iframe')) {
-        setIsVisible(false);
-        setIsHovering(false);
-        setCursorText('');
-        cursorTextRef.current = '';
-        return;
-      }
-
-      // data-cursor
-      const cursorEl = target.closest('[data-cursor]');
-      if (cursorEl) {
-        const label = cursorEl.getAttribute('data-cursor') || '';
-        if (label !== cursorTextRef.current) {
-          cursorTextRef.current = label;
-          setCursorText(label);
-        }
-        setIsHovering(false);
-        return;
-      }
-
-      if (cursorTextRef.current) {
-        cursorTextRef.current = '';
-        setCursorText('');
-      }
-
-      const isInteractive =
-        target.tagName === 'A' ||
-        target.tagName === 'BUTTON' ||
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.closest('a') !== null ||
-        target.closest('button') !== null ||
-        target.closest('[role="button"]') !== null ||
-        target.classList.contains('cursor-pointer') ||
-        target.closest('.cursor-pointer') !== null;
-
-      setIsHovering(isInteractive);
-    };
-
-    const handlePointerLeave = () => {
+    const handleReset = () => {
       cursorTextRef.current = '';
       setCursorText('');
       setIsVisible(false);
       setIsHovering(false);
     };
 
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'data-cursor') {
-          const mutatedEl = mutation.target as HTMLElement;
-          const elUnderMouse = document.elementFromPoint(cursorX.get(), cursorY.get());
-          const cursorEl = elUnderMouse?.closest('[data-cursor]') || (mutatedEl && mutatedEl.contains(elUnderMouse as Node) ? mutatedEl : null);
-          if (cursorEl) {
-            const currentLabel = cursorEl.getAttribute('data-cursor') || '';
-            if (currentLabel !== cursorTextRef.current) {
-              cursorTextRef.current = currentLabel;
-              setCursorText(currentLabel);
-            }
-          }
-        }
-      }
-    });
-    observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['data-cursor'] });
-
     window.addEventListener('mousemove', moveCursor, { passive: true });
-    document.addEventListener('pointerdown', handleGlobalClick, { capture: true, passive: true });
-    document.addEventListener('mousedown', handleGlobalClick, { capture: true, passive: true });
-    document.addEventListener('click', handleGlobalClick, { capture: true, passive: true });
-    document.addEventListener('pointerover', handlePointerOver, { passive: true });
-    document.documentElement.addEventListener('pointerleave', handlePointerLeave);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    document.documentElement.addEventListener('pointerleave', handleReset);
+    window.addEventListener('blur', handleReset);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) handleReset();
+    });
 
     return () => {
       document.documentElement.classList.remove('smooth-cursor-active');
-      observer.disconnect();
       window.removeEventListener('mousemove', moveCursor);
-      document.removeEventListener('pointerdown', handleGlobalClick, { capture: true });
-      document.removeEventListener('mousedown', handleGlobalClick, { capture: true });
-      document.removeEventListener('click', handleGlobalClick, { capture: true });
-      document.removeEventListener('pointerover', handlePointerOver);
-      document.documentElement.removeEventListener('pointerleave', handlePointerLeave);
+      window.removeEventListener('scroll', handleScroll);
+      document.documentElement.removeEventListener('pointerleave', handleReset);
+      window.removeEventListener('blur', handleReset);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -172,12 +133,15 @@ export function SmoothCursor() {
   if (isTouch) return null;
 
   const hasText = Boolean(cursorText);
-  // Fixed pixel width based on text length — avoids 'auto' which breaks Framer Motion
   const pillWidth = cursorText.length > 22 ? 220 : cursorText.length > 14 ? 170 : cursorText.length > 6 ? 130 : 90;
   const TAIL_HEIGHT = 8;
 
+  const targetTranslateX = hasText ? 4 : isHovering ? -21 : -6;
+  const targetTranslateY = hasText ? -(32 + TAIL_HEIGHT) : isHovering ? -21 : -6;
+
   return (
     <motion.div
+      className="smooth-cursor-root !pointer-events-none !select-none"
       style={{
         x: dotX,
         y: dotY,
@@ -186,84 +150,94 @@ export function SmoothCursor() {
         left: 0,
         pointerEvents: 'none',
         zIndex: 9999999,
-        mixBlendMode: hasText ? 'normal' : 'difference', // Remove difference blending when bubble is active
-        translateX: hasText ? 2 : -6,
-        translateY: hasText ? -(32 + TAIL_HEIGHT) : -6,
+        mixBlendMode: hasText ? 'normal' : 'difference',
       }}
-      animate={{ opacity: isVisible ? 1 : 0 }}
-      transition={{ opacity: { duration: 0.15 } }}
     >
-      {/* Bubble element */}
       <motion.div
-        style={{
-          backgroundColor: hasText ? '#111' : '#fff', // Solid black when it has text
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'visible',           // allow tail to stick out below
-          position: 'relative',
-        }}
+        className="!pointer-events-none !select-none"
         animate={{
-          width: hasText ? pillWidth : isHovering ? 42 : 12,
-          height: hasText ? 32 : isHovering ? 42 : 12,
-          borderRadius: hasText ? '16px 16px 16px 0px' : '24px 24px 24px 24px',
+          opacity: isVisible ? 1 : 0,
+          x: targetTranslateX,
+          y: targetTranslateY,
         }}
         transition={{
-          width: { type: 'spring', damping: 26, stiffness: 300 },
-          height: { type: 'spring', damping: 26, stiffness: 300 },
-          borderRadius: { type: 'spring', damping: 26, stiffness: 300 },
+          opacity: { duration: 0.15 },
+          x: { type: 'spring', damping: 35, stiffness: 500, mass: 0.3 },
+          y: { type: 'spring', damping: 35, stiffness: 500, mass: 0.3 },
         }}
       >
-        {/* Text — color #000 so inside the white pill it inverts to white text on black pill */}
-        <AnimatePresence mode="wait">
-          {hasText && (
-            <motion.span
-              key={cursorText}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.12, delay: 0.1 }}
-              style={{
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#fff',
-                letterSpacing: '0.03em',
-                lineHeight: 1,
-                userSelect: 'none',
-                whiteSpace: 'nowrap',
-                paddingLeft: 14,
-                paddingRight: 14,
-              }}
-            >
-              {cursorText}
-            </motion.span>
-          )}
-        </AnimatePresence>
+        <motion.div
+          className="!pointer-events-none !select-none"
+          style={{
+            backgroundColor: hasText ? '#111' : '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'visible',
+            position: 'relative',
+          }}
+          animate={{
+            width: hasText ? pillWidth : isHovering ? 42 : 12,
+            height: hasText ? 32 : isHovering ? 42 : 12,
+            borderRadius: hasText ? '16px 16px 16px 0px' : '24px 24px 24px 24px',
+          }}
+          transition={{
+            width: { type: 'spring', damping: 32, stiffness: 450, mass: 0.3 },
+            height: { type: 'spring', damping: 32, stiffness: 450, mass: 0.3 },
+            borderRadius: { type: 'spring', damping: 32, stiffness: 450, mass: 0.3 },
+          }}
+        >
+          <AnimatePresence mode="wait">
+            {hasText && (
+              <motion.span
+                key={cursorText}
+                className="!pointer-events-none !select-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.12, delay: 0.05 }}
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: '#fff',
+                  letterSpacing: '0.03em',
+                  lineHeight: 1,
+                  userSelect: 'none',
+                  whiteSpace: 'nowrap',
+                  paddingLeft: 14,
+                  paddingRight: 14,
+                }}
+              >
+                {cursorText}
+              </motion.span>
+            )}
+          </AnimatePresence>
 
-        {/* Bubble tail — SVG overlapping 1px into the flat bottom-left corner so zero gap/seam */}
-        <AnimatePresence>
-          {hasText && (
-            <motion.svg
-              key="tail"
-              viewBox="0 0 10 8"
-              width={10}
-              height={8}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.1 }}
-              style={{
-                position: 'absolute',
-                bottom: -7, // overlaps 1px with bottom of pill to eliminate any subpixel line
-                left: 0,
-                fill: '#111', // Black tail
-                display: 'block',
-              }}
-            >
-              <path d="M0 0 L10 0 L0 8 Z" />
-            </motion.svg>
-          )}
-        </AnimatePresence>
+          <AnimatePresence>
+            {hasText && (
+              <motion.svg
+                key="tail"
+                viewBox="0 0 10 8"
+                width={10}
+                height={8}
+                className="!pointer-events-none !select-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.1 }}
+                style={{
+                  position: 'absolute',
+                  bottom: -7,
+                  left: 0,
+                  fill: '#111',
+                  display: 'block',
+                }}
+              >
+                <path d="M0 0 L10 0 L0 8 Z" />
+              </motion.svg>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </motion.div>
     </motion.div>
   );

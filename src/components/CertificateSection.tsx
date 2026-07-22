@@ -122,12 +122,20 @@ export default function CertificateSection({ certificates }: Props) {
       </div>
 
       {/* Detail Modal */}
-      {selectedCertificate && (
-        <CertificateModal
-          certificate={selectedCertificate}
-          onClose={() => setSelectedCertificate(null)}
-        />
-      )}
+      {selectedCertificate && (() => {
+        const selectedIndex = certificates.findIndex(c => c.id === selectedCertificate.id);
+        const hasNav = selectedIndex !== -1 && certificates.length > 1;
+        return (
+          <CertificateModal
+            certificate={selectedCertificate}
+            onClose={() => setSelectedCertificate(null)}
+            onNext={hasNav ? () => setSelectedCertificate(certificates[(selectedIndex + 1) % certificates.length]) : undefined}
+            onPrev={hasNav ? () => setSelectedCertificate(certificates[(selectedIndex - 1 + certificates.length) % certificates.length]) : undefined}
+            currentIndex={hasNav ? selectedIndex : undefined}
+            totalCount={hasNav ? certificates.length : undefined}
+          />
+        );
+      })()}
     </div>
   );
 }

@@ -86,10 +86,10 @@ export const SuikaGame = () => {
 
     const wallOptions = {
       isStatic: true,
-      render: { fillStyle: '#f0f0f0', strokeStyle: '#e5e5e5', lineWidth: 1 }
+      render: { visible: false, opacity: 0, fillStyle: 'transparent', strokeStyle: 'transparent', lineWidth: 0 }
     }
 
-    const ground = Bodies.rectangle(initialWidth / 2, initialHeight - 10, 3000, 60, wallOptions)
+    const ground = Bodies.rectangle(initialWidth / 2, initialHeight + 28, 3000, 60, wallOptions)
     const leftWall = Bodies.rectangle(-30, initialHeight / 2, 60, 3000, wallOptions)
     const rightWall = Bodies.rectangle(initialWidth + 30, initialHeight / 2, 60, 3000, wallOptions)
 
@@ -111,7 +111,7 @@ export const SuikaGame = () => {
       render.canvas.width = width * pixelRatio;
       render.canvas.height = height * pixelRatio;
 
-      Matter.Body.setPosition(ground, { x: width / 2, y: height - 10 });
+      Matter.Body.setPosition(ground, { x: width / 2, y: height + 28 });
       Matter.Body.setPosition(leftWall, { x: -30, y: height / 2 });
       Matter.Body.setPosition(rightWall, { x: width + 30, y: height / 2 });
     });
@@ -246,8 +246,28 @@ export const SuikaGame = () => {
       }
     }, 1000);
 
+    // Pause/resume engine when not visible in viewport
+    const visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!runnerRef.current || !renderRef.current) return;
+        if (entry.isIntersecting) {
+          Runner.run(runnerRef.current, engine);
+          Render.run(renderRef.current);
+        } else {
+          Runner.stop(runnerRef.current);
+          Render.stop(renderRef.current);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (sceneRef.current) {
+      visibilityObserver.observe(sceneRef.current);
+    }
+
     return () => {
       clearInterval(checkInterval);
+      visibilityObserver.disconnect();
       Render.stop(render);
       Runner.stop(runner);
       if (engineRef.current) {
@@ -325,10 +345,10 @@ export const SuikaGame = () => {
   const restartGame = () => {
     if (engineRef.current) {
       Matter.Composite.clear(engineRef.current.world, false);
-      const wallOptions = { isStatic: true, render: { fillStyle: '#f0f0f0', strokeStyle: '#e5e5e5', lineWidth: 1 } }
+      const wallOptions = { isStatic: true, render: { visible: false, opacity: 0, fillStyle: 'transparent', strokeStyle: 'transparent', lineWidth: 0 } }
       const width = gameWidthRef.current;
       const height = gameHeightRef.current;
-      const ground = Matter.Bodies.rectangle(width / 2, height - 10, 3000, 60, wallOptions)
+      const ground = Matter.Bodies.rectangle(width / 2, height + 28, 3000, 60, wallOptions)
       const leftWall = Matter.Bodies.rectangle(-30, height / 2, 60, 3000, wallOptions)
       const rightWall = Matter.Bodies.rectangle(width + 30, height / 2, 60, 3000, wallOptions)
       Matter.Composite.add(engineRef.current.world, [ground, leftWall, rightWall]);
@@ -412,10 +432,10 @@ export const SuikaGame = () => {
       {/* Help / How to Play Fullscreen Popup Modal */}
       {showHelp && typeof document !== 'undefined' && createPortal(
         <div className="fixed inset-0 z-[50000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="max-w-sm w-full bg-white border border-[#eaeaea] rounded-3xl p-6 text-center shadow-[0_20px_60px_rgba(0,0,0,0.3)] relative space-y-3.5">
+          <div className="max-w-sm w-full bg-white border border-gray-200 rounded-3xl p-6 text-center shadow-xl relative space-y-4">
             <button
               onClick={() => setShowHelp(false)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#f5f5f5] hover:bg-[#ebebeb] text-gray-500 hover:text-black flex items-center justify-center transition-all text-xs font-mono cursor-pointer"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full border border-gray-200 bg-white hover:bg-gray-100 text-gray-500 hover:text-black flex items-center justify-center transition-all text-xs font-mono cursor-pointer"
               aria-label="Close modal"
             >
               ✕
@@ -426,7 +446,7 @@ export const SuikaGame = () => {
               </div>
               <h3 className="text-xl font-serif text-[#111] tracking-tight font-bold">How to Play</h3>
             </div>
-            <div className="text-left text-xs text-[#444] font-light space-y-2.5 leading-relaxed bg-[#fafafa] border border-[#ebebeb] p-4 rounded-2xl shadow-inner">
+            <div className="text-left text-xs text-[#444] font-light space-y-3 leading-relaxed bg-white border border-gray-200 p-4 rounded-2xl">
               <p className="flex gap-2.5 items-start">
                 <span className="font-mono text-white font-bold bg-black px-1.5 py-0.5 rounded text-[10px] shrink-0 mt-0.5">1</span>
                 <span><strong className="text-[#111] font-semibold">Aim & Drop:</strong> Move your cursor inside the white container and click to drop shapes.</span>
@@ -442,7 +462,7 @@ export const SuikaGame = () => {
             </div>
             <button
               onClick={() => setShowHelp(false)}
-              className="w-full py-2.5 bg-black text-white font-bold text-[11px] tracking-[0.2em] uppercase font-mono hover:bg-[#222] active:scale-98 transition-all rounded-full shadow-md !mt-4 cursor-pointer"
+              className="w-full py-2.5 bg-black text-white font-bold text-[11px] tracking-[0.2em] uppercase font-mono hover:bg-[#222] active:scale-98 transition-all rounded-full shadow-md !mt-5 cursor-pointer"
             >
               Got it, Let&apos;s Play!
             </button>
