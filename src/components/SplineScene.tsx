@@ -140,10 +140,10 @@ export function SplineScene({
           renderer.setClearAlpha(0);
         }
       }
-      // Scale camera zoom balanced (1.16x) so it fits perfectly without clipping
+      // Scale camera zoom balanced (0.88x) so it fits perfectly without clipping
       const camera = app._camera;
       if (camera) {
-        camera.zoom = 1.16;
+        camera.zoom = 0.88;
         if (camera.updateProjectionMatrix) camera.updateProjectionMatrix();
       }
     } catch {
@@ -178,7 +178,7 @@ export function SplineScene({
       onPointerUpCapture={handlePointerUp}
       onMouseUpCapture={handlePointerUp}
       onPointerLeave={handlePointerLeave}
-      className={`relative w-full h-full flex items-center justify-center overflow-hidden bg-transparent ${className}`}
+      className={`relative w-full h-full flex items-center justify-center overflow-visible bg-transparent ${className}`}
     >
       {/* No loading UI — Spline fades in silently when ready */}
       <div className={`w-full h-full flex items-center justify-center transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>

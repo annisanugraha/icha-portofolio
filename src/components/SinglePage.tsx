@@ -3,7 +3,6 @@
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { ChevronDown } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { PageSectionHeader } from './PageSectionHeader';
@@ -25,8 +24,6 @@ interface SinglePageProps {
   activities: Activity[];
   experiences: Experience[];
 }
-
-
 
 export function SinglePage({ profile, projects, certificates, activities, experiences }: SinglePageProps) {
   const heroRef = useRef<HTMLElement>(null);
@@ -55,14 +52,11 @@ export function SinglePage({ profile, projects, certificates, activities, experi
         }
       };
 
-      // Try scrolling immediately, then retry as images and dynamic content (like Canvas) load
       scrollToHash();
       setTimeout(scrollToHash, 100);
       setTimeout(scrollToHash, 500);
       setTimeout(scrollToHash, 1500);
 
-      // Phase D fix: Remove hash from URL after scroll completes.
-      // Prevents force-scroll back to section on page refresh.
       setTimeout(() => {
         history.replaceState(null, '', window.location.pathname);
       }, 1700);
@@ -71,166 +65,197 @@ export function SinglePage({ profile, projects, certificates, activities, experi
 
   return (
     <>
-      {/* ── Content ── */}
-      <main className="min-h-screen bg-white">
-        <div>
+      <main className="bg-white">
+        <div className="relative">
+
           {/* ══════════════════════════════════════════════════
-              CHAPTER 1: HERO — First Impression
+              CHAPTER 1: HERO — First Impression (sticky paper)
               ══════════════════════════════════════════════════ */}
           <section
             ref={heroRef}
             id="hero"
-            className="hero-grid-bg min-h-screen flex items-center md:pt-0 pt-20 relative overflow-hidden"
-            style={{ minHeight: '100svh' }}
+            className="hero-grid-bg sticky top-0 h-screen flex flex-col justify-between relative overflow-hidden pb-36 md:pb-44 pt-6 px-6 md:px-12"
           >
-            {/* 2-column grid: text left, Spline right */}
-            <div className="w-full px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-4 items-center relative z-10">
-
-              {/* Left: Text */}
-              <motion.div
-                style={{ y: heroTitleY, opacity: heroOpacity }}
-                className="lg:col-span-7 space-y-8 max-w-2xl z-10"
-              >
-                {/* Role label */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            <div className="w-full max-w-6xl mx-auto flex flex-col h-full relative z-10">
+              {/* Top bar — role label + section number */}
+              <div className="w-full flex items-center justify-between pt-3">
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="tracking-[0.3em] text-[#777] font-sans font-medium text-[10px] md:text-xs"
                 >
-                  <span className="label">
-                    {profile?.heroRole || 'Software Engineer'}
-                  </span>
+                  {profile?.heroRole || 'UI UX DESIGNER & FRONT END DEVELOPER'}
+                </motion.span>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="flex items-center gap-4 flex-1 justify-end"
+                >
+                  <div className="hidden md:flex items-center gap-0 mx-4 flex-1 max-w-sm justify-end">
+                    <div className="w-px h-2.5 bg-[#444]" />
+                    <div className="h-px bg-[#ccc] flex-1 max-w-[120px]" />
+                    <div className="w-px h-2.5 bg-[#444]" />
+                  </div>
+                  <span className="font-serif text-xl md:text-2xl font-normal text-[#111] tracking-wide">01</span>
                 </motion.div>
+              </div>
 
-                {/* Headline */}
-                <motion.h1
-                  data-cursor="Hi there! Nice to meet you :]"
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="leading-[1.0] whitespace-pre-line cursor-default"
-                >
-                  {profile?.heroTitle || 'Building things that matter.'}
-                </motion.h1>
+              {/* Main hero layout: Robot left + Headline right, Subtitle below, Pills left-aligned */}
+              <div className="w-full flex flex-col items-center justify-center my-auto relative">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 w-full">
+                  {/* Robot 3D — uncropped with balanced dimensions */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    style={{ opacity: heroOpacity }}
+                    className="relative flex-shrink-0 w-[200px] md:w-[270px] lg:w-[320px] h-[200px] md:h-[270px] lg:h-[320px] my-0 overflow-visible"
+                  >
+                    <SplineScene
+                      scene="https://prod.spline.design/bTBmc2h7TBzR3GJr/scene.splinecode"
+                      className="w-full h-full"
+                    />
+                  </motion.div>
 
-                {/* Subtitle */}
+                  {/* Headline — rata kanan (right aligned) exactly as in mockup */}
+                  <motion.div
+                    style={{ y: heroTitleY, opacity: heroOpacity }}
+                    className="flex-1 min-w-0"
+                  >
+                    <motion.h1
+                      data-cursor="Hi there! Nice to meet you :]"
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                      className="font-serif text-6xl md:text-8xl lg:text-[6.5rem] xl:text-[7rem] leading-[0.85] text-[#111] text-center md:text-right tracking-tighter cursor-default w-full"
+                    >
+                      {profile?.heroTitle ? (
+                        profile.heroTitle.toLowerCase().includes('dynamic') ? (
+                          <>
+                            {profile.heroTitle.split(/dynamic/i)[0].trim()}
+                            <br />
+                            Dynamic Code.
+                          </>
+                        ) : (
+                          profile.heroTitle
+                        )
+                      ) : (
+                        <>Explorative design.<br />Dynamic Code.</>
+                      )}
+                    </motion.h1>
+                  </motion.div>
+                </div>
+
+                {/* Subtitle — left aligned full width under heading/robot row */}
                 <motion.div
-                  style={{ y: heroSubtitleY }}
+                  style={{ y: heroSubtitleY, opacity: heroOpacity }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex items-center gap-4 pt-2"
+                  className="w-full mt-6 md:mt-4 pl-0"
                 >
-                  <motion.div
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.6, delay: 1, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-6 h-px bg-[#111] origin-left"
-                  />
-                  <p className="text-xs text-[#999] tracking-wide">
-                    {profile?.heroSubtitle || 'Engineering & minimal design.'}
+                  <p className="text-sm md:text-base text-[#555] w-full text-center md:text-left leading-relaxed">
+                    {profile?.heroSubtitle || 'Bridging visual aesthetics and frontend logic to build impactful digital products.'}
                   </p>
                 </motion.div>
 
-                {/* Stats Bar */}
+                {/* Stats Bar Pills — indented to align with mockup */}
                 {[profile?.statsItem1, profile?.statsItem2, profile?.statsItem3, profile?.statsItem4].filter(Boolean).length > 0 && (
                   <motion.div
+                    style={{ opacity: heroOpacity }}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex flex-wrap items-center gap-3 pt-4"
+                    className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-6 md:mt-8 pb-2 w-full md:pl-[240px] lg:pl-[280px]"
                   >
                     {[profile?.statsItem1, profile?.statsItem2, profile?.statsItem3, profile?.statsItem4]
                       .filter(Boolean)
                       .map((item, i) => (
                         <div
                           key={i}
-                          className="px-4 py-1.5 rounded-full border border-[#ebebeb] bg-[#fafafa]/90 backdrop-blur-sm text-[11px] font-mono tracking-wider text-[#333] shadow-xs"
+                          className="px-5 py-2 rounded-full border border-[#e0e0e0] bg-white/90 backdrop-blur-sm shadow-2xs text-[11px] font-mono tracking-wider text-[#555]"
                         >
                           {item}
                         </div>
                       ))}
                   </motion.div>
                 )}
-              </motion.div>
-
-              {/* Right: Spline 3D white robot — desktop only (hidden on mobile) */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                style={{ opacity: heroOpacity, height: '100svh' }}
-                className="hidden md:flex lg:col-span-5 w-full relative overflow-visible items-center justify-center"
-              >
-                <SplineScene
-                  scene="https://prod.spline.design/bTBmc2h7TBzR3GJr/scene.splinecode"
-                  className="w-full h-full"
-                />
-              </motion.div>
+              </div>
             </div>
-
-            {/* Scroll indicator */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.5, duration: 0.8 }}
-              style={{ opacity: heroOpacity }}
-              className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10 pointer-events-none"
-            >
-              <span className="text-[8px] font-mono tracking-[0.5em] text-[#bbb] uppercase">
-                Scroll to explore
-              </span>
-              <ChevronDown size={14} className="text-[#ccc] scroll-indicator" />
-            </motion.div>
           </section>
 
           {/* ══════════════════════════════════════════════════
-              TRANSITION: Hero → About
+              CHAPTER 2: ABOUT — Paper slides up over Hero
               ══════════════════════════════════════════════════ */}
-          <div id="about">
 
-            {/* ══════════════════════════════════════════════════
-                CHAPTER 2: ABOUT — Behind The Screen
-                ══════════════════════════════════════════════════ */}
-            <section
-              className="min-h-screen flex flex-col justify-center py-24 md:pt-16"
+          {/* Pixel Grid Decoration — its OWN white section, guaranteed visible,
+              sitting directly after Hero (no negative-margin overlap so it can
+              never get tucked behind the sticky hero or blend into the black
+              section below it). */}
+          <div className="relative z-20 bg-white">
+            <PixelGridDecoration />
+            {/* Rotating Scroll Badge — overlaps top pixel grid area, positioned top-right exactly as in mockup */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute -top-8 md:-top-12 right-8 md:right-20 lg:right-28 z-40 w-[160px] h-[160px] md:w-[190px] md:h-[190px] pointer-events-none"
             >
-              <div className="px-6 md:px-12">
-                <div className="grid grid-cols-1 md:grid-cols-10 gap-8 md:gap-4 items-center w-full">
-                  {/* Text Content — Staggered reveal */}
-                  <div className="md:col-span-6 space-y-6">
+              <RotatingScrollBadge />
+            </motion.div>
+          </div>
+
+          <div id="about" className="relative z-20 -mt-[1px]">
+
+            {/* Solid Black Banner — ONLY contains the Who I Am card */}
+            <section className="bg-[#0a0a0a] pt-12 pb-16 px-6 md:px-12 text-white">
+              <div className="max-w-6xl mx-auto">
+                {/* White card with bio */}
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, margin: '-8%' }}
+                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                  className="relative grid grid-cols-1 md:grid-cols-10 gap-0 overflow-hidden"
+                  style={{
+                    background: '#fff',
+                    border: '1px solid #e8e8e8',
+                  }}
+                >
+                  {/* Left: Text Content */}
+                  <div className="md:col-span-6 p-8 md:p-12 space-y-6 text-[#111]">
                     <motion.div
-                      initial={{ opacity: 0, y: 30 }}
+                      initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: false, margin: '-10%' }}
                       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                       className="space-y-2"
                     >
-                      <span className="label">About</span>
+                      <span className="label text-[#888] font-mono text-[11px] tracking-[0.25em] uppercase">About</span>
                       <h2 className="text-4xl md:text-5xl font-serif text-[#111] tracking-tight">
                         Who I Am.
                       </h2>
                     </motion.div>
 
                     <div className="space-y-4 max-w-xl">
-                      {/* Quote with underline draw */}
                       <motion.p
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: false, margin: '-5%' }}
                         transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                        className="text-sm italic text-[#111] border-l-2 border-[#111] pl-5 leading-relaxed"
+                        className="text-sm italic text-[#111] border-l-2 border-[#111] pl-5 leading-relaxed font-sans"
                       >
-                        &ldquo;{profile?.aboutQuote || 'Crafting digital clarity through intentional code.'}&rdquo;
+                        &ldquo;{profile?.aboutQuote || 'Hi, I\'m Icha, but I also go by Annisa Angelica Nugraha.'}&rdquo;
                       </motion.p>
 
-                      {/* Bio paragraphs — staggered */}
                       <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: false, margin: '-5%' }}
                         transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                        className="text-xs text-[#777] leading-relaxed whitespace-pre-line"
+                        className="text-xs md:text-[13px] text-[#666] leading-relaxed whitespace-pre-line font-sans"
                       >
                         {profile?.aboutBio1}
                       </motion.p>
@@ -239,48 +264,28 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: false, margin: '-5%' }}
                         transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                        className="text-xs text-[#777] leading-relaxed whitespace-pre-line"
+                        className="text-xs md:text-[13px] text-[#666] leading-relaxed whitespace-pre-line font-sans"
                       >
                         {profile?.aboutBio2}
                       </motion.p>
                     </div>
                   </div>
 
-                  {/* Portrait - Mobile Only — Simple fade-in */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: false, margin: '-5%' }}
-                    transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex md:hidden justify-center w-full"
-                  >
-                    <div className="img-container aspect-square w-full max-w-[320px] rounded-sm overflow-hidden relative">
-                      <Image
-                        src={profile?.aboutImage || 'https://placehold.co/600x600/f5f5f5/999999?text=—'}
-                        alt="Portrait"
-                        fill
-                        sizes="(max-width: 768px) 100vw, 320px"
-                        className="object-cover"
-                      />
-                    </div>
-                  </motion.div>
-
-                  {/* Portrait - Desktop — Curtain reveal */}
-                  <div ref={portraitRef} className="hidden md:flex md:col-span-4 justify-center md:justify-start">
+                  {/* Right: Portrait photo — fills column, B&W */}
+                  <div ref={portraitRef} className="md:col-span-4 relative min-h-[300px] md:min-h-0">
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: isPortraitInView ? 1 : 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
                       data-cursor="It's me ♡"
-                      className="relative aspect-square w-full max-w-[380px] rounded-sm overflow-hidden group"
+                      className="absolute inset-0 overflow-hidden group"
                     >
-                      {/* Curtain overlay */}
                       <motion.div
                         initial={{ x: 0 }}
                         animate={{ x: isPortraitInView ? '101%' : 0 }}
                         transition={{ duration: 1.0, delay: 0.3, ease: [0.76, 0, 0.24, 1] }}
                         style={{ willChange: 'transform' }}
-                        className="absolute inset-0 bg-[#111] z-10"
+                        className="absolute inset-0 bg-[#0a0a0a] z-10"
                       />
                       <motion.div
                         initial={{ scale: 1.15 }}
@@ -289,22 +294,29 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                         className="w-full h-full relative grayscale group-hover:grayscale-0 transition-all duration-1000"
                       >
                         <Image
-                          src={profile?.aboutImage || 'https://placehold.co/600x600/f5f5f5/999999?text=—'}
-                          alt="Portrait"
+                          src={profile?.aboutImage || 'https://placehold.co/600x800/1a1a1a/555555?text=Icha'}
+                          alt="Portrait of Icha"
                           fill
                           sizes="(min-width: 768px) 380px, 100vw"
-                          className="object-cover"
+                          className="object-cover object-top"
                         />
                       </motion.div>
                     </motion.div>
                   </div>
-                </div>
+                </motion.div>
+              </div>
+            </section>
 
-                {/* Timeline — Enhanced with staggered reveals and pulsing dots */}
+            {/* Bottom Pixel Grid Decoration — small clusters at corners, stepping into white background */}
+            <PixelGridDecoration />
+
+            {/* Chronology Timeline — strictly on WHITE background (#ffffff) below the black box */}
+            <section className="bg-white pt-16 pb-24 px-6 md:px-12 text-[#111]">
+              <div className="max-w-6xl mx-auto">
                 {experiences && experiences.length > 0 && (
-                  <div className="mt-16 space-y-0" data-cursor="What a journey... ✩">
+                  <div className="space-y-0" data-cursor="What a journey... ✩">
                     <PageSectionHeader title="Chronology" number="02" />
-                    <div className="flex flex-col">
+                    <div className="flex flex-col mt-10">
                       {experiences.map((exp, i: number) => {
                         const isLast = i === experiences.length - 1;
                         return (
@@ -314,16 +326,16 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: false, margin: '-5%' }}
                             transition={{ duration: 0.7, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                            className="flex items-start group"
+                            className="flex items-start group py-4"
                           >
                             <div className="hidden md:block w-48 shrink-0 pt-1">
                               {exp.imageUrl ? (
-                                <div className="aspect-video w-full bg-[#fafafa] border border-[#ebebeb] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out opacity-80 group-hover:opacity-100">
+                                <div className="aspect-video w-full bg-[#fafafa] border border-[#ebebeb] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out opacity-90 group-hover:opacity-100">
                                   <img src={exp.imageUrl} alt={exp.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                 </div>
                               ) : (
                                 <div className="aspect-video w-full bg-[#fafafa] border border-[#ebebeb] flex items-center justify-center">
-                                  <span className="text-[6px] text-[#ddd] tracking-widest uppercase font-mono">N/A</span>
+                                  <span className="text-[9px] text-[#bbb] tracking-widest uppercase font-mono">N/A</span>
                                 </div>
                               )}
                             </div>
@@ -333,24 +345,24 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                                 whileInView={{ scale: [0, 1.3, 1] }}
                                 viewport={{ once: false }}
                                 transition={{ duration: 0.5, delay: i * 0.1 + 0.2 }}
-                                className="w-2 h-2 rounded-full bg-[#111] group-hover:bg-[#ddd] transition-colors duration-500 mt-[5px]"
+                                className="w-2.5 h-2.5 rounded-full bg-[#111] group-hover:bg-[#555] transition-colors duration-500 mt-[5px]"
                               />
-                              <div className={`w-[0.5px] bg-[#ebebeb] flex-1 ${isLast ? 'opacity-0' : 'opacity-100'}`} />
+                              <div className={`w-[1px] bg-[#e0e0e0] flex-1 mt-1 ${isLast ? 'opacity-0' : 'opacity-100'}`} />
                             </div>
 
-                            <div className="flex-1 pt-0 pb-10 space-y-4">
+                            <div className="flex-1 pt-0 pb-10 space-y-3">
                               <div className="flex flex-wrap items-center gap-3">
-                                <span className="font-mono text-[10px] md:text-[11px] tracking-[0.1em] text-[#111] group-hover:opacity-70 transition-opacity duration-500 font-bold">
+                                <span className="font-mono text-xs md:text-[13px] tracking-[0.08em] text-[#111] font-bold">
                                   [{exp.year}]
                                 </span>
-                                <h4 className="font-mono text-[11px] md:text-[12px] tracking-tight text-[#111] group-hover:opacity-70 transition-opacity duration-500">
+                                <h4 className="font-mono text-xs md:text-[13px] tracking-tight text-[#111] font-bold">
                                   {exp.title}
                                 </h4>
                               </div>
-                              <p className="text-[11px] md:text-[12px] text-[#777] leading-relaxed font-sans line-clamp-3 md:line-clamp-none pr-4 md:pr-12">
+                              <p className="text-xs md:text-[13px] text-[#666] leading-relaxed font-sans pr-4 md:pr-12">
                                 {exp.description}
                               </p>
-                              <span className="text-[8px] tracking-[0.4em] text-[#bbb] group-hover:text-[#999] transition-colors font-mono italic">
+                              <span className="text-[10px] tracking-[0.35em] text-[#888] font-mono italic block pt-1">
                                 at {exp.company}
                               </span>
                             </div>
@@ -365,13 +377,9 @@ export function SinglePage({ profile, projects, certificates, activities, experi
           </div>
 
           {/* ══════════════════════════════════════════════════
-              TRANSITION: About → Work
+              CHAPTER 3: WORK — The Craft
               ══════════════════════════════════════════════════ */}
           <div id="work">
-
-            {/* ══════════════════════════════════════════════════
-                CHAPTER 3: WORK — The Craft (light polish only)
-                ══════════════════════════════════════════════════ */}
             <WorkAndSkills projects={projects} />
           </div>
 
@@ -383,9 +391,7 @@ export function SinglePage({ profile, projects, certificates, activities, experi
             {/* ══════════════════════════════════════════════════
                 CHAPTER 4: PLAY — Let's Have Fun
                 ══════════════════════════════════════════════════ */}
-            <section
-              className="min-h-screen md:h-[100dvh] pt-6 pb-6 flex flex-col relative"
-            >
+            <section className="min-h-screen md:h-[100dvh] pt-6 pb-6 flex flex-col relative">
               <div className="px-6 md:px-12 flex-1 flex flex-col md:min-h-0">
                 <PageSectionHeader title="LET'S TAKE A BREAK" number="04" />
                 <motion.div
@@ -431,7 +437,6 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                 <div className="px-6 md:px-12">
                   <div className="flex flex-col gap-4">
                     <div>
-                      {/* <span className="label block mb-1">Beyond Code</span> */}
                       <h3 className="text-3xl md:text-4xl font-serif text-[#111] mb-2">
                         Life outside the editor.
                       </h3>
@@ -460,7 +465,6 @@ export function SinglePage({ profile, projects, certificates, activities, experi
               <div className="px-6 md:px-12 z-10">
 
                 <div className="space-y-6 max-w-lg">
-                  {/* Scale-from-huge entrance */}
                   <motion.h2
                     initial={{ opacity: 0, scale: 1.1, y: 30 }}
                     whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -481,7 +485,6 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                     Thanks for scrolling all the way down! Since you&apos;re already here, we should definitely talk, right?
                   </motion.p>
 
-                  {/* CTA with pulse glow */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -527,7 +530,6 @@ export function SinglePage({ profile, projects, certificates, activities, experi
                   </motion.div>
                 </div>
 
-                {/* Spotlight gradient */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -549,64 +551,83 @@ export function SinglePage({ profile, projects, certificates, activities, experi
   );
 }
 
-function PortraitWithCursor({ src, isInView }: { src: string; isInView: boolean }) {
-  const [cursor, setCursor] = useState({ x: 0, y: 0, visible: false });
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    setCursor({ x: e.clientX - rect.left, y: e.clientY - rect.top, visible: true });
-  };
+// ── Rotating "Scroll to explore" circular badge ──────────────────────────────
+function RotatingScrollBadge() {
+  const text = 'Scroll to explore - Scroll to explore - ';
 
   return (
-    <motion.div
-      ref={containerRef}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: isInView ? 1 : 0 }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-      className="relative aspect-square w-full max-w-[380px] rounded-sm overflow-hidden group cursor-none"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => setCursor(c => ({ ...c, visible: false }))}
-    >
-      {/* Custom cursor label */}
-      <motion.div
-        className="pointer-events-none absolute z-30 select-none"
-        animate={{
-          x: cursor.x - 40,
-          y: cursor.y - 18,
-          opacity: cursor.visible ? 1 : 0,
-          scale: cursor.visible ? 1 : 0.7,
-        }}
-        transition={{ type: 'spring', damping: 20, stiffness: 300, mass: 0.5 }}
+    <div className="w-full h-full relative">
+      <div className="absolute inset-0 rounded-full border border-[#ccc] bg-white/95 backdrop-blur-sm shadow-md" />
+      <motion.svg
+        viewBox="0 0 100 100"
+        className="absolute inset-0 w-full h-full"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
       >
-        <span className="bg-white text-[#111] text-[10px] font-mono tracking-tight px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap border border-[#ebebeb]">
-          it&apos;s me ˙ᵕ˙
-        </span>
-      </motion.div>
+        <defs>
+          <path
+            id="circle-text-path"
+            d="M 50,50 m -37,0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"
+          />
+        </defs>
+        <text
+          fontSize="7.4"
+          fontFamily="system-ui, -apple-system, sans-serif"
+          fill="#111"
+          letterSpacing="0.4"
+          fontWeight="bold"
+        >
+          <textPath href="#circle-text-path">
+            {text}
+          </textPath>
+        </text>
+      </motion.svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <motion.span
+          animate={{ y: [0, 4, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+          className="text-[#111] text-lg font-bold"
+        >
+          ↓
+        </motion.span>
+      </div>
+    </div>
+  );
+}
 
-      {/* Curtain overlay */}
-      <motion.div
-        initial={{ x: 0 }}
-        animate={{ x: isInView ? '101%' : 0 }}
-        transition={{ duration: 1.0, delay: 0.3, ease: [0.76, 0, 0.24, 1] }}
-        style={{ willChange: 'transform' }}
-        className="absolute inset-0 bg-[#111] z-10"
-      />
-      <motion.div
-        initial={{ scale: 1.15 }}
-        animate={{ scale: isInView ? 1 : 1.15 }}
-        transition={{ duration: 1.2, delay: 0.3, ease: [0.76, 0, 0.24, 1] }}
-        className="w-full h-full relative grayscale group-hover:grayscale-0 transition-all duration-1000"
-      >
-        <Image
-          src={src}
-          alt="Portrait"
-          fill
-          sizes="(min-width: 768px) 380px, 100vw"
-          className="object-cover"
-        />
-      </motion.div>
-    </motion.div>
+// ── Pixel Grid Decoration ──────────────────────────────
+function PixelGridDecoration() {
+  const rows = [
+    [0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  ];
+
+  return (
+    <div
+      className="relative w-full bg-transparent overflow-hidden"
+      style={{ marginBottom: '-1px' }}
+      aria-hidden="true"
+    >
+      <div className="flex flex-col gap-0 w-full max-w-6xl mx-auto items-center justify-center">
+        <div className="inline-flex flex-col">
+          {rows.map((row, rowIdx) => (
+            <div key={rowIdx} className="flex gap-0">
+              {row.map((filled, colIdx) => (
+                <div
+                  key={colIdx}
+                  className={`w-[40px] h-[40px] flex-shrink-0 transition-opacity duration-300 ${filled ? 'bg-[#0a0a0a] border border-[#181818]' : 'bg-transparent border border-transparent'
+                    }`}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

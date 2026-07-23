@@ -208,9 +208,14 @@ h4 {
 
 /* Skip rendering off-screen sections until they're near the viewport.
    Saves significant layout/paint work on long pages. */
-#about, #work, #play, #archives, #contact {
+#work, #play, #archives, #contact {
   content-visibility: auto;
   contain-intrinsic-size: auto 100vh; /* estimate height to avoid layout shift */
+}
+
+/* About section — dark bg, exempt from content-visibility (sticky stacking) */
+#about {
+  background: #0a0a0a;
 }
 
 /* Cinematic Section Transitions */
