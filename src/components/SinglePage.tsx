@@ -297,16 +297,13 @@ function HeroSection({ profile }: { profile: Profile | null }) {
           >
             {/* Annotation callouts — editorial diagram flourish */}
             <div className="hero-annot a1" aria-hidden="true">
-              <span className="chip">Optic array — dual sensor</span>
-              <div className="leader" />
+              <span className="chip">Neat Design</span>
             </div>
             <div className="hero-annot a2" aria-hidden="true">
-              <div className="leader" />
-              <span className="chip">Shell — matte alloy</span>
+              <span className="chip">Code Craft</span>
             </div>
             <div className="hero-annot a3" aria-hidden="true">
-              <span className="chip">Status — idle / standby</span>
-              <div className="leader" />
+              <span className="chip">Always Learning</span>
             </div>
 
             {/* Spline robot + orbit ring */}
