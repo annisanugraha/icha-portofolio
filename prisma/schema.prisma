@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id       String @id @default(cuid())
+  email    String @unique
+  password String 
+}
+
+model Project {
+  id               String   @id @default(cuid())
+  title            String
+  slug             String   @unique
+  category         String   
+  role             String?  @default("")  // Contribution type: "Frontend" | "UI/UX" | "Full Stack" | ""
+  shortDescription String   @db.Text
+  fullDescription  String   @db.Text
+  
+  // Custom project details
+  contextWhy       String?  @db.Text
+  scopeWhat        String?  @db.Text
+  outcomeHow       String?  @db.Text
+  content          String?  @db.Text
+
+  imageUrl         String?
+  galleryImages    String[] @default([]) // Array of image URLs for gallery
+  techStack        String[] @default([]) // Technologies used (e.g., ["React", "Tailwind"])
+  
+  // Legacy links (keeping for data safety, but will use ProjectLink moving forward)
+  githubUrl        String?
+  demoUrl          String?
+  
+  // New flexible links
+  links            ProjectLink[]
+
+  // [NEW] Relation to Skill model
+  skills           Skill[]
+
+  year             String
+  featured         Boolean  @default(false) // For "Selected Work" section
+  order            Int      @default(0)     // For custom sorting
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model ProjectLink {
+  id        String  @id @default(cuid())
+  label     String  // e.g., "GitHub", "Figma", "Live Demo"
+  url       String
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Certificate {
+  id          String   @id @default(cuid())
+  title       String
+  category    String   
+  description String   @db.Text
+  imageUrl    String?
+  highlighted Boolean  @default(false)
+  order       Int      @default(0)     // For custom sorting
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Profile {
+  id              String   @id @default("singleton")
+  logoText        String   @default("Annisa Nugraha")
+  logoImage       String?  // Gambar untuk logo
+  favicon         String?  // Gambar untuk favicon (ikon browser)
+  
+  // SEO & Metadata
+  siteTitle       String   @default("Icha's Portfolio")
+  siteDescription String   @default("Minimalist portfolio focused on software engineering and user experience.")
+
+  // Hero Section
+  heroRole        String   @default("Software Engineer")
+  heroTitle       String   @default("Building things that matter.")
+  heroTitleBold   String   @default("Dynamic code.")
+  heroSubtitle    String   @default("Engineering & minimal design.")
+  
+  // About Section
+  aboutQuote      String   @default("Crafting digital clarity through intentional code.")
+  aboutBio1       String   @default("")
+  aboutBio2       String   @default("")
+  aboutImage      String?
+  
+  // Footer Links
+  linkedinUrl     String   @default("#")
+  githubUrl       String   @default("#")
+  emailAddress    String   @default("")
+  emailSubject    String   @default("")
+  
+  resumeUrl       String?  @default("")
+  
+  // [NEW] Hero Stats Bar — 4 item yang bisa dikustomisasi via CMS
+  statsItem1      String?  @default("3+ Projects Built")
+  statsItem2      String?  @default("UI/UX & Frontend Dev")
+  statsItem3      String?  @default("Based in Surakarta, ID")
+  statsItem4      String?  @default("5 Cats 🐱")
+  
+  updatedAt       DateTime @updatedAt
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  year        String
+  title       String
+  company     String
+  description String   @db.Text
+  imageUrl    String?  // Foto kenangan (Optional)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Activity {
+  id            String   @id @default(cuid())
+  title         String
+  event         String
+  year          String
+  imageUrl      String?
+  galleryImages String[] @default([])
+  description   String?  @db.Text
+  highlighted   Boolean  @default(false)
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+}
+
+model Skill {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  category  String    @default("Frontend")   // Frontend | Backend | Design | Tools
+  logoUrl   String?
+  order     Int       @default(0)
+  projects  Project[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}

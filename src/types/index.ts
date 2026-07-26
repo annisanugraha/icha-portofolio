@@ -42,6 +42,7 @@ export interface Profile {
   siteDescription: string;
   heroRole: string;
   heroTitle: string;
+  heroTitleBold?: string | null;
   heroSubtitle: string;
   aboutQuote: string;
   aboutBio1: string;

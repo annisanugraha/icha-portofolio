@@ -133,11 +133,13 @@ function HeroSection({ profile }: { profile: Profile | null }) {
         }
       });
       // Ghost drift
-      const hr = hero.getBoundingClientRect();
-      const nx = (mx - hr.left) / hr.width - 0.5;
-      const ny = (my - hr.top) / hr.height - 0.5;
-      if (ghostOutline) ghostOutline.style.transform = `translate(${nx * 14}px, ${ny * 10}px)`;
-      if (ghostSolid) ghostSolid.style.transform = `translate(${-nx * 10}px, ${-ny * 7}px)`;
+      if (hero) {
+        const hr = hero.getBoundingClientRect();
+        const nx = (mx - hr.left) / hr.width - 0.5;
+        const ny = (my - hr.top) / hr.height - 0.5;
+        if (ghostOutline) ghostOutline.style.transform = `translate(${nx * 14}px, ${ny * 10}px)`;
+        if (ghostSolid) ghostSolid.style.transform = `translate(${-nx * 10}px, ${-ny * 7}px)`;
+      }
     }
 
     function onMouseLeave() {
