@@ -756,3 +756,449 @@ html.lenis, html.lenis-smooth {
   border-top: 1px solid #ebebeb;
   margin: 2.5rem 0;
 }
+
+/* ================================================================
+   HERO: PRINT REGISTER DESIGN
+   ================================================================ */
+
+/* Font shorthand helpers (CSS custom properties registered in layout.tsx) */
+.font-playfair { font-family: var(--font-playfair), 'Georgia', serif; }
+.font-jetbrains { font-family: var(--font-jetbrains), 'Courier New', monospace; }
+
+/* ── Hero section wrapper ── */
+#hero {
+  background: #ffffff;
+  color: #121210;
+  height: 100svh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grain removed to ensure pure white background */
+
+/* ── Print registration marks ── */
+.regmark {
+  position: absolute;
+  z-index: 7;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+.regmark::before,
+.regmark::after {
+  content: '';
+  position: absolute;
+  background: rgba(18, 18, 16, 0.35);
+}
+.regmark::before {
+  top: 50%; left: 0;
+  width: 100%; height: 1px;
+  transform: translateY(-50%);
+}
+.regmark::after {
+  left: 50%; top: 0;
+  height: 100%; width: 1px;
+  transform: translateX(-50%);
+}
+.regmark-label {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  color: rgba(18, 18, 16, 0.35);
+  white-space: nowrap;
+}
+.regmark.tl { top: 18px; left: 18px; }
+.regmark.tr { top: 18px; right: 18px; }
+.regmark.tr .regmark-label { left: auto; right: 50%; transform: translateX(50%); }
+.regmark.bl { bottom: 18px; left: 18px; }
+.regmark.br { bottom: 18px; right: 18px; }
+.regmark.br .regmark-label { left: auto; right: 50%; transform: translateX(50%); }
+
+/* ── Spine label (vertical, left side) ── */
+.hero-spine {
+  position: absolute;
+  z-index: 7;
+  left: 26px;
+  top: 50%;
+  transform: translateY(-50%) rotate(180deg);
+  writing-mode: vertical-rl;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(18, 18, 16, 0.35);
+  pointer-events: none;
+}
+
+/* ── Ghost words (two layers drift like offset print plates) ── */
+.ghost-outline {
+  position: absolute;
+  bottom: -3vw;
+  right: -3vw;
+  font-family: var(--font-playfair), serif;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 19vw;
+  line-height: 0.85;
+  letter-spacing: -0.01em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(18, 18, 16, 0.16);
+  white-space: nowrap;
+  z-index: 2;
+  user-select: none;
+  pointer-events: none;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ghost-solid {
+  position: absolute;
+  bottom: 2.2vw;
+  right: -1vw;
+  font-family: var(--font-playfair), serif;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 14.5vw;
+  line-height: 0.85;
+  letter-spacing: -0.01em;
+  color: #121210;
+  white-space: nowrap;
+  z-index: 2;
+  user-select: none;
+  pointer-events: none;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Grid canvas ── */
+.hero-grid-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Content wrapper ── */
+.hero-content {
+  position: relative;
+  z-index: 5;
+  flex: 1;
+  min-height: 0;
+  padding: 40px 56px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* ── Mid grid (2 columns) ── */
+.hero-mid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.hero-mid-left {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 520px;
+}
+
+/* ── Role label ── */
+.hero-role {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #6f6d65;
+}
+.hero-role .mark { color: #121210; }
+
+/* ── Headline ── */
+.hero-headline {
+  line-height: 1;
+}
+.hero-h-thin {
+  display: block;
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.7rem, 3.3vw, 3.6rem);
+  color: #6f6d65;
+  line-height: 1.05;
+}
+.hero-h-bold {
+  display: block;
+  font-family: var(--font-playfair), serif;
+  font-weight: 700;
+  font-size: clamp(2.6rem, 5.6vw, 6rem);
+  color: #121210;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  margin-top: 2px;
+}
+
+/* ── Magnetic letter ── */
+.hero-lt {
+  display: inline-block;
+  transition: transform 0.18s ease-out;
+  will-change: transform;
+}
+
+/* ── Subtitle ── */
+.hero-sub {
+  display: flex;
+  gap: 12px;
+  color: #6f6d65;
+  font-size: 13px;
+  line-height: 1.75;
+  max-width: 380px;
+}
+.hero-sub .bar {
+  width: 20px;
+  height: 1px;
+  background: #b6b3a9;
+  margin-top: 9px;
+  flex-shrink: 0;
+}
+
+/* ── Editorial stats ── */
+.hero-stats {
+  display: flex;
+  border-top: 1px solid #dcd8ce;
+  border-bottom: 1px solid #dcd8ce;
+  padding: 16px 0;
+  margin-top: 4px;
+}
+.hero-stat {
+  padding-right: 26px;
+  margin-right: 26px;
+  border-right: 1px solid #dcd8ce;
+}
+.hero-stat:last-child {
+  border-right: none;
+  margin-right: 0;
+  padding-right: 0;
+}
+.hero-stat b {
+  display: block;
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 22px;
+  color: #121210;
+}
+.hero-stat span {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #b6b3a9;
+}
+
+/* ── Robot stage (right) ── */
+.hero-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 900px;
+  height: 100%;
+}
+
+/* ── Figure annotations ── */
+.hero-annot {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-annot .chip {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #666666;
+  background: #f4f4f4;
+  border: 1px solid #e0e0e0;
+  padding: 3px 8px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.hero-annot .leader {
+  height: 1px;
+  background: #ebebeb;
+}
+.hero-annot.a1 { top: 18%; left: -6%; flex-direction: row-reverse; }
+.hero-annot.a1 .leader { width: 28px; }
+.hero-annot.a2 { top: 46%; right: -14%; }
+.hero-annot.a2 .leader { width: 24px; }
+.hero-annot.a3 { bottom: 12%; left: -2%; flex-direction: row-reverse; }
+.hero-annot.a3 .leader { width: 20px; }
+
+@media (max-width: 1080px) {
+  .hero-annot { display: none; }
+}
+
+/* ── Bottom row ── */
+.hero-bottom {
+  flex-shrink: 0;
+}
+.hero-bottomrow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+.hero-avail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #6f6d65;
+}
+.hero-avail-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3a3a35;
+  animation: heroPulse 2s infinite;
+}
+@keyframes heroPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+}
+.hero-scroll-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #b6b3a9;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  justify-self: end;
+}
+.hero-scroll-btn:focus-visible {
+  outline: 1px solid #121210;
+  outline-offset: 4px;
+}
+.hero-scroll-chevron {
+  animation: heroChevronBounce 1.8s ease-in-out infinite;
+}
+@keyframes heroChevronBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* ── Spline robot orbit ring overlay ── */
+.hero-orbit-ring {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 1px dashed rgba(18, 18, 16, 0.22);
+  animation: heroOrbit 16s linear infinite;
+  z-index: 10;
+  pointer-events: none;
+}
+.hero-orbit-ring::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3a3a35;
+}
+@keyframes heroOrbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Keyframes ── */
+@keyframes heroFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes heroSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Responsive: mobile ── */
+@media (max-width: 860px) {
+  #hero { height: auto; min-height: 100svh; overflow: visible; }
+  .hero-content { padding: 24px 22px 20px; }
+  .hero-mid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 16px 0;
+  }
+  .hero-mid-left { gap: 16px; max-width: 100%; }
+  .hero-stage { order: -1; height: 350px; padding: 8px 0 28px; }
+  .ghost-outline, .ghost-solid { display: none; }
+  .hero-spine { display: none; }
+  .regmark { width: 16px; height: 16px; }
+  .regmark-label { display: none; }
+  .regmark.tl, .regmark.tr { top: 12px; }
+  .regmark.bl, .regmark.br { bottom: 12px; }
+  .regmark.tl, .regmark.bl { left: 12px; }
+  .regmark.tr, .regmark.br { right: 12px; }
+  .hero-role { font-size: 9px; letter-spacing: 0.28em; }
+  .hero-stats { flex-wrap: wrap; row-gap: 14px; }
+  .hero-stat { padding-right: 16px; margin-right: 16px; }
+  .hero-stat b { font-size: 18px; }
+  .hero-stat span { font-size: 7px; letter-spacing: 0.22em; }
+}
+
+@media (max-width: 480px) {
+  .hero-content { padding: 20px 16px 18px; }
+  .hero-role { font-size: 8px; letter-spacing: 0.22em; }
+  .hero-sub { font-size: 12px; }
+  .hero-stat { padding-right: 12px; margin-right: 12px; }
+  .hero-stat b { font-size: 16px; }
+  .hero-bottomrow {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    row-gap: 14px;
+    text-align: center;
+  }
+  .hero-scroll-btn { justify-self: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-orbit-ring,
+  .hero-avail-dot,
+  .hero-scroll-chevron { animation: none !important; }
+  .hero-lt,
+  .ghost-outline,
+  .ghost-solid { transition: none !important; }
+}

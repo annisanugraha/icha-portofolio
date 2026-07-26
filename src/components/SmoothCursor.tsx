@@ -43,9 +43,7 @@ export function SmoothCursor() {
         return;
       }
 
-      if (!el || !(el instanceof Element) || el.tagName === 'IFRAME' || el.closest('iframe')) {
-        setIsVisible(false);
-        setIsHovering(false);
+      if (!el || !(el instanceof Element)) {
         if (cursorTextRef.current !== '') {
           cursorTextRef.current = '';
           setCursorText('');
@@ -108,7 +106,6 @@ export function SmoothCursor() {
     const handleReset = () => {
       cursorTextRef.current = '';
       setCursorText('');
-      setIsVisible(false);
       setIsHovering(false);
     };
 
@@ -127,7 +124,7 @@ export function SmoothCursor() {
       document.documentElement.removeEventListener('pointerleave', handleReset);
       window.removeEventListener('blur', handleReset);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isTouch) return null;
