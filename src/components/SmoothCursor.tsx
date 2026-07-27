@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 
 /**
  * SmoothCursor — Premium custom cursor with trailing dot and chat bubble support.
  * Uses spring physics for smooth follow, enlarges on interactive elements.
- * Uses mix-blend-mode: difference for the dot, switches to normal for the bubble.
+ * Event listeners are registered ONCE (empty dep array) — state is accessed via refs.
  */
 export function SmoothCursor() {
   const [isVisible, setIsVisible] = useState(false);
@@ -14,113 +14,118 @@ export function SmoothCursor() {
   const [cursorText, setCursorText] = useState('');
   const [isTouch, setIsTouch] = useState(false);
 
+  // Keep latest state in refs so event callbacks never capture stale closures
+  const isVisibleRef = useRef(false);
+
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
-  const hasMovedRef = useRef(false);
+  const hasInitRef = useRef(false);
 
-  // Snappy, crisp springs that follow instantly without long oscillation locks
   const springConfig = { damping: 35, stiffness: 500, mass: 0.3 };
   const dotX = useSpring(cursorX, springConfig);
   const dotY = useSpring(cursorY, springConfig);
 
+  const isInteractive = useCallback((target: Element | null): boolean => {
+    if (!target) return false;
+    const el = target as HTMLElement;
+    return (
+      el.tagName === 'A' ||
+      el.tagName === 'BUTTON' ||
+      el.tagName === 'INPUT' ||
+      el.tagName === 'TEXTAREA' ||
+      el.tagName === 'SELECT' ||
+      !!el.closest('a') ||
+      !!el.closest('button') ||
+      !!el.closest('[role="button"]') ||
+      el.classList.contains('cursor-pointer') ||
+      !!el.closest('.cursor-pointer')
+    );
+  }, []);
+
+  const updateFromElement = useCallback((target: Element | null) => {
+    if (!target) return;
+    const cursorTarget = target.closest('[data-cursor]');
+    if (cursorTarget) {
+      setCursorText(cursorTarget.getAttribute('data-cursor') || '');
+      setIsHovering(false);
+    } else {
+      setCursorText('');
+      setIsHovering(isInteractive(target));
+    }
+  }, [isInteractive]);
+
   useEffect(() => {
-    // Detect touch device
     const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
     if (isTouchDevice) {
       setIsTouch(true);
       return;
     }
 
-    const moveCursor = (e: MouseEvent) => {
+    const onMouseMove = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
-
-      if (!hasMovedRef.current) {
-        hasMovedRef.current = true;
+      if (!hasInitRef.current) {
+        hasInitRef.current = true;
         dotX.set(e.clientX);
         dotY.set(e.clientY);
       }
-
-      if (!isVisible) setIsVisible(true);
-    };
-
-    const updateCursorStateFromTarget = (target: Element | null) => {
-      if (!target) return;
-      // Check for data-cursor text
-      const cursorTarget = target.closest('[data-cursor]');
-      if (cursorTarget) {
-        setCursorText(cursorTarget.getAttribute('data-cursor') || '');
-        setIsHovering(false); // If it's a text bubble, don't show the hover dot
-      } else {
-        setCursorText('');
-        // Check for interactive elements
-        if (
-          target.tagName === 'A' ||
-          target.tagName === 'BUTTON' ||
-          target.tagName === 'INPUT' ||
-          target.tagName === 'TEXTAREA' ||
-          target.closest('a') ||
-          target.closest('button') ||
-          target.closest('[role="button"]') ||
-          target.classList.contains('cursor-pointer') ||
-          target.closest('.cursor-pointer')
-        ) {
-          setIsHovering(true);
-        } else {
-          setIsHovering(false);
-        }
+      if (!isVisibleRef.current) {
+        isVisibleRef.current = true;
+        setIsVisible(true);
       }
     };
 
-    const handleMouseOver = (e: Event) => {
-      setIsVisible(true);
-      updateCursorStateFromTarget(e.target as Element);
+    const onMouseOver = (e: Event) => {
+      if (!isVisibleRef.current) {
+        isVisibleRef.current = true;
+        setIsVisible(true);
+      }
+      updateFromElement(e.target as Element);
     };
 
-    let scrollRafId: number | null = null;
-    const handleScroll = () => {
-      if (scrollRafId !== null) return;
-      scrollRafId = requestAnimationFrame(() => {
-        scrollRafId = null;
-        const cx = cursorX.get();
-        const cy = cursorY.get();
-        if (cx < 0 || cy < 0) return;
-        const el = document.elementFromPoint(cx, cy);
-        updateCursorStateFromTarget(el);
-      });
-    };
-
-    const handleMouseOut = (e: Event) => {
-      const target = e.target as HTMLElement;
-      // When leaving the document entirely
-      if (target.nodeName === 'HTML') {
+    const onMouseOut = (e: Event) => {
+      const t = e.target as HTMLElement;
+      if (t.nodeName === 'HTML') {
+        isVisibleRef.current = false;
         setIsVisible(false);
         setCursorText('');
         setIsHovering(false);
       }
     };
 
-    window.addEventListener('mousemove', moveCursor);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    document.addEventListener('mouseover', handleMouseOver, true);
-    document.addEventListener('mouseout', handleMouseOut, true);
+    let rafId: number | null = null;
+    const onScroll = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const cx = cursorX.get();
+        const cy = cursorY.get();
+        if (cx < 0 || cy < 0) return;
+        updateFromElement(document.elementFromPoint(cx, cy));
+      });
+    };
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('mouseover', onMouseOver, true);
+    document.addEventListener('mouseout', onMouseOut, true);
 
     return () => {
-      window.removeEventListener('mousemove', moveCursor);
-      window.removeEventListener('scroll', handleScroll);
-      document.removeEventListener('mouseover', handleMouseOver, true);
-      document.removeEventListener('mouseout', handleMouseOut, true);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('mouseover', onMouseOver, true);
+      document.removeEventListener('mouseout', onMouseOut, true);
+      if (rafId !== null) cancelAnimationFrame(rafId);
     };
-  }, [cursorX, cursorY, dotX, dotY, isVisible]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally empty — listeners registered once, refs prevent stale closure
 
   if (isTouch) return null;
 
   const hasText = Boolean(cursorText);
-  // Calculate dynamic width based on text length to make it snappy
   const pillWidth = cursorText.length > 22 ? 220 : cursorText.length > 14 ? 170 : cursorText.length > 6 ? 130 : 90;
   const TAIL_HEIGHT = 8;
 
-  // Offsets so the cursor point sits nicely at the top-left of the bubble
   const targetTranslateX = hasText ? 4 : isHovering ? -21 : -6;
   const targetTranslateY = hasText ? -(32 + TAIL_HEIGHT) : isHovering ? -21 : -6;
 
@@ -142,6 +147,7 @@ export function SmoothCursor() {
           left: 0,
           pointerEvents: 'none',
           zIndex: 9999999,
+          willChange: 'transform',
           mixBlendMode: hasText ? 'normal' : 'difference',
         }}
       >

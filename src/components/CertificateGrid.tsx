@@ -52,6 +52,7 @@ function SpotlightCard({
         ease: [0.16, 1, 0.3, 1]
       }}
       className="group space-y-4 cursor-pointer relative"
+      style={{ willChange: 'filter, opacity, transform' }}
       onClick={onClick}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}

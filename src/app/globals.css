@@ -1063,11 +1063,11 @@ html.lenis, html.lenis-smooth {
   height: 1px;
   background: #ebebeb;
 }
-.hero-annot.a1 { top: 18%; left: -6%; flex-direction: row-reverse; }
+.hero-annot.a1 { top: 18%; left: 0%; flex-direction: row-reverse; }
 .hero-annot.a1 .leader { width: 28px; }
-.hero-annot.a2 { top: 46%; right: -2%; }
+.hero-annot.a2 { top: 46%; right: 4%; }
 .hero-annot.a2 .leader { width: 24px; }
-.hero-annot.a3 { bottom: 12%; left: -2%; flex-direction: row-reverse; }
+.hero-annot.a3 { bottom: 12%; left: 2%; flex-direction: row-reverse; }
 .hero-annot.a3 .leader { width: 20px; }
 
 @media (max-width: 1080px) {

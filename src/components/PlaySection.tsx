@@ -13,6 +13,7 @@ export function PlaySection() {
   const [cursorPos, setCursorPos] = useState(0);
   const [messages, setMessages] = useState<{ role: 'user' | 'ai'; content: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [activeTab, setActiveTab] = useState<'game' | 'help'>('game');
   const [gameScore, setGameScore] = useState(0);
   const [gameBest, setGameBest] = useState(0);
@@ -233,12 +234,12 @@ export function PlaySection() {
               {query ? (
                 <>
                   <span className="text-white/90 whitespace-pre">{query.slice(0, cursorPos)}</span>
-                  <span className="inline-block w-[7px] h-[14px] bg-white mx-[1px] animate-[blink_1s_step-end_infinite]"></span>
+                  <span className={`inline-block w-[7px] h-[14px] mx-[1px] ${isFocused ? 'bg-white animate-[blink_1s_step-end_infinite]' : 'border border-white/40 bg-transparent'}`}></span>
                   <span className="text-white/90 whitespace-pre">{query.slice(cursorPos)}</span>
                 </>
               ) : (
                 <>
-                  <span className="inline-block w-[7px] h-[14px] bg-white/80 mr-1 animate-[blink_1s_step-end_infinite]"></span>
+                  <span className={`inline-block w-[7px] h-[14px] mr-1 ${isFocused ? 'bg-white/80 animate-[blink_1s_step-end_infinite]' : 'border border-white/40 bg-transparent'}`}></span>
                   <span className="text-white/20 whitespace-pre">ask anything</span>
                 </>
               )}
@@ -253,6 +254,8 @@ export function PlaySection() {
               }}
               onSelect={(e) => setCursorPos((e.target as HTMLInputElement).selectionStart || 0)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
               className="absolute inset-0 w-full h-full opacity-0 cursor-text z-10"
               spellCheck="false"
               autoComplete="off"
