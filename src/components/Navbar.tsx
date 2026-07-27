@@ -24,7 +24,10 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
 
     const updateActiveSection = () => {
       const triggerY = window.innerHeight * 0.35; // Upper-middle portion of screen triggers section
-      for (const id of sections) {
+      
+      // We check in reverse order because sticky elements (like hero) stay in the viewport.
+      // We want the element that overlays it (like about) to trigger first.
+      for (const id of [...sections].reverse()) {
         const el = document.getElementById(id);
         if (el) {
           const rect = el.getBoundingClientRect();
