@@ -14,11 +14,12 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 const getCachedPortfolioContext = unstable_cache(
   async () => {
     try {
-      const [profile, projects, experiences, certificates] = await Promise.all([
+      const [profile, projects, experiences, certificates, activities] = await Promise.all([
         prisma.profile.findFirst({ where: { id: 'singleton' } }),
         prisma.project.findMany({ include: { links: true }, orderBy: { order: 'asc' } }),
         prisma.experience.findMany({ orderBy: { order: 'asc' } }),
         prisma.certificate.findMany({ orderBy: { order: 'asc' } }),
+        prisma.activity.findMany({ orderBy: { order: 'asc' } }),
       ]);
 
       return `
@@ -35,14 +36,17 @@ const getCachedPortfolioContext = unstable_cache(
 
         # CERTIFICATIONS:
         ${certificates.map(c => `- ${c.title}: ${c.description}`).join('\n')}
+
+        # OUTSIDE THE EDITOR (ACTIVITIES / VOLUNTEERING / SPEAKING):
+        ${activities.map(a => `- ${a.title} (${a.year}) at ${a.event}. ${a.description}`).join('\n')}
       `;
     } catch (error) {
       console.error('Aggregator Error:', error);
       return 'Portfolio data is currently unavailable.';
     }
   },
-  ['portfolio-ai-context'],
-  { tags: ['portfolio-data'], revalidate: 3600 }
+  ['portfolio-ai-context-v2'],
+  { tags: ['portfolio-data-v2'], revalidate: 3600 }
 );
 /**
  * Server Action for AI Assistant interaction.

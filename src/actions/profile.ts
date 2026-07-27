@@ -1,4 +1,4 @@
-'use server'
+'use server' 
 
 import { cache } from 'react'
 import prisma from '@/lib/db'
@@ -31,6 +31,7 @@ export async function updateProfile(data: any) {
         siteDescription: data.siteDescription,
         heroRole: data.heroRole,
         heroTitle: data.heroTitle,
+        heroTitleBold: data.heroTitleBold,
         heroSubtitle: data.heroSubtitle,
         aboutQuote: data.aboutQuote,
         aboutBio1: data.aboutBio1,

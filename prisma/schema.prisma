@@ -81,6 +81,7 @@ model Profile {
   // Hero Section
   heroRole        String   @default("Software Engineer")
   heroTitle       String   @default("Building things that matter.")
+  heroTitleBold   String   @default("Dynamic code.")
   heroSubtitle    String   @default("Engineering & minimal design.")
   
   // About Section

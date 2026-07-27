@@ -17,7 +17,7 @@ const TIERS = [
   { symbol: '❋', size: 152, color: '#111111', stroke: '#111111', textCol: '#ffffff' },
 ]
 
-export const SuikaGame = () => {
+export const SuikaGame = ({ onScoreChange }: { onScoreChange?: (score: number, best: number) => void }) => {
   const sceneRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<Matter.Engine | null>(null)
   const renderRef = useRef<Matter.Render | null>(null)
@@ -27,7 +27,6 @@ export const SuikaGame = () => {
   const [score, setScore] = useState(0)
   const [bestScore, setBestScore] = useState(0)
   const [gameOver, setGameOver] = useState(false)
-  const [showHelp, setShowHelp] = useState(false)
 
   // Game mechanics state
   const [currentTier, setCurrentTier] = useState(0)
@@ -271,24 +270,25 @@ export const SuikaGame = () => {
       Render.stop(render);
       Runner.stop(runner);
       if (engineRef.current) {
+        Matter.World.clear(engineRef.current.world, false);
         Engine.clear(engineRef.current);
       }
       if (render.canvas) {
         render.canvas.remove();
       }
-      render.canvas = null as any;
-      render.context = null as any;
-      render.textures = {};
       resizeObserver.disconnect();
     };
   }, []);
 
   useEffect(() => {
+    let newBest = bestScore;
     if (score > bestScore) {
+      newBest = score;
       setBestScore(score);
       localStorage.setItem('icha-suika-best', score.toString());
     }
-  }, [score, bestScore]);
+    onScoreChange?.(score, newBest);
+  }, [score, bestScore, onScoreChange]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (gameOver || cooldownRef.current) return;
@@ -367,43 +367,24 @@ export const SuikaGame = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full h-full max-w-[600px] mx-auto py-4 relative z-10 min-h-0">
-      {/* Header Info */}
-      <div className="w-full flex justify-between items-end mb-4 px-2 shrink-0">
-        <div>
-          <div className="flex items-center gap-3 mt-2.5">
-            <button
-              onClick={() => setShowHelp(true)}
-              className="group px-3.5 py-1.5 rounded-full border border-white/30 bg-[#1a1a1a] hover:bg-white hover:text-black text-gray-200 hover:scale-105 active:scale-95 text-[10px] font-mono font-bold uppercase tracking-[0.15em] transition-all flex items-center gap-2 shadow-md cursor-pointer"
-              aria-label="How to Play"
-            >
-              <span className="w-4 h-4 rounded-full bg-white/15 group-hover:bg-black group-hover:text-white flex items-center justify-center text-[10px] transition-colors font-mono font-black">?</span>
-              <span>HOW TO PLAY</span>
-            </button>
-            <div className="h-4 w-[1px] bg-white/15" />
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-gray-400 tracking-[0.15em] uppercase font-mono font-medium">
-                Next
-              </span>
-              <div
-                className="w-7 h-7 rounded-full border border-white/20 bg-[#222] shadow-sm flex items-center justify-center text-[11px] text-white font-bold"
-              >
-                {TIERS[nextTier]?.symbol}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="text-right font-mono flex flex-col justify-end gap-1">
-          <p className="text-[11px] text-gray-400 tracking-widest uppercase m-0 leading-tight">Score <span className="text-white font-semibold text-xs">{score}</span></p>
-          <p className="text-[10px] text-gray-500 tracking-widest uppercase m-0 leading-tight">Best <span className="text-gray-300">{bestScore}</span></p>
-        </div>
-      </div>
-
+    <div className="flex flex-col items-center w-full h-full p-6 relative z-10 min-h-0">
       {/* Game Container Wrapper - completely fluid */}
       <div className="w-full flex-1 min-h-0 flex items-center justify-center relative overflow-hidden">
         <div
           className="relative bg-white border border-gray-200 rounded-[2rem] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.5)] w-full h-full"
         >
+          {/* Header Info (Moved inside) */}
+          <div className="absolute top-5 left-6 z-20 flex items-center gap-2 pointer-events-none">
+            <span className="text-[10px] text-gray-400 tracking-[0.15em] uppercase font-mono font-bold">
+              Next
+            </span>
+            <div
+              className="w-8 h-8 rounded-full border border-gray-200 bg-white shadow-sm flex items-center justify-center text-[12px] text-gray-800 font-bold"
+            >
+              {TIERS[nextTier]?.symbol}
+            </div>
+          </div>
+
           <div
             ref={sceneRef}
             onMouseMove={handleMouseMove}
@@ -428,48 +409,6 @@ export const SuikaGame = () => {
           )}
         </div>
       </div>
-
-      {/* Help / How to Play Fullscreen Popup Modal */}
-      {showHelp && typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[50000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="max-w-sm w-full bg-white border border-gray-200 rounded-3xl p-6 text-center shadow-xl relative space-y-4">
-            <button
-              onClick={() => setShowHelp(false)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full border border-gray-200 bg-white hover:bg-gray-100 text-gray-500 hover:text-black flex items-center justify-center transition-all text-xs font-mono cursor-pointer"
-              aria-label="Close modal"
-            >
-              ✕
-            </button>
-            <div className="flex flex-col items-center justify-center gap-1.5 pt-1">
-              <div className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-black text-white font-serif text-base shadow-sm">
-                ?
-              </div>
-              <h3 className="text-xl font-serif text-[#111] tracking-tight font-bold">How to Play</h3>
-            </div>
-            <div className="text-left text-xs text-[#444] font-light space-y-3 leading-relaxed bg-white border border-gray-200 p-4 rounded-2xl">
-              <p className="flex gap-2.5 items-start">
-                <span className="font-mono text-white font-bold bg-black px-1.5 py-0.5 rounded text-[10px] shrink-0 mt-0.5">1</span>
-                <span><strong className="text-[#111] font-semibold">Aim & Drop:</strong> Move your cursor inside the white container and click to drop shapes.</span>
-              </p>
-              <p className="flex gap-2.5 items-start">
-                <span className="font-mono text-white font-bold bg-black px-1.5 py-0.5 rounded text-[10px] shrink-0 mt-0.5">2</span>
-                <span><strong className="text-[#111] font-semibold">Merge & Grow:</strong> When two identical symbols collide, they combine into the next bigger tier (<span className="font-mono text-[#111] font-medium">◦ → ⋆ → ✧ → ✦</span>).</span>
-              </p>
-              <p className="flex gap-2.5 items-start">
-                <span className="font-mono text-white font-bold bg-black px-1.5 py-0.5 rounded text-[10px] shrink-0 mt-0.5">3</span>
-                <span><strong className="text-[#111] font-semibold">High Score:</strong> Keep merging for points without overflowing the top limit!</span>
-              </p>
-            </div>
-            <button
-              onClick={() => setShowHelp(false)}
-              className="w-full py-2.5 bg-black text-white font-bold text-[11px] tracking-[0.2em] uppercase font-mono hover:bg-[#222] active:scale-98 transition-all rounded-full shadow-md !mt-5 cursor-pointer"
-            >
-              Got it, Let&apos;s Play!
-            </button>
-          </div>
-        </div>,
-        document.body
-      )}
     </div>
   )
 }

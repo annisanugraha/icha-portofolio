@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, DM_Mono } from "next/font/google";
+import { DM_Serif_Display, DM_Mono, Playfair_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { getProfile } from "@/actions/profile";
 
@@ -14,6 +14,21 @@ const dmMono = DM_Mono({
   variable: "--font-dm-mono",
   subsets: ["latin"],
   weight: ["300", "400", "500"],
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -35,7 +50,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${dmSerif.variable} ${dmMono.variable} antialiased bg-white`}>
+      <body className={`${dmSerif.variable} ${dmMono.variable} ${playfair.variable} ${jetbrainsMono.variable} antialiased bg-white`}>
         {children}
       </body>
     </html>
