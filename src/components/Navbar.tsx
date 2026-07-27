@@ -15,6 +15,7 @@ const navItems = [
 
 export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logoImage?: string | null }) => {
   const [activeSection, setActiveSection] = useState('hero');
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -24,7 +25,7 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
 
     const updateActiveSection = () => {
       const triggerY = window.innerHeight * 0.35; // Upper-middle portion of screen triggers section
-      
+
       // We check in reverse order because sticky elements (like hero) stay in the viewport.
       // We want the element that overlays it (like about) to trigger first.
       for (const id of [...sections].reverse()) {
@@ -38,17 +39,27 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
         }
       }
     };
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveSection();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
 
-    window.addEventListener('scroll', updateActiveSection, { passive: true });
-    window.addEventListener('resize', updateActiveSection, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
     updateActiveSection();
 
     // Re-check after layout updates / image loading
     const timers = [100, 500, 1000, 2000].map(t => setTimeout(updateActiveSection, t));
 
     return () => {
-      window.removeEventListener('scroll', updateActiveSection);
-      window.removeEventListener('resize', updateActiveSection);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
       timers.forEach(clearTimeout);
     };
   }, []);
@@ -71,25 +82,29 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
       const isMobile = window.innerWidth < 768;
       const offset = isMobile ? 48 : 0;
       const top = el.getBoundingClientRect().top + window.scrollY - offset;
+
+      // Start cinematic transition overlay
+      setIsTransitioning(true);
       
-      // Temporarily disable CSS scroll-behavior to prevent conflict with JS animation
-      document.documentElement.style.scrollBehavior = 'auto';
-      
-      // Use framer-motion's animate for reliable long-distance scrolling
-      // (Bypasses native chromium smooth scroll bugs on long pages)
-      animate(window.scrollY, top, {
-        duration: 1.2,
-        ease: [0.16, 1, 0.3, 1],
-        onUpdate: (latest) => window.scrollTo(0, latest),
-        onComplete: () => {
-          document.documentElement.style.scrollBehavior = '';
+      // Wait for overlay to fade in (400ms duration)
+      setTimeout(() => {
+        // Jump instantly to the section behind the overlay (0ms duration = instant)
+        if ((window as any).__lenis) {
+          (window as any).__lenis.scrollTo(top, { immediate: true });
+        } else {
+          window.scrollTo({ top, behavior: 'auto' });
         }
-      });
+
+        // Wait a tiny bit for the browser to paint the new section, then fade out
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 50);
+      }, 400);
     }
   };
 
   const logoContent = (
-<div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center gap-2">
       {logoImage && (
         <Image
           src={logoImage}
@@ -129,7 +144,7 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
   return (
     <>
       {/* ── Desktop Sidebar Nav ── */}
-      <motion.nav 
+      <motion.nav
         className="fixed left-0 top-0 bottom-0 w-16 hidden md:flex flex-col items-center justify-between py-10 bg-white/95 backdrop-blur-sm border-r border-[#ebebeb] z-50"
       >
 
@@ -149,12 +164,12 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
                 className="group flex flex-col items-center gap-1.5 cursor-pointer relative"
               >
                 {/* Active indicator — animated line */}
-                <motion.div 
+                <motion.div
                   className="w-px bg-[#111]"
                   animate={{ height: active ? 12 : 0, opacity: active ? 1 : 0 }}
                   transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 />
-                
+
                 {/* Chapter number — appears on active */}
                 <motion.span
                   animate={{ opacity: active ? 0.4 : 0, height: active ? 'auto' : 0 }}
@@ -173,9 +188,8 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
                     letterSpacing: '0.45em',
                   }}
                   transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className={`text-[9px] [writing-mode:vertical-lr] rotate-180 transition-colors duration-300 uppercase font-mono ${
-                    active ? 'text-[#111] font-medium' : 'text-[#ccc] group-hover:text-[#111]'
-                  }`}
+                  className={`text-[9px] [writing-mode:vertical-lr] rotate-180 transition-colors duration-300 uppercase font-mono ${active ? 'text-[#111] font-medium' : 'text-[#ccc] group-hover:text-[#111]'
+                    }`}
                 >
                   {item.label}
                 </motion.span>
@@ -188,7 +202,7 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
       </motion.nav>
 
       {/* ── Mobile Top Bar ── */}
-      <motion.nav 
+      <motion.nav
         className="fixed top-0 left-0 right-0 h-12 bg-white/90 backdrop-blur-sm border-b border-[#ebebeb] flex md:hidden items-center justify-between px-6 z-50"
       >
         <button onClick={() => scrollTo('hero')} className="shrink-0 cursor-pointer">
@@ -201,9 +215,8 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
               onClick={() => scrollTo(item.id)}
               className="relative shrink-0 cursor-pointer"
             >
-              <span className={`text-[9px] tracking-widest font-mono transition-colors ${
-                activeSection === item.id ? 'text-[#111]' : 'text-[#ccc]'
-              }`}>
+              <span className={`text-[9px] tracking-widest font-mono transition-colors ${activeSection === item.id ? 'text-[#111]' : 'text-[#ccc]'
+                }`}>
                 {item.label}
               </span>
               {/* Mobile active underline */}
@@ -218,6 +231,13 @@ export const Navbar = ({ logoText, logoImage }: { logoText?: string | null; logo
           ))}
         </div>
       </motion.nav>
+
+      {/* Cinematic Transition Overlay */}
+      <div 
+        className={`fixed inset-0 z-40 bg-white/80 backdrop-blur-lg transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isTransitioning ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      />
     </>
   );
 };

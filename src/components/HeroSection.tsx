@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import type { Profile } from '@/types';
 
@@ -30,6 +30,7 @@ function splitToSpans(text: string) {
 }
 
 export function HeroSection({ profile }: HeroSectionProps) {
+    const [isCovered, setIsCovered] = useState(false);
     const heroRef = useRef<HTMLElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const ghostOutlineRef = useRef<HTMLDivElement>(null);
@@ -86,6 +87,23 @@ export function HeroSection({ profile }: HeroSectionProps) {
         draw();
         window.addEventListener('resize', draw);
         return () => window.removeEventListener('resize', draw);
+    }, []);
+
+    // Scroll listener to disable Spline rendering when covered by About section
+    useEffect(() => {
+        let ticking = false;
+        const checkCovered = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    // If scrolled past 120vh, the hero is safely completely covered by About
+                    setIsCovered(window.scrollY > window.innerHeight * 1.2);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+        window.addEventListener('scroll', checkCovered, { passive: true });
+        return () => window.removeEventListener('scroll', checkCovered);
     }, []);
 
     // Magnetic letter attraction, ghost-word drift, and 3D tilt on the robot stage.
@@ -180,11 +198,17 @@ export function HeroSection({ profile }: HeroSectionProps) {
         const hero = heroRef.current;
         if (!hero) return;
         const next = hero.nextElementSibling as HTMLElement | null;
-        (next || document.body).scrollIntoView({ behavior: 'smooth' });
+        const target = next || document.body;
+        
+        if ((window as any).__lenis) {
+            (window as any).__lenis.scrollTo(target, { duration: 1.2 });
+        } else {
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
     }
 
     return (
-        <section ref={heroRef} id="hero">
+        <section ref={heroRef} className="hero-section">
             <canvas ref={canvasRef} className="hero-grid-canvas" aria-hidden="true" />
 
             {/* Out-of-register ghost typography */}
@@ -276,7 +300,10 @@ export function HeroSection({ profile }: HeroSectionProps) {
                         <div
                             ref={splineWrapRef}
                             className="relative h-full w-full transition-transform duration-[250ms] ease-out"
-                            style={{ transformStyle: 'preserve-3d' }}
+                            style={{ 
+                                transformStyle: 'preserve-3d',
+                                visibility: isCovered ? 'hidden' : 'visible'
+                            }}
                         >
                             <div className="hero-orbit-ring" aria-hidden="true" />
                             <SplineScene

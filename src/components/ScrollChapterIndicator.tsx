@@ -22,6 +22,7 @@ const CHAPTERS = [
 export function ScrollChapterIndicator() {
   const [activeChapter, setActiveChapter] = useState('hero');
   const [showLabel, setShowLabel] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [prevChapter, setPrevChapter] = useState('hero');
   const [scrollProgress, setScrollProgress] = useState(0);
   const activeChapterRef = useRef(activeChapter);
@@ -102,13 +103,24 @@ export function ScrollChapterIndicator() {
     const el = document.getElementById(id);
     if (el) {
       const top = el.getBoundingClientRect().top + window.scrollY;
-      document.documentElement.style.scrollBehavior = 'auto';
-      animate(window.scrollY, top, {
-        duration: 1.2,
-        ease: [0.16, 1, 0.3, 1],
-        onUpdate: (latest) => window.scrollTo(0, latest),
-        onComplete: () => { document.documentElement.style.scrollBehavior = ''; }
-      });
+
+      // Start cinematic transition overlay
+      setIsTransitioning(true);
+
+      // Wait for overlay to fade in (400ms duration)
+      setTimeout(() => {
+        // Jump instantly
+        if ((window as any).__lenis) {
+          (window as any).__lenis.scrollTo(top, { immediate: true });
+        } else {
+          window.scrollTo({ top, behavior: 'auto' });
+        }
+
+        // Wait a tiny bit for the browser to paint, then fade out
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 50);
+      }, 400);
     }
   };
 
@@ -117,6 +129,7 @@ export function ScrollChapterIndicator() {
   if (pathname !== '/') return null;
 
   return (
+    <>
     <div className="chapter-indicator">
       {/* Progress line */}
       <div className="chapter-progress-line">
@@ -156,6 +169,14 @@ export function ScrollChapterIndicator() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Cinematic Transition Overlay must be outside the transformed container */}
     </div>
+    <div
+      className={`fixed inset-0 z-40 bg-white/80 backdrop-blur-lg transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        isTransitioning ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+      }`}
+    />
+    </>
   );
 }

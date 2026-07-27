@@ -55,7 +55,7 @@ export function SinglePage({ profile, projects, certificates, activities, experi
     <main className="min-h-screen bg-white">
       <div>
         {/* Hero & About share a sticky wrapper */}
-        <div className="relative z-0 bg-white">
+        <div id="hero" className="relative z-0 bg-white">
           {/* 01 — Hero */}
           <HeroSection profile={profile} />
 

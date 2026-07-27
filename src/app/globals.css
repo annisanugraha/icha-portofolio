@@ -585,6 +585,7 @@ h4 {
   background: var(--ghost);
   transition: all 0.5s var(--ease-dramatic);
   cursor: pointer;
+  outline: none;
 }
 
 .chapter-dot:hover {
@@ -640,6 +641,12 @@ html.lenis-smooth {
 
 .lenis.lenis-smooth iframe {
   pointer-events: none;
+}
+
+/* ── Scroll Performance Boost ── */
+/* Disable hover/hit-testing during scroll to prevent main-thread jank */
+html.lenis-scrolling * {
+  pointer-events: none !important;
 }
 
 /* ── Hero Grid Background ── */
@@ -819,7 +826,7 @@ html.lenis-smooth {
 }
 
 /* ── Hero section wrapper ── */
-#hero {
+.hero-section {
   background: #ffffff;
   color: #121210;
   height: 100svh;
